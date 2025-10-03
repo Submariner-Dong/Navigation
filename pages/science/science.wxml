@@ -1,0 +1,11 @@
+<view class="container">
+  <view class="header">
+    <text>口腔健康科普</text>
+  </view>
+  <view class="content">
+    <view class="article" wx:for="{{articles}}" wx:key="id">
+      <text>{{item.title}}</text>
+      <text>{{item.summary}}</text>
+    </view>
+  </view>
+</view>

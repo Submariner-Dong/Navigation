@@ -1,0 +1,10 @@
+<view class="container">
+  <view class="header">
+    <text>青芽智医</text>
+  </view>
+  <view class="content">
+    <navigator url="/pages/science/science" class="btn">科普知识</navigator>
+    <navigator url="/pages/map/map" class="btn">医疗机构地图</navigator>
+    <navigator url="/pages/navigation/navigation" class="btn">院内导航</navigator>
+  </view>
+</view>

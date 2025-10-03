@@ -1,0 +1,11 @@
+<view class="container">
+  <view class="header">
+    <text>院内导航</text>
+  </view>
+  <view class="content">
+    <picker mode="selector" range="{{floors}}" bindchange="onFloorChange">
+      <view>当前楼层：{{currentFloor}}</view>
+    </picker>
+    <image src="{{floorImage}}" mode="widthFix"></image>
+  </view>
+</view>
