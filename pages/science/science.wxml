@@ -2,6 +2,11 @@
   <view class="header">
     <text>口腔健康科普</text>
   </view>
+  <view class="dots-container">
+    <view class="dot" wx:for="{{imageList}}" wx:key="id" bindtap="navigateToDetail" data-id="{{index}}">
+      <image src="{{item}}" mode="aspectFill"></image>
+    </view>
+  </view>
   <view class="content">
     <view class="article" wx:for="{{articles}}" wx:key="id">
       <text>{{item.title}}</text>

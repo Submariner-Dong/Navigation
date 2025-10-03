@@ -1,0 +1,32 @@
+.container {
+  padding: 20px;
+}
+.header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.dots-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+.dot {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.dot image {
+  width: 100%;
+  height: 100%;
+}
+.content {
+  margin-top: 10px;
+}
+.article {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
