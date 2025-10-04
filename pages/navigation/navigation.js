@@ -6,9 +6,10 @@ Page({
   },
   onFloorChange: function(e) {
     const floor = this.data.floors[e.detail.value];
+    const no = parseInt(e.detail.value)+1;
     this.setData({
       currentFloor: floor,
-      floorImage: `/images/floor${e.detail.value + 1}.png`
+      floorImage: `/images/floor${no}.png`
     });
   }
 })

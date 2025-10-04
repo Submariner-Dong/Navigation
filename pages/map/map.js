@@ -1,11 +1,11 @@
 Page({
   data: {
-    longitude: 116.404,
+    longitude: 40,
     latitude: 39.915,
     markers: [
       {
         id: 1,
-        longitude: 116.404,
+        longitude: 40,
         latitude: 39.915,
         name: "北京口腔医院",
         iconPath: "/images/marker.png"
