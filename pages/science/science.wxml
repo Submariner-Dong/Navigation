@@ -3,12 +3,12 @@
     <text>口腔健康科普</text>
   </view>
   <view class="dots-container">
-    <view class="dot" wx:for="{{imageList}}" wx:key="id" bindtap="navigateToDetail" data-id="{{index}}">
+    <view class="dot" wx:for="{{imageList}}" wx:key="id">
       <image src="{{item}}" mode="aspectFill"></image>
     </view>
   </view>
   <view class="content">
-    <view class="article" wx:for="{{articles}}" wx:key="id">
+    <view class="article" wx:for="{{articles}}" wx:key="id" bindtap="navigateToDetail" data-id="{{index}}">
       <text>{{item.title}}</text>
       <text>{{item.summary}}</text>
     </view>
