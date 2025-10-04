@@ -1,4 +1,8 @@
 <view class="container">
+  <view class="search-bar">
+    <input placeholder="输入目标地址" bindinput="onInput" />
+    <button bindtap="onSearch">搜索</button>
+  </view>
   <map
     id="map"
     longitude="{{longitude}}"
@@ -6,5 +10,6 @@
     markers="{{markers}}"
     scale="16"
     show-location
+    bindmarkertap="onMarkerTap"
   ></map>
 </view>

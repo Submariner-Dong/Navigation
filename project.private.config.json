@@ -10,6 +10,7 @@
     "autoAudits": false,
     "showShadowRootInWxmlPanel": true,
     "compileHotReLoad": true,
+<<<<<<< HEAD
     "useApiHook": true,
     "useApiHostProcess": true,
     "useStaticServer": false,
@@ -18,5 +19,8 @@
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true,
     "bigPackageSizeSupport": false
+=======
+    "bigPackageSizeSupport": true
+>>>>>>> 22189d8ae93b75210bd85113aba156396b3b267e
   }
 }
