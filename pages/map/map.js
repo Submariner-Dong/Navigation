@@ -172,9 +172,9 @@ Page({
         const markers = data.poisData
           .filter(poi => {
             const isValid = !isNaN(poi.longitude) && !isNaN(poi.latitude);
-            if (!isValid) {
-              console.warn('无效经纬度数据:', poi);
-            }
+            //if (!isValid) {
+            //  console.warn('无效经纬度数据:', poi);
+            //}
             return isValid;
           })
           .map((poi, index) => ({
@@ -208,11 +208,23 @@ Page({
   onMarkerTap: function(e) {
     const markerId = e.markerId;
     const marker = this.data.markers.find(m => m.id === markerId);
+    this.setData({ selectedMarker: marker });
     wx.showActionSheet({
       itemList: ["导航到" + marker.name],
       success: (res) => {
         if (res.tapIndex === 0) {
           wx.openLocation({
+  onNavigate: function() {
+    const { selectedMarker } = this.data;
+    if (selectedMarker) {
+      wx.openLocation({
+        latitude: selectedMarker.latitude,
+        longitude: selectedMarker.longitude,
+        name: selectedMarker.name,
+        address: selectedMarker.address
+      });
+    }
+  },
             latitude: marker.latitude,
             longitude: marker.longitude,
             name: marker.name,

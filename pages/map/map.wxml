@@ -14,4 +14,12 @@
     show-location
     bindmarkertap="onMarkerTap"
   ></map>
+  <view class="location-list">
+    <block wx:for="{{markers}}" wx:key="id">
+      <view class="location-item" bindtap="onMarkerTap" data-marker-id="{{item.id}}">
+        <text>{{item.name}}</text>
+        <text>{{item.address}}</text>
+      </view>
+    </block>
+  </view>
 </view>
