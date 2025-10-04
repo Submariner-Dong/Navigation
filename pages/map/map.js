@@ -1,21 +1,19 @@
+var amapFile = require('../../libs/amap-wx.130');
+
 Page({
   data: {
     longitude: 116.404, // 默认经度
     latitude: 39.915,   // 默认纬度
     markers: [],
     searchText: "",
-    timer: null
+    timer: null,
+    aroundData: {}
   },
   onLoad: function() {
     console.log('当前经度:', this.data.longitude);
     console.log('当前纬度:', this.data.latitude);
     this.initAMap();
-    this.mapCtx = wx.createMapContext('map');
-    console.log('地图上下文初始化结果:', this.mapCtx);
-    if (!this.mapCtx) {
-      console.error('地图上下文初始化失败');
-      return;
-    }
+
     this.getUserLocation();
     // 每30秒更新一次位置
     this.data.timer = setInterval(() => {
@@ -27,8 +25,6 @@ Page({
     if (this.data.timer) clearInterval(this.data.timer);
   },
   initAMap: function() {
-    // 引入高德地图SDK
-    const amapFile = require('../../libs/amap-wx.130.js');
     this.amapPlugin = new amapFile.AMapWX({ key: '21785100aeae5f79be2a00ae97f333c0' });
     console.log('高德地图插件初始化完成:', this.amapPlugin);
   },
@@ -58,15 +54,15 @@ Page({
   },
   updateMultiMarker: function() {
     console.log('开始更新标记点...');
-    if (!this.mapCtx || typeof this.mapCtx.updateMultiMarker !== 'function') {
-      console.error('地图上下文或方法无效', this.mapCtx);
+    if (!this.amapPlugin) {
+      console.error('高德地图初始化失败', this.amapPlugin);
       wx.showToast({
         title: '地图初始化失败',
         icon: 'none'
       });
       return;
     }
-    const { markers } = this.data;
+    const { markers } = this.data.markers;
     console.log('当前标记点数据:', markers);
     if (!markers || markers.length === 0) {
       console.error('标记点数据为空');
@@ -112,11 +108,12 @@ Page({
     console.log('开始获取附近医院数据...', longitude, latitude);
     this.amapPlugin.getPoiAround({
       location: `${longitude},${latitude}`,
-      keywords: '口腔医院',
+      querykeywords: '口腔医院',
+      querytypes:'医院',
       radius: 5000, // 5公里范围
       success: (data) => {
         console.log('获取医院数据成功:', data);
-        if (!data || !data.pois) {
+        if (!data || !data.poisData) {
           console.error('未获取到有效数据', data);
           wx.showToast({
             title: '未获取到有效数据',
@@ -125,29 +122,8 @@ Page({
           return;
         }
         // 严格校验数据格式
-        const validMarkers = data.pois
-          .filter(poi => {
-            if (!poi.location || !poi.location.lng || !poi.location.lat) {
-              console.warn('无效POI数据:', poi);
-              return false;
-            }
-            const lng = parseFloat(poi.location.lng);
-            const lat = parseFloat(poi.location.lat);
-            const isValid = !isNaN(lng) && !isNaN(lat);
-            if (!isValid) {
-              console.warn('无效经纬度:', poi.location);
-            }
-            return isValid;
-          })
-          .map(poi => ({
-            id: poi.id,
-            longitude: parseFloat(poi.location.lng),
-            latitude: parseFloat(poi.location.lat),
-            title: poi.name,
-            iconPath: '/assets/marker.png',
-            width: 30,
-            height: 30
-          }));
+        const validMarkers = data.markers;
+          
         console.log('过滤后的标记点数据:', validMarkers);
         if (validMarkers.length === 0) {
           console.error('过滤后的标记点数据为空');
