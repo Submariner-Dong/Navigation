@@ -7,10 +7,11 @@ Page({
     timer: null
   },
   onLoad: function() {
-  console.log('当前经度:', this.data.longitude);
-  console.log('当前纬度:', this.data.latitude);
+    console.log('当前经度:', this.data.longitude);
+    console.log('当前纬度:', this.data.latitude);
     this.initAMap();
     this.mapCtx = wx.createMapContext('map');
+    console.log('地图上下文初始化结果:', this.mapCtx);
     if (!this.mapCtx) {
       console.error('地图上下文初始化失败');
       return;
@@ -29,15 +30,19 @@ Page({
     // 引入高德地图SDK
     const amapFile = require('../../libs/amap-wx.130.js');
     this.amapPlugin = new amapFile.AMapWX({ key: '21785100aeae5f79be2a00ae97f333c0' });
+    console.log('高德地图插件初始化完成:', this.amapPlugin);
   },
   getUserLocation: function() {
+    console.log('开始获取用户位置...');
     wx.getLocation({
       type: 'gcj02',
       success: (res) => {
+        console.log('获取位置成功:', res);
         this.setData({
           longitude: res.longitude,
           latitude: res.latitude
         }, () => {
+          console.log('更新地图位置:', res.longitude, res.latitude);
           this.updateMultiMarker();
         });
         this.fetchNearbyHospitals(res.longitude, res.latitude);
@@ -52,51 +57,117 @@ Page({
     });
   },
   updateMultiMarker: function() {
+    console.log('开始更新标记点...');
     if (!this.mapCtx || typeof this.mapCtx.updateMultiMarker !== 'function') {
-      console.error('地图上下文或方法无效');
+      console.error('地图上下文或方法无效', this.mapCtx);
+      wx.showToast({
+        title: '地图初始化失败',
+        icon: 'none'
+      });
       return;
     }
     const { markers } = this.data;
-    if (!markers || markers.some(marker => isNaN(marker.longitude) || isNaN(marker.latitude))) {
-      console.error('标记点数据无效');
+    console.log('当前标记点数据:', markers);
+    if (!markers || markers.length === 0) {
+      console.error('标记点数据为空');
+      wx.showToast({
+        title: '暂无标记点数据',
+        icon: 'none'
+      });
       return;
     }
-    this.mapCtx.updateMultiMarker({ markers });
+    // 确保每个标记点都有有效的经纬度
+    const validMarkers = markers.filter(marker => {
+      const isValid = marker.longitude !== undefined && 
+                     marker.latitude !== undefined &&
+                     !isNaN(marker.longitude) && 
+                     !isNaN(marker.latitude);
+      if (!isValid) {
+        console.warn('无效标记点:', marker);
+      }
+      return isValid;
+    });
+    console.log('有效标记点数据:', validMarkers);
+    if (validMarkers.length === 0) {
+      console.error('标记点数据无效', markers);
+      wx.showToast({
+        title: '标记点数据无效',
+        icon: 'none'
+      });
+      return;
+    }
+    try {
+      console.log('调用 updateMultiMarker 方法...');
+      this.mapCtx.updateMultiMarker({ markers: validMarkers });
+      console.log('标记点更新成功');
+    } catch (error) {
+      console.error('更新标记点失败', error);
+      wx.showToast({
+        title: '地图更新失败',
+        icon: 'none'
+      });
+    }
   },
   fetchNearbyHospitals: function(longitude, latitude) {
+    console.log('开始获取附近医院数据...', longitude, latitude);
     this.amapPlugin.getPoiAround({
       location: `${longitude},${latitude}`,
       keywords: '口腔医院',
       radius: 5000, // 5公里范围
       success: (data) => {
+        console.log('获取医院数据成功:', data);
         if (!data || !data.pois) {
-          console.error('未获取到有效数据');
+          console.error('未获取到有效数据', data);
+          wx.showToast({
+            title: '未获取到有效数据',
+            icon: 'none'
+          });
           return;
         }
-        const validMarkers = data.pois.filter(poi => 
-          poi.location && !isNaN(poi.location.lng) && !isNaN(poi.location.lat)
-        ).map(poi => ({
-          id: poi.id,
-          longitude: poi.location.lng,
-          latitude: poi.location.lat,
-          title: poi.name
-        }));
+        // 严格校验数据格式
+        const validMarkers = data.pois
+          .filter(poi => {
+            if (!poi.location || !poi.location.lng || !poi.location.lat) {
+              console.warn('无效POI数据:', poi);
+              return false;
+            }
+            const lng = parseFloat(poi.location.lng);
+            const lat = parseFloat(poi.location.lat);
+            const isValid = !isNaN(lng) && !isNaN(lat);
+            if (!isValid) {
+              console.warn('无效经纬度:', poi.location);
+            }
+            return isValid;
+          })
+          .map(poi => ({
+            id: poi.id,
+            longitude: parseFloat(poi.location.lng),
+            latitude: parseFloat(poi.location.lat),
+            title: poi.name,
+            iconPath: '/assets/marker.png',
+            width: 30,
+            height: 30
+          }));
+        console.log('过滤后的标记点数据:', validMarkers);
+        if (validMarkers.length === 0) {
+          console.error('过滤后的标记点数据为空');
+          wx.showToast({
+            title: '未找到附近医院',
+            icon: 'none'
+          });
+          return;
+        }
         this.setData({ markers: validMarkers }, () => {
-          this.updateMultiMarker(); // 确保数据更新完成
+          console.log('标记点数据已更新:', validMarkers);
+          this.updateMultiMarker();
         });
-        const markers = data.poisData.map((poi, index) => ({
-          id: index,
-          longitude: poi.longitude,
-          latitude: poi.latitude,
-          name: poi.name,
-          address: poi.address,
-          width: 30,
-          height: 30
-        }));
-        this.setData({ markers });
       },
       fail: (err) => {
         console.error('获取医院数据失败', err);
+        wx.showToast({
+          title: '获取数据失败',
+          icon: 'none'
+        });
       }
     });
   },
