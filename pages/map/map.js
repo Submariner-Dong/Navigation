@@ -161,19 +161,47 @@ Page({
       keywords: searchText,
       radius: 5000,
       success: (data) => {
-        const markers = data.poisData.map((poi, index) => ({
-          id: index,
-          longitude: poi.longitude,
-          latitude: poi.latitude,
-          name: poi.name,
-          address: poi.address,
-          width: 30,
-          height: 30
-        }));
+        if (!data || !data.poisData) {
+          console.error('未获取到有效数据', data);
+          wx.showToast({
+            title: '未找到相关医院',
+            icon: 'none'
+          });
+          return;
+        }
+        const markers = data.poisData
+          .filter(poi => {
+            const isValid = !isNaN(poi.longitude) && !isNaN(poi.latitude);
+            if (!isValid) {
+              console.warn('无效经纬度数据:', poi);
+            }
+            return isValid;
+          })
+          .map((poi, index) => ({
+            id: index,
+            longitude: parseFloat(poi.longitude),
+            latitude: parseFloat(poi.latitude),
+            name: poi.name,
+            address: poi.address,
+            width: 30,
+            height: 30
+          }));
+        if (markers.length === 0) {
+          console.error('过滤后的标记点数据为空');
+          wx.showToast({
+            title: '未找到相关医院',
+            icon: 'none'
+          });
+          return;
+        }
         this.setData({ markers });
       },
       fail: (err) => {
         console.error('搜索医院失败', err);
+        wx.showToast({
+          title: '搜索失败，请重试',
+          icon: 'none'
+        });
       }
     });
   },
@@ -191,6 +219,63 @@ Page({
             address: marker.address
           });
         }
+      }
+    });
+  },
+  // 新增搜索功能
+  searchHospitals: function(keyword, city = '', cityLimit = false, location = '') {
+    console.log('开始搜索医疗机构...', keyword);
+    this.amapPlugin.getInputtips({
+      keywords: keyword,
+      type: '医院',
+      city: city,
+      citylimit: cityLimit,
+      location: location,
+      success: (data) => {
+        console.log('搜索医疗机构成功:', data);
+        if (!data || !data.tips) {
+          console.error('未获取到有效数据', data);
+          wx.showToast({
+            title: '未找到相关医疗机构',
+            icon: 'none'
+          });
+          return;
+        }
+        // 解析提示词数据
+        const validMarkers = data.tips
+          .filter(tip => tip.location && tip.location.split(',').length === 2)
+          .map(tip => {
+            const [longitude, latitude] = tip.location.split(',').map(Number);
+            return {
+              id: tip.id,
+              longitude: longitude,
+              latitude: latitude,
+              title: tip.name,
+              // iconPath: '/assets/marker.png',
+              width: 30,
+              height: 30
+            };
+          });
+        console.log('过滤后的标记点数据:', validMarkers);
+        if (validMarkers.length === 0) {
+          console.error('过滤后的标记点数据为空');
+          wx.showToast({
+            title: '未找到相关医疗机构',
+            icon: 'none'
+          });
+          return;
+        }
+        this.setData({ markers: validMarkers }, () => {
+          console.log('标记点数据已更新:', validMarkers);
+          this.updateMultiMarker();
+        });
+      },
+      fail: (err) => {
+        console.error('搜索医疗机构失败', err);
+        wx.showToast({
+          title: '搜索失败',
+          icon: 'none'
+        });
       }
     });
   }
