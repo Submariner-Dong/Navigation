@@ -1,24 +1,10 @@
 Page({
   data: {
-<<<<<<< HEAD
-    longitude: 40,
-    latitude: 39.915,
-    markers: [
-      {
-        id: 1,
-        longitude: 40,
-        latitude: 39.915,
-        name: "北京口腔医院",
-        iconPath: "/images/marker.png"
-      }
-    ]
-=======
     longitude: 116.404, // 默认经度
     latitude: 39.915,   // 默认纬度
     markers: [],
     searchText: "",
     timer: null
->>>>>>> 22189d8ae93b75210bd85113aba156396b3b267e
   },
   onLoad: function() {
   console.log('当前经度:', this.data.longitude);

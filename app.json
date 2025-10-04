@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/science/science",
     "pages/map/map",
-    "pages/navigation/navigation"
+    "pages/navigation/navigation",
+    "pages/science/detail/detail"
   ],
   "window": {
     "navigationBarTitleText": "青芽智医",
