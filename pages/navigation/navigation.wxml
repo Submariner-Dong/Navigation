@@ -1,11 +1,35 @@
 <view class="container">
-  <view class="header">
-    <text>院内导航</text>
+  <view wx:if="{{!showNavigation}}" class="input-container">
+    <text>请输入目的科室</text>
+    <input placeholder="例如：正畸科" bindinput="handleInput" />
+    <button class="search-button" bindtap="handleSearch">搜索</button>
   </view>
-  <view class="content">
-    <picker mode="selector" range="{{floors}}" bindchange="onFloorChange">
-      <view>当前楼层：{{currentFloor}}</view>
-    </picker>
-    <image src="{{floorImage}}" mode="widthFix"></image>
+  <view wx:if="{{showNavigation}}">
+    <view wx:if="{{currentStep === 0}}" class="image-container">
+      <image src="{{navigationInfo[destination].steps[currentStep].image}}" mode="aspectFit" class="navigation-image"></image>
+    </view>
+    <view wx:if="{{currentStep === 0}}" class="text-container">
+      <text>{{navigationInfo[destination].steps[currentStep].text}}</text>
+    </view>
+    <view wx:if="{{currentStep === 1}}">
+      <view class="options-container">
+        <button wx:for="{{navigationInfo[destination].steps[currentStep].options}}" wx:key="type" data-type="{{item.type}}" bindtap="selectRoute">
+          {{item.type === 'stairs' ? '走楼梯' : '乘电梯'}}
+        </button>
+      </view>
+    </view>
+    <view wx:if="{{currentStep === 2}}" class="image-container">
+      <image src="{{selectedRoute === 'stairs' ? navigationInfo[destination].steps[1].options[0].image : navigationInfo[destination].steps[1].options[1].image}}" mode="aspectFit" class="navigation-image"></image>
+    </view>
+    <view wx:if="{{currentStep === 2}}" class="text-container">
+      <text>{{selectedRoute === 'stairs' ? navigationInfo[destination].steps[1].options[0].text : navigationInfo[destination].steps[1].options[1].text}}</text>
+    </view>
+    <view wx:if="{{currentStep === 3}}" class="image-container">
+      <image src="{{navigationInfo[destination].steps[2].image}}" mode="aspectFit" class="navigation-image"></image>
+    </view>
+    <view wx:if="{{currentStep === 3}}" class="text-container">
+      <text>{{navigationInfo[destination].steps[2].text}}</text>
+    </view>
+    <button wx:if="{{currentStep < 3}}" class="next-button" bindtap="nextStep">下一步</button>
   </view>
 </view>
