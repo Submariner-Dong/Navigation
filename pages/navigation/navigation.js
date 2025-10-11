@@ -1,10 +1,9 @@
 Page({
   data: {
-    destination: "",
-    showNavigation: false,
-    currentStep: 0,
-    selectedRoute: "",
-    navigationInfo: {
+    navigationArray: [
+      "正畸科", "放射科", "儿科", "儿童口腔科"
+    ],
+    navigationInfo: { 
       "正畸科": {
         steps: [
           { image: "/public/images/gate.jpg", text: "进入同济大学口腔医院" },
@@ -40,11 +39,29 @@ Page({
           { image: "/public/images/2-radiology-1.jpg", text: "成功到达儿童口腔科，治疗顺利！" }
         ]
       }
-    }
+    },
+
+    destination: "",
+    value: [0],
+    showNavigation: false,
+    currentStep: 0,
+    selectedRoute: "",
   },
-  handleInput: function(e) {
-    this.setData({ destination: e.detail.value });
+
+  onLoad(options) {
+    this.setData({
+      destination: this.data.navigationArray[0],
+    })
   },
+
+  bindChange: function(e) {
+    const val = e.detail.value;
+    this.setData({
+      destination: this.data.navigationArray[val[0]]
+    })
+    console.log("set destination to", this.data.navigationArray[val[0]]);
+  },
+
   handleSearch: function() {
     if (this.data.destination.trim() === "") {
       wx.showToast({
