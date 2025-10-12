@@ -4,6 +4,7 @@
     "pages/science/science",
     "pages/map/map",
     "pages/navigation/navigation",
+    "pages/navigation/department/department",
     "pages/science/detail/detail"
   ],
   "window": {

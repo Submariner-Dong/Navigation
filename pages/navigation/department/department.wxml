@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="header">
+    <text class="department">{{department}}导航</text>
+    <text class="step-info">步骤 {{currentStepIndex + 1}}/{{totalSteps}}</text>
+  </view>
+
+  <!-- 普通步骤显示 -->
+  <view wx:if="{{!hasOptions}}" class="step-content">
+    <image class="step-image" src="{{currentStep.image}}" mode="aspectFit"></image>
+    <view class="step-text">{{currentStep.text}}</view>
+  </view>
+
+  <!-- 分叉步骤显示 -->
+  <view wx:else class="options-content">
+    <view class="options-title">请选择路线：</view>
+    <view class="options-list">
+      <block wx:for="{{currentStep.options}}" wx:key="type">
+        <view 
+          class="option-item {{selectedOption === item.type ? 'selected' : ''}}" 
+          bindtap="selectOption" 
+          data-option="{{item}}"
+        >
+          <image class="option-image" src="{{item.image}}" mode="aspectFit"></image>
+          <view class="option-text">{{item.text}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="navigation-controls">
+    <button wx:if="{{currentStepIndex > 0}}" class="btn prev-btn" bindtap="prevStep">上一步</button>
+    <button 
+      class="btn next-btn {{hasOptions && !selectedOption ? 'disabled' : ''}}" 
+      bindtap="nextStep"
+      disabled="{{hasOptions && !selectedOption}}"
+    >
+      {{isLastStep ? '完成导航' : '下一步'}}
+    </button>
+  </view>
+</view>

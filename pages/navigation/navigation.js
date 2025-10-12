@@ -43,67 +43,15 @@ Page({
       console.log('未选择科室名称');
       return;
     }*/
-    const destination = this.data.destination;
-    if (this.data.navigationInfo[destination]) {
-      this.setData({
-        showNavigation: true,
-        currentStep: 0,
-        selectedRoute: "",
-        department: destination,
-        steps: this.data.navigationInfo[destination].steps
-      });
-      console.log('导航开始，目标科室:', destination, '导航步骤:', this.data.steps);
-    } else {
-      wx.showToast({
-        title: "未找到该科室",
-        icon: "none"
-      });
-      console.log('未找到科室:', destination);
-    }
-  },
-
-  selectRoute: function(e) {
-    const selectedType = e.currentTarget.dataset.type;
-    this.setData({
-      selectedRoute: selectedType,
-      currentStep: this.data.currentStep + 1,
-      selectedOption: selectedType,
-      navigationPath: [...this.data.navigationPath, selectedType]
+    const department = this.data.destination;
+    wx.navigateTo({
+      url: `/pages/navigation/department/department?d=${department}`,
+      success: function(res) {
+        res.eventChannel.emit('sendNavigationData', {
+          navigationInfo: this.data.navigationInfo[department],
+          department: department
+        });
+      }.bind(this)
     });
-    console.log('用户选择路径:', selectedType, '当前步骤:', this.data.currentStep);
   },
-
-  nextStep: function() {
-    const nextStep = this.data.currentStep + 1;
-    this.setData({ currentStep: nextStep });
-    console.log('进入下一步，当前步骤:', nextStep);
-  },
-
-  /**
-   * 更新当前步骤的显示
-   */
-  updateCurrentStep() {
-    const { steps, currentStepIndex, navigationPath } = this.data;
-    let currentStep = steps[currentStepIndex]; // 获取当前步骤
-    
-    // 如果当前步骤有选项且用户之前已选择，则标记已选选项
-    if (currentStep.options && navigationPath[currentStepIndex]) {
-      const selectedType = navigationPath[currentStepIndex]; // 获取用户选择的选项类型
-      currentStep = {
-        ...currentStep,
-        options: currentStep.options.map(opt => ({
-          ...opt,
-          selected: opt.type === selectedType // 标记已选选项
-        }))
-      };
-    }
-
-    // 更新页面数据
-    this.setData({
-      currentStep: currentStep, // 当前步骤详情
-      hasOptions: !!currentStep.options, // 当前步骤是否有选项
-      isLastStep: currentStepIndex === steps.length - 1 // 是否为最后一步
-    });
-    console.log('更新当前步骤:', currentStep);
-  }
 })
