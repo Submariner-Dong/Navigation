@@ -1,13 +1,13 @@
 <view class="container">
   <view class="header">
-    <image src="../../public/images/logo.png" mode="aspectFit" class="logo"></image>
+    <image src="../../public/images/logo.png" mode="aspectFill" class="logo"></image>
     <text>青芽智医</text>
   </view>
   <view class="content">
     <view class="image-container">
       <image src="../../public/images/index-button1.png" mode="aspectFit" class="button-image"></image>
-      <image src="../../public/images/index-button2.jpg" mode="aspectFit" class="button-image"></image>
-      <image src="../../public/images/index-button3.jpg" mode="aspectFit" class="button-image"></image>
+      <image src="../../public/images/index-button2.png" mode="aspectFit" class="button-image"></image>
+      <image src="../../public/images/index-button3.png" mode="aspectFit" class="button-image"></image>
     </view>
     <navigator url="/pages/science/science" class="btn">科普知识</navigator>
     <navigator url="/pages/map/map" class="btn">医院地图</navigator>
