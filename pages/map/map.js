@@ -246,12 +246,9 @@ Page({
       address: marker.address
     });
   },
-
-        
       });
     }
   },
-            
           });
         }
       }
