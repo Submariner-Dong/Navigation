@@ -21,8 +21,8 @@
 }
 .btn {
   padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: #11ffee00;
+  color: black;
   text-align: center;
   border-radius: 5px;
 }
@@ -32,14 +32,20 @@
   
 }
 .image-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  width: 1000px;
+  height: 1000px;
+  overflow: hidden;
 }
 
-.button-image {
+.button-image1 {
+  width: 128px;
+  height: 128px;
+}
+.button-image2 {
+  width: 155px;
+  height: 155px;
+}
+.button-image3 {
   width: 128px;
   height: 128px;
 }

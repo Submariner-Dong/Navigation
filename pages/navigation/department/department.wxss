@@ -65,7 +65,7 @@
 }
 
 .option-item.selected {
-  border-color: #007aff;
+  border-color: #07c160;
   background-color: #f0f8ff;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .next-btn {
-  background-color: #007aff;
+  background-color: #07c160;
   color: white;
 }
 

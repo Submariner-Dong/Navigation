@@ -1,10 +1,10 @@
 Page({
   data: {
     imageList: [
-      '/public/images/image-1.jpg',
-      '/public/images/image-2.jpg',
-      '/public/images/image-3.jpg',
-      '/public/images/image-4.jpg'
+      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVCpo69970vksfU4zJUhhP9ZOZLsAAbAAAk4gAAIsvmFXaqVLndYsK7k2BA.jpg',
+      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVCto69-Sim7ojfZYf-Mu9AR9t9vlSwACTyAAAiy-YVdLtb3I42vNqjYE.jpg',
+      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVCxo69-W_K9tsccQTfa4qay430qbgwACUCAAAiy-YVdkVgP7EulQQzYE.jpg',
+      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVC1o69-Z6puM9Fwmwn8Zl7ncm3E5qwACUSAAAiy-YVeHOy4IdRNjwDYE.jpg'
     ],
     articles: [
       { id: 1, title: "“鼻”须知道\n——打败口呼吸小怪兽的魔法指南" },

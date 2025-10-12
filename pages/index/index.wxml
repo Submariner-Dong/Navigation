@@ -1,16 +1,28 @@
 <view class="container">
   <view class="header">
-    <image src="../../public/images/logo.png" mode="aspectFill" class="logo"></image>
+    <image src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVDFo69-imC6tFe8VNZBz3nzXeiChgAACVSAAAiy-YVfChNmtNySBzjYE.png" mode="aspectFill" class="logo"></image>
     <text>青芽智医</text>
   </view>
   <view class="content">
     <view class="image-container">
-      <image src="../../public/images/index-button1.png" mode="aspectFit" class="button-image"></image>
-      <image src="../../public/images/index-button2.png" mode="aspectFit" class="button-image"></image>
-      <image src="../../public/images/index-button3.png" mode="aspectFit" class="button-image"></image>
+      <view class="image-item">
+        <navigator url="/pages/science/science" class="btn">
+          <image src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVC5o69-amibg3wFPbDQSHSY5pedt2wACUiAAAiy-YVeODGvp2RJodTYE.png" mode="aspectFit" class="button-image"></image>
+        </navigator>
+        <navigator url="/pages/science/science" class="btn">科普知识</navigator>
+      </view>
+      <view class="image-item">
+        <navigator url="/pages/map/map" class="btn">
+          <image src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVC9o69-cxa2XMFV83-hAtaactjzyiwACUyAAAiy-YVdABNqtoGhGoDYE.png" mode="aspectFit" class="button-image"></image>
+        </navigator>
+        <navigator url="/pages/map/map" class="btn">医院地图</navigator>
+      </view>
+      <view class="image-item">
+        <navigator url="/pages/navigation/navigation" class="btn">
+          <image src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVDBo69-fCo0FZvZEKIkro5a-gg3BPQACVCAAAiy-YVd5uFdZuPqoujYE.png" mode="aspectFit" class="button-image"></image>
+        </navigator>
+        <navigator url="/pages/navigation/navigation" class="btn">院内导航</navigator>
+      </view>
     </view>
-    <navigator url="/pages/science/science" class="btn">科普知识</navigator>
-    <navigator url="/pages/map/map" class="btn">医院地图</navigator>
-    <navigator url="/pages/navigation/navigation" class="btn">院内导航</navigator>
   </view>
 </view>
