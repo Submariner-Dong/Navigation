@@ -5,7 +5,7 @@
   </view>
   <view class="content">
     <view class="image-container">
-      <image src="../../public/images/index-button1.jpg" mode="aspectFit" class="button-image"></image>
+      <image src="../../public/images/index-button1.png" mode="aspectFit" class="button-image"></image>
       <image src="../../public/images/index-button2.jpg" mode="aspectFit" class="button-image"></image>
       <image src="../../public/images/index-button3.jpg" mode="aspectFit" class="button-image"></image>
     </view>
