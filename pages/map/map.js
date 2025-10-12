@@ -246,33 +246,12 @@ Page({
       address: marker.address
     });
   },
-  onTextButtonTap: function() {
-    const { selectedMarker } = this.data;
-    if (!selectedMarker) {
-      wx.showToast({
-        title: '请先选择标记点',
-        icon: 'none'
-      });
-      return;
-    }
-    wx.openLocation({
-      latitude: selectedMarker.latitude,
-      longitude: selectedMarker.longitude,
-      name: selectedMarker.name,
-      address: selectedMarker.address
-    });
-  },
-        latitude: selectedMarker.latitude,
-        longitude: selectedMarker.longitude,
-        name: selectedMarker.name,
-        address: selectedMarker.address
+
+        
       });
     }
   },
-            latitude: marker.latitude,
-            longitude: marker.longitude,
-            name: marker.name,
-            address: marker.address
+            
           });
         }
       }
