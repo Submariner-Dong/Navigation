@@ -1,9 +1,14 @@
 <view class="container">
-  <image src="../../public/images/index-image.png" mode="aspectFill" class="background-image"></image>
   <view class="header">
+    <image src="../../public/images/logo.png" mode="aspectFit" class="logo"></image>
     <text>青芽智医</text>
   </view>
   <view class="content">
+    <view class="image-container">
+      <image src="../../public/images/index-button1.jpg" mode="aspectFit" class="button-image"></image>
+      <image src="../../public/images/index-button2.jpg" mode="aspectFit" class="button-image"></image>
+      <image src="../../public/images/index-button3.jpg" mode="aspectFit" class="button-image"></image>
+    </view>
     <navigator url="/pages/science/science" class="btn">科普知识</navigator>
     <navigator url="/pages/map/map" class="btn">医院地图</navigator>
     <navigator url="/pages/navigation/navigation" class="btn">院内导航</navigator>
