@@ -7,7 +7,7 @@
     <view class="image-container">
       <view class="image-item">
         <navigator url="/pages/science/science" class="btn">
-          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button1.png" mode="aspectFit" class="button-image"></image>
+          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-1.png" mode="aspectFit" class="button-image"></image>
         </navigator>
         <!--<navigator url="/pages/science/science" class="btn">科普知识</navigator>-->
       </view>

@@ -1,6 +1,6 @@
 <view class="container">
   <view wx:if="{{!showNavigation}}" class="input-container">
-    <text>欢迎来到同济口腔医院</text>
+    <text>欢迎来到同济大学附属口腔医院</text>
     <text>请选择目的科室</text>
     <picker-view indicator-style="height: 50px;" style="width: 100%; height: 150px;" value="{{value}}" bindchange="bindChange">
       <picker-view-column>

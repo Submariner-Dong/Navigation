@@ -3,7 +3,7 @@ import navigationConfig from "../../config/navigationConfig";
 Page({
   data: {
     navigationArray: [
-      "正畸科", "放射科", "儿科/儿童口腔科"
+      "正畸科", "放射科", "儿童口腔科", "牙周科", "牙体牙髓病科", "种植科", "口腔颌面外科", "检验科", "口腔修复科",
     ],
     navigationInfo: navigationConfig,
 
