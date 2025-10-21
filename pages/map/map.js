@@ -210,10 +210,6 @@ Page({
           return;
         }
         this.setData({ markers, tips: [] });
-        // 如果点击的是提示项，直接导航到第一个匹配的标记点
-        if (e.target.dataset.keywords) {
-          this.onTextButtonTap({ currentTarget: { dataset: { markerId: 0 } } });
-        }
       },
       fail: (err) => {
         console.error('搜索医院失败', err);
