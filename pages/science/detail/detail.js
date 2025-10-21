@@ -13,7 +13,7 @@ Page({
   },
 
   getImageUrl: function(id) {
-    const imageBaseUrl = '/public/images/image-';
+    const imageBaseUrl = 'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image-';
     return `${imageBaseUrl}${parseInt(id)+1}.jpg`;
   },
 
