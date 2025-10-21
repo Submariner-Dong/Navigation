@@ -4,7 +4,7 @@
   </view>
   <view class="dots-container">
     <view class="dot" wx:for="{{imageList}}" wx:key="id">
-      <image src="{{item}}" mode="aspectFill"></image>
+      <image src="{{item[0]}}" mode="aspectFill"></image>
     </view>
   </view>
   <view class="content">
