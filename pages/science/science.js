@@ -1,10 +1,38 @@
 Page({
   data: {
     imageList: [
-      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVCpo69970vksfU4zJUhhP9ZOZLsAAbAAAk4gAAIsvmFXaqVLndYsK7k2BA.jpg',
-      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVCto69-Sim7ojfZYf-Mu9AR9t9vlSwACTyAAAiy-YVdLtb3I42vNqjYE.jpg',
-      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVCxo69-W_K9tsccQTfa4qay430qbgwACUCAAAiy-YVdkVgP7EulQQzYE.jpg',
-      'https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAEDVC1o69-Z6puM9Fwmwn8Zl7ncm3E5qwACUSAAAiy-YVeHOy4IdRNjwDYE.jpg'
+      [
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image1-1.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image1-2.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image1-3.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image1-4.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image1-5.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image1-6.jpg',
+      ],
+      [
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image2-1.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image2-2.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image2-3.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image2-4.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image2-5.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image2-6.jpg',
+      ],
+      [
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image3-1.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image3-2.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image3-3.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image3-4.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image3-5.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image3-6.jpg',
+      ],
+      [
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image4-1.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image4-2.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image4-3.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image4-4.jpg', 
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image4-5.jpg',
+        'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/image4-6.jpg',
+      ],
     ],
     articles: [
       { id: 1, title: "“鼻”须知道\n——打败口呼吸小怪兽的魔法指南" },
