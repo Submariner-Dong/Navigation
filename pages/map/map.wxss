@@ -22,3 +22,21 @@
   border: none;
   border-radius: 4px;
 }
+
+.tips-list {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 5px 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tip-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.tip-item:last-child {
+  border-bottom: none;
+}

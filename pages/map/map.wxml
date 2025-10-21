@@ -3,6 +3,11 @@
     <input placeholder="输入目标地址" bindinput="onInput" />
     <button bindtap="onSearch">搜索</button>
   </view>
+  <view class="tips-list">
+    <view wx:for="{{tips}}" wx:key="id" class="tip-item" bindtap="onTextButtonTap" data-marker-id="{{index}}">
+      <text>{{item.name}}</text>
+    </view>
+  </view>
   <map
     class="map"
     id="map"

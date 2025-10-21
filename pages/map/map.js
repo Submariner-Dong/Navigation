@@ -148,17 +148,35 @@ Page({
     });
   },
   onInput: function(e) {
-    this.setData({ searchText: e.detail.value });
+    const keywords = e.detail.value;
+    this.setData({ searchText: keywords });
+    if (keywords.trim()) {
+      this.amapPlugin.getInputtips({
+        keywords: keywords,
+        location: `${this.data.longitude},${this.data.latitude}`,
+        success: (data) => {
+          if (data && data.tips) {
+            this.setData({ tips: data.tips });
+          }
+        },
+        fail: (err) => {
+          console.error('获取输入提示失败', err);
+        }
+      });
+    } else {
+      this.setData({ tips: [] });
+    }
   },
-  onSearch: function() {
-    const { searchText, longitude, latitude } = this.data;
-    if (!searchText.trim()) {
+  onSearch: function(e) {
+    const keywords = e.target.dataset.keywords || this.data.searchText;
+    const { longitude, latitude } = this.data;
+    if (!keywords.trim()) {
       this.fetchNearbyHospitals(longitude, latitude);
       return;
     }
     this.amapPlugin.getPoiAround({
       location: `${longitude},${latitude}`,
-      keywords: searchText,
+      keywords: keywords,
       radius: 5000,
       success: (data) => {
         if (!data || !data.poisData) {
@@ -172,9 +190,6 @@ Page({
         const markers = data.poisData
           .filter(poi => {
             const isValid = !isNaN(poi.longitude) && !isNaN(poi.latitude);
-            //if (!isValid) {
-            //  console.warn('无效经纬度数据:', poi);
-            //}
             return isValid;
           })
           .map((poi, index) => ({
@@ -194,7 +209,11 @@ Page({
           });
           return;
         }
-        this.setData({ markers });
+        this.setData({ markers, tips: [] });
+        // 如果点击的是提示项，直接导航到第一个匹配的标记点
+        if (e.target.dataset.keywords) {
+          this.onTextButtonTap({ currentTarget: { dataset: { markerId: 0 } } });
+        }
       },
       fail: (err) => {
         console.error('搜索医院失败', err);
