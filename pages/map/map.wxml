@@ -4,7 +4,7 @@
     <button bindtap="onSearch">搜索</button>
   </view>
   <view class="tips-list">
-    <view wx:for="{{tips}}" wx:key="id" class="tip-item" bindtap="onSearch" data-keywords="{{item.name}}">
+    <view wx:for="{{tips}}" wx:key="id" class="tip-item" bindtap="onInputButtonTap" data-tip-index="{{index}}">
       <text>{{item.name}}</text>
     </view>
   </view>

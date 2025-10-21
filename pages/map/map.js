@@ -167,6 +167,27 @@ Page({
       this.setData({ tips: [] });
     }
   },
+  onInputButtonTap: function(e) {
+    const tipIndex = e.currentTarget.dataset.tipIndex;
+    console.log('点击的提示信息索引:', tipIndex);
+    const tip = this.data.tips[tipIndex];
+    console.log('找到的提示信息:', tip);
+    if (!tip) {
+      wx.showToast({
+        title: '未找到提示信息',
+        icon: 'none'
+      });
+      return;
+    }
+    const location = tip.location.split(',');
+    wx.openLocation({
+      latitude: parseFloat(location[1]),
+      longitude: parseFloat(location[0]),
+      name: tip.name,
+      address: tip.district + tip.address
+    });
+  },
+  
   onSearch: function(e) {
     const keywords = e.target.dataset.keywords || this.data.searchText;
     const { longitude, latitude } = this.data;
@@ -201,6 +222,7 @@ Page({
             width: 30,
             height: 30
           }));
+        
         if (markers.length === 0) {
           console.error('过滤后的标记点数据为空');
           wx.showToast({
