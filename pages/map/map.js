@@ -223,10 +223,16 @@ Page({
       success: (res) => {
         if (res.tapIndex === 0) {
           wx.openLocation({
-  onNavigate: function() {
-    const { selectedMarker } = this.data;
-    if (selectedMarker) {
-      wx.openLocation({
+            latitude: marker.latitude,
+            longitude: marker.longitude,
+            name: marker.name,
+            address: marker.address
+          });
+        }
+      }
+    });
+  },
+
   onTextButtonTap: function(e) {
     const markerId = e.currentTarget.dataset.markerId;
     console.log('点击的标记点 ID:', markerId);
@@ -246,14 +252,7 @@ Page({
       address: marker.address
     });
   },
-      });
-    }
-  },
-          });
-        }
-      }
-    });
-  },
+
   // 新增搜索功能
   searchHospitals: function(keyword, city = '', cityLimit = false, location = '') {
     console.log('开始搜索医疗机构...', keyword);
