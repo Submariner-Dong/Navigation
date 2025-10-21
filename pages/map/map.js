@@ -66,10 +66,12 @@ Page({
     console.log('当前标记点数据:', markers);
     if (!markers || markers.length === 0) {
       console.error('标记点数据为空');
+      /*
       wx.showToast({
         title: '暂无标记点数据',
         icon: 'none'
       });
+      */
       return;
     }
     // 确保每个标记点都有有效的经纬度
@@ -187,7 +189,7 @@ Page({
       address: tip.district + tip.address
     });
   },
-  
+
   onSearch: function(e) {
     const keywords = e.target.dataset.keywords || this.data.searchText;
     const { longitude, latitude } = this.data;
@@ -202,10 +204,12 @@ Page({
       success: (data) => {
         if (!data || !data.poisData) {
           console.error('未获取到有效数据', data);
+          /*
           wx.showToast({
             title: '未找到相关医院',
             icon: 'none'
           });
+          */
           return;
         }
         const markers = data.poisData
@@ -225,10 +229,12 @@ Page({
         
         if (markers.length === 0) {
           console.error('过滤后的标记点数据为空');
+          /*
           wx.showToast({
             title: '未找到相关医院',
             icon: 'none'
           });
+          */
           return;
         }
         this.setData({ markers, tips: [] });

@@ -40,3 +40,34 @@
 .tip-item:last-child {
   border-bottom: none;
 }
+
+.location-list {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 10px 20px 30px 20px;
+  max-height: 320px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.location-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-item:last-child {
+  border-bottom: none;
+}
+
+.location-item text {
+  font-size: 14px;
+  color: #333;
+}
+
+.location-item text:first-child {
+  font-weight: bold;
+}
