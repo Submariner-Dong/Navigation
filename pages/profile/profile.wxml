@@ -1,0 +1,49 @@
+<view class="container">
+  <!-- 账号显示区域 -->
+  <view class="account-section">
+    <view wx:if="{{userAccount}}" class="account-info">
+      <image class="avatar" src="{{userAccount.avatarUrl}}" mode="aspectFill"></image>
+      <view class="account-details">
+        <text class="account-name">{{userAccount.accountName}}</text>
+        <text class="nickname">{{userAccount.nickName}}</text>
+      </view>
+    </view>
+    <view wx:else class="no-account">
+      <text>未登录</text>
+      <button class="login-btn" bindtap="goToLogin">立即登录</button>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="title">个人信息</text>
+    <view class="input-group">
+      <text>姓名：</text>
+      <input placeholder="请输入姓名" bindinput="saveUserInfo" data-field="name" value="{{userInfo.name}}" />
+    </view>
+    <view class="input-group">
+      <text>性别：</text>
+      <picker mode="selector" range="{{['男', '女']}}" bindchange="onGenderChange">
+        <view class="picker-display">{{userInfo.gender || '请选择性别'}}</view>
+      </picker>
+    </view>
+    <view class="input-group">
+      <text>年龄：</text>
+      <input placeholder="请输入年龄" type="number" bindinput="saveUserInfo" data-field="age" value="{{userInfo.age}}" />
+    </view>
+    <view class="input-group">
+      <text>电话：</text>
+      <input placeholder="请输入电话" type="number" bindinput="saveUserInfo" data-field="phone" value="{{userInfo.phone}}" />
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="title">病历记录</text>
+    <button class="add-btn" bindtap="addMedicalRecord">添加病历</button>
+    <view class="record-list">
+      <view wx:for="{{medicalRecords}}" wx:key="index" class="record-item">
+        <text>{{item.date}} - {{item.diagnosis}}</text>
+        <button class="delete-btn" bindtap="deleteRecord" data-index="{{index}}">删除</button>
+      </view>
+    </view>
+  </view>
+</view>

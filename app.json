@@ -2,10 +2,12 @@
   "pages": [
     "pages/index/index",
     "pages/science/science",
-    "pages/map/map",
+    
     "pages/navigation/navigation",
     "pages/navigation/department/department",
-    "pages/science/detail/detail"
+    "pages/science/detail/detail",
+    "pages/profile/profile",
+    "pages/ai-diagnosis/ai-diagnosis"
   ],
   "window": {
     "navigationBarTitleText": "青芽智医",
@@ -17,7 +19,7 @@
       "desc": "你的位置信息将用于小程序定位功能"
     }
   },
-  "requiredPrivateInfos": ["getLocation"],
+  "requiredPrivateInfos": ["getLocation", "getUserProfile"],
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

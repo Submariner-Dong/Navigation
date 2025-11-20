@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="chat-container">
+    <view wx:for="{{messages}}" wx:key="index" class="message {{item.type}}">
+      <text>{{item.content}}</text>
+    </view>
+  </view>
+
+  <view class="input-container">
+    <input placeholder="请描述您的症状" bindinput="onInput" value="{{inputText}}" />
+    <button bindtap="sendMessage">发送</button>
+  </view>
+
+  <view wx:if="{{recommendedDepartment}}" class="recommendation">
+    <text class="title">推荐科室：{{recommendedDepartment}}</text>
+    <text class="reason">{{recommendationReason}}</text>
+    <button class="nav-btn" bindtap="navigateToDepartment">前往导航</button>
+  </view>
+</view>

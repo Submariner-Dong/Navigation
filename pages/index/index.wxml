@@ -11,17 +11,27 @@
         </navigator>
         <!--<navigator url="/pages/science/science" class="btn">科普知识</navigator>-->
       </view>
-      <view class="image-item">
+      <!-- <view class="image-item">
         <navigator url="/pages/map/map" class="btn">
           <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button2.png" mode="aspectFit" class="button-image"></image>
         </navigator>
-        <!--<navigator url="/pages/map/map" class="btn">医院地图</navigator>-->
-      </view>
+        <navigator url="/pages/map/map" class="btn">医院地图</navigator>
+      </view> -->
       <view class="image-item">
         <navigator url="/pages/navigation/navigation" class="btn">
           <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button3.png" mode="aspectFit" class="button-image"></image>
         </navigator>
         <!--<navigator url="/pages/navigation/navigation" class="btn">院内导航</navigator>-->
+      </view>
+      <view class="image-item">
+        <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
+          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-4%28needchange%29.png" mode="aspectFit" class="button-image"></image>
+        </navigator>
+      </view>
+      <view class="image-item">
+        <navigator url="/pages/profile/profile" class="btn">
+          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-5%28needchange%29.png" mode="aspectFit" class="button-image"></image>
+        </navigator>
       </view>
     </view>
   </view>
