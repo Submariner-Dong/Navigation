@@ -1,120 +1,222 @@
 .container {
-  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
 }
 
-.account-section {
-  background-color: #f8f8f8;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
+/* 顶部身份区 */
+.identity-section {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  padding: 40rpx 30rpx 30rpx;
+  border-radius: 0 0 30rpx 30rpx;
 }
 
-.account-info {
+.identity-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.avatar {
-  width: 60px;
-  height: 60px;
+.avatar-area {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.avatar-container {
+  position: relative;
+  margin-right: 20rpx;
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 50%;
-  margin-right: 15px;
+  border: 4rpx solid #fff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
-.account-details {
+.default-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid #fff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
-.account-name {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
+.avatar-icon {
+  font-size: 48rpx;
+  color: #fff;
 }
 
-.nickname {
-  font-size: 14px;
+.greeting-area {
+  flex: 1;
+}
+
+.greeting-text {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1976d2;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.care-motto {
+  font-size: 24rpx;
   color: #666;
-  margin-top: 5px;
+  display: block;
 }
 
-.no-account {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+.health-status {
+  text-align: center;
+  margin-top: 20rpx;
 }
 
-.no-account text {
+.status-tag {
+  margin-bottom: 10rpx;
+}
+
+.status-desc {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+}
+
+/* 卡片区域 */
+.cards-section {
+  padding: 30rpx;
+}
+
+.health-card,
+.knowledge-card,
+.service-card {
+  margin-bottom: 30rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-content {
+  font-size: 28rpx;
+  color: #333;
+  margin-left: 15rpx;
+}
+
+.record-count {
+  font-size: 24rpx;
   color: #999;
-  margin-bottom: 10px;
 }
 
-.login-btn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 8px 20px;
-  border-radius: 4px;
-  font-size: 14px;
+.card-tip {
+  padding: 20rpx 30rpx;
+  border-top: 1rpx solid #f0f0f0;
 }
 
-.section {
-  margin-bottom: 30px;
+.card-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-right: 15rpx;
 }
 
-.title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
+.card-count,
+.card-desc {
+  font-size: 24rpx;
+  color: #999;
 }
 
-.input-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+.recommendation {
+  border-top: 1rpx solid #f0f0f0;
 }
 
-.input-group text {
-  width: 60px;
+.recommend-text {
+  font-size: 26rpx;
+  color: #666;
+  margin-left: 15rpx;
 }
 
-.input-group input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.appointment-info {
+  font-size: 26rpx;
+  color: #52c41a;
+  margin-left: 15rpx;
 }
 
-.picker-display {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
+/* 设置区域 */
+.settings-section {
+  padding: 0 30rpx;
 }
 
-picker {
-  flex: 1;
+.status-text {
+  font-size: 24rpx;
+  color: #999;
 }
 
-.add-btn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
+/* 底部安全操作区 */
+.security-section {
+  padding: 30rpx;
+  margin-top: 20rpx;
 }
 
-.record-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+.logout-btn {
+  margin-bottom: 20rpx;
 }
 
-.delete-btn {
-  background-color: #f44336;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
+.privacy-notice {
+  text-align: center;
+}
+
+/* 响应式调整 */
+@media (max-width: 375px) {
+  .identity-section {
+    padding: 30rpx 20rpx 20rpx;
+  }
+  
+  .cards-section {
+    padding: 20rpx;
+  }
+  
+  .settings-section {
+    padding: 0 20rpx;
+  }
+}
+
+/* 动画效果 */
+.health-card,
+.knowledge-card,
+.service-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.health-card:active,
+.knowledge-card:active,
+.service-card:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 6rpx 25rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 无障碍支持 */
+.user-avatar {
+  cursor: pointer;
+}
+
+.user-avatar:focus {
+  outline: 2rpx solid #1976d2;
+  outline-offset: 2rpx;
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .identity-section {
+    background: #e8f4fd;
+    border: 1rpx solid #1976d2;
+  }
+  
+  .health-card,
+  .knowledge-card,
+  .service-card {
+    border: 1rpx solid #ddd;
+  }
 }

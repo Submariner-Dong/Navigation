@@ -12,7 +12,6 @@
 
   <view wx:if="{{recommendedDepartment}}" class="recommendation">
     <text class="title">推荐科室：{{recommendedDepartment}}</text>
-    <text class="reason">{{recommendationReason}}</text>
     <button class="nav-btn" bindtap="navigateToDepartment">前往导航</button>
   </view>
 </view>
