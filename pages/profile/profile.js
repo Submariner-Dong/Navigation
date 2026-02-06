@@ -26,13 +26,16 @@ Page({
     commonDepartmentsCount: 0,
     favoriteHospitals: 0,
     latestAppointment: '',
-    notificationEnabled: true
+    notificationEnabled: true,
+    
+    // 新增：加载状态
+    loading: true
   },
 
-  onLoad() {
+  async onLoad() {
     this.loadUserData();
     this.loadUserAccount();
-    this.loadHealthData();
+    await this.loadHealthData();
   },
 
   loadUserData() {
@@ -78,48 +81,120 @@ Page({
     }
   },
 
-  loadHealthData() {
-    // 加载AI诊断历史
-    const aiDiagnosisHistory = wx.getStorageSync('aiDiagnosisHistory') || [];
-    const selfCheckRecords = wx.getStorageSync('selfCheckRecords') || [];
-    const favoriteArticles = wx.getStorageSync('favoriteArticles') || [];
-    const watchedVideos = wx.getStorageSync('watchedVideos') || [];
-    const commonDepartments = wx.getStorageSync('commonDepartments') || [];
-    const favoriteHospitals = wx.getStorageSync('favoriteHospitals') || [];
-    
-    // 处理AI诊断列表
-    const aiDiagnosisList = this.processDiagnosisList(aiDiagnosisHistory);
-    
-    // 计算最新诊断（使用关键词而非完整结果）
-    const latestDiagnosis = aiDiagnosisHistory.length > 0 ? 
-      this.extractKeywords(aiDiagnosisHistory[aiDiagnosisHistory.length - 1].symptoms) : '';
-    
-    // 根据诊断历史更新健康状态
-    const healthStatus = this.calculateHealthStatus(aiDiagnosisHistory);
-    
-    this.setData({
-      aiRecordsCount: aiDiagnosisHistory.length,
-      aiDiagnosisList: aiDiagnosisList,
-      selfCheckCount: selfCheckRecords.length,
-      latestDiagnosis: latestDiagnosis,
-      healthStatus: healthStatus,
-      favoriteArticles: favoriteArticles.length,
-      watchedVideos: watchedVideos.length,
-      commonDepartmentsCount: commonDepartments.length,
-      favoriteHospitals: favoriteHospitals.length,
-      recommendedArticle: this.getRecommendedArticle(aiDiagnosisHistory)
-    });
+  async loadHealthData() {
+    try {
+      // 加载AI诊断历史（包含缓存的总结）
+      const aiDiagnosisHistory = await this.loadCachedDiagnosisHistory();
+      const selfCheckRecords = wx.getStorageSync('selfCheckRecords') || [];
+      const favoriteArticles = wx.getStorageSync('favoriteArticles') || [];
+      const watchedVideos = wx.getStorageSync('watchedVideos') || [];
+      const commonDepartments = wx.getStorageSync('commonDepartments') || [];
+      const favoriteHospitals = wx.getStorageSync('favoriteHospitals') || [];
+      
+      console.log('加载的诊断历史:', aiDiagnosisHistory);
+      
+      // 处理AI诊断列表（异步）
+      const aiDiagnosisList = await this.processDiagnosisList(aiDiagnosisHistory);
+      
+      console.log('处理后的诊断列表:', aiDiagnosisList);
+      
+      // 计算最新诊断（使用缓存的总结）
+      const latestDiagnosis = aiDiagnosisHistory.length > 0 ? 
+        aiDiagnosisHistory[aiDiagnosisHistory.length - 1].summary || 
+        await this.summarizeSymptoms(aiDiagnosisHistory[aiDiagnosisHistory.length - 1].symptoms) : '';
+      
+      // 根据诊断历史更新健康状态
+      const healthStatus = this.calculateHealthStatus(aiDiagnosisHistory);
+      
+      this.setData({
+        aiRecordsCount: aiDiagnosisHistory.length,
+        aiDiagnosisList: aiDiagnosisList,
+        selfCheckCount: selfCheckRecords.length,
+        latestDiagnosis: latestDiagnosis,
+        healthStatus: healthStatus,
+        favoriteArticles: favoriteArticles.length,
+        watchedVideos: watchedVideos.length,
+        commonDepartmentsCount: commonDepartments.length,
+        favoriteHospitals: favoriteHospitals.length,
+        recommendedArticle: this.getRecommendedArticle(aiDiagnosisHistory),
+        loading: false
+      });
+      
+      console.log('设置数据完成，aiDiagnosisList长度:', aiDiagnosisList.length);
+      console.log('aiDiagnosisList内容:', aiDiagnosisList);
+      console.log('页面数据状态:', this.data);
+      
+      // 详细调试信息
+      console.log('=== 详细调试信息 ===');
+      console.log('aiDiagnosisList类型:', typeof aiDiagnosisList);
+      console.log('aiDiagnosisList是否为数组:', Array.isArray(aiDiagnosisList));
+      console.log('aiDiagnosisList长度:', aiDiagnosisList.length);
+      
+      if (aiDiagnosisList.length > 0) {
+        console.log('第一条记录详情:');
+        console.log('  - ID:', aiDiagnosisList[0].id);
+        console.log('  - Symptoms:', aiDiagnosisList[0].symptoms);
+        console.log('  - Type of symptoms:', typeof aiDiagnosisList[0].symptoms);
+        console.log('  - Department:', aiDiagnosisList[0].department);
+        console.log('  - Timestamp:', aiDiagnosisList[0].timestamp);
+        
+        console.log('所有记录symptoms字段:');
+        aiDiagnosisList.forEach((record, index) => {
+          console.log(`  ${index + 1}. ${record.symptoms} (${typeof record.symptoms})`);
+        });
+      }
+      
+      console.log('loading状态:', this.data.loading);
+      console.log('aiRecordsCount:', this.data.aiRecordsCount);
+      console.log('showAllDiagnosis:', this.data.showAllDiagnosis);
+      console.log('=== 调试信息结束 ===');
+    } catch (error) {
+      console.error('加载健康数据失败:', error);
+      // 出错时使用空数据
+      this.setData({
+        aiRecordsCount: 0,
+        aiDiagnosisList: [],
+        selfCheckCount: 0,
+        latestDiagnosis: '',
+        healthStatus: {
+          theme: 'default',
+          text: '待评估',
+          desc: '尚未进行AI诊断'
+        },
+        favoriteArticles: 0,
+        watchedVideos: 0,
+        commonDepartmentsCount: 0,
+        favoriteHospitals: 0,
+        recommendedArticle: ''
+      });
+    }
   },
 
-  processDiagnosisList(history) {
-    return history.map(record => ({
-      id: record.timestamp || Date.now(),
-      symptoms: this.extractKeywords(record.symptoms),
-      department: record.department,
-      severity: record.severity,
-      timestamp: record.timestamp,
-      fullRecord: record
-    })).reverse().slice(0, 3); // 最新的在前，默认只显示前3条
+  async processDiagnosisList(history) {
+    const processedList = [];
+    
+    // 处理每条记录的症状总结
+    for (const record of history) {
+      // 检查是否已经有缓存的总结
+      let symptomsSummary = record.summary;
+      if (!symptomsSummary) {
+        // 如果没有缓存，调用AI总结
+        symptomsSummary = await this.summarizeSymptoms(record.symptoms);
+        // 保存总结结果到存储
+        await this.saveSummaryToStorage(record.timestamp, symptomsSummary);
+      }
+      
+      processedList.push({
+        id: record.timestamp || Date.now(),
+        symptoms: symptomsSummary,
+        department: record.department,
+        severity: record.severity,
+        timestamp: record.timestamp,
+        fullRecord: record
+      });
+    }
+    
+    return processedList.reverse(); // 最新的在前
   },
 
   extractKeywords(symptoms) {
@@ -135,6 +210,107 @@ Page({
       .slice(0, 3); // 最多显示3个关键词
     
     return keywords.length > 0 ? keywords.join('、') : symptoms.substring(0, 10) + '...';
+  },
+
+  async summarizeSymptoms(symptoms) {
+    if (!symptoms) return '未知症状';
+    
+    // 如果症状描述较短，直接显示
+    if (symptoms.length <= 15) {
+      return symptoms;
+    }
+    
+    // 直接使用AI总结：调用AI接口生成简洁的症状描述
+    const aiSummary = await this.generateAiSummary(symptoms);
+    
+    // 如果AI总结有效，使用它；否则使用关键词
+    if (aiSummary && aiSummary.length > 0) {
+      return aiSummary;
+    }
+    
+    // 备用方案：使用关键词
+    return this.extractKeywords(symptoms);
+  },
+
+  async generateAiSummary(symptoms) {
+    // 使用DeepSeek API生成简洁的症状描述
+    try {
+      const summary = await this.callDeepSeekForSummary(symptoms);
+      return summary;
+    } catch (error) {
+      console.error('AI总结失败，使用备用方案:', error);
+      return this.fallbackSummary(symptoms);
+    }
+  },
+
+  async callDeepSeekForSummary(symptoms) {
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url: 'https://api.deepseek.com/chat/completions',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer sk-68966a908d44452ca87264e055e9863e'
+        },
+        data: {
+          model: 'deepseek-chat',
+          messages: [
+            {
+              role: 'system',
+              content: '你是一个医疗AI助手。请将用户描述的症状总结为2-3个关键词或简短描述，用中文逗号分隔。只需要总结症状本身，不需要分析或建议。例如："牙齿疼痛持续三天，牙龈有些红肿" → "牙痛、牙龈红肿"'
+            },
+            {
+              role: 'user',
+              content: `症状描述：${symptoms}`
+            }
+          ],
+          temperature: 0.1,
+          max_tokens: 30
+        },
+        success: (res) => {
+          if (res.statusCode === 200) {
+            const content = res.data.choices[0].message.content;
+            // 清理响应内容，去除多余的标点符号
+            const cleanedContent = content.replace(/[，。、！？；：,.!?;:\s]+$/, '');
+            resolve(cleanedContent);
+          } else {
+            reject(new Error(`API请求失败: ${res.statusCode}`));
+          }
+        },
+        fail: (error) => {
+          reject(error);
+        }
+      });
+    });
+  },
+
+  fallbackSummary(symptoms) {
+    // 备用方案：使用简单的关键词提取
+    const aiSummaryRules = [
+      { pattern: /(牙痛|牙疼|牙齿痛)/, summary: '牙痛' },
+      { pattern: /(牙龈|牙肉).*(出血|红肿)/, summary: '牙龈问题' },
+      { pattern: /(智齿|第三磨牙)/, summary: '智齿问题' },
+      { pattern: /(松动|脱落|断裂)/, summary: '牙齿松动' },
+      { pattern: /(溃疡|疼痛)/, summary: '口腔溃疡' },
+      { pattern: /(敏感|酸痛)/, summary: '牙齿敏感' },
+      { pattern: /(炎症|肿痛)/, summary: '牙周炎症' },
+      { pattern: /(蛀牙|龋齿|洞)/, summary: '蛀牙' },
+      { pattern: /(持续|间断|阵发)/, summary: '持续不适' }
+    ];
+    
+    const matchedSummaries = [];
+    for (const rule of aiSummaryRules) {
+      if (rule.pattern.test(symptoms)) {
+        matchedSummaries.push(rule.summary);
+      }
+    }
+    
+    if (matchedSummaries.length > 0) {
+      const uniqueSummaries = [...new Set(matchedSummaries)];
+      return uniqueSummaries.slice(0, 2).join('、');
+    }
+    
+    return null;
   },
 
   calculateHealthStatus(diagnosisHistory) {
@@ -383,6 +559,34 @@ Page({
         }
       }
     });
+  },
+
+  // 缓存管理方法
+  async loadCachedDiagnosisHistory() {
+    const history = wx.getStorageSync('aiDiagnosisHistory') || [];
+    const summaries = wx.getStorageSync('aiDiagnosisSummaries') || {};
+    
+    // 为每条记录添加缓存的总结
+    return history.map(record => ({
+      ...record,
+      summary: summaries[record.timestamp]
+    }));
+  },
+
+  async saveSummaryToStorage(timestamp, summary) {
+    const summaries = wx.getStorageSync('aiDiagnosisSummaries') || {};
+    summaries[timestamp] = summary;
+    wx.setStorageSync('aiDiagnosisSummaries', summaries);
+    
+    // 同时更新诊断历史记录中的总结字段
+    const history = wx.getStorageSync('aiDiagnosisHistory') || [];
+    const updatedHistory = history.map(record => {
+      if (record.timestamp === timestamp) {
+        return { ...record, summary: summary };
+      }
+      return record;
+    });
+    wx.setStorageSync('aiDiagnosisHistory', updatedHistory);
   },
 
   goToLogin() {

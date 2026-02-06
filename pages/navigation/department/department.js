@@ -1,3 +1,5 @@
+import navigationConfig from "../../../config/navigationConfig";
+
 Page({
   data: {
     department: '',
@@ -8,16 +10,49 @@ Page({
   },
 
   onLoad(options) {
-    const eventChannel = this.getOpenerEventChannel();
+    // 优先通过URL参数获取科室名称
+    if (options && options.d) {
+      const department = options.d;
+      this.loadNavigationData(department);
+    } else {
+      // 备用方案：通过事件通道获取数据
+      const eventChannel = this.getOpenerEventChannel();
+      
+      eventChannel.on('sendNavigationData', (data) => {
+        this.setData({
+          department: data.department,
+          steps: data.navigationInfo.steps,
+          totalSteps: data.navigationInfo.steps.length
+        });
+        this.updateCurrentStep();
+      });
+    }
+  },
+
+  loadNavigationData(department) {
+    // 从导航配置中获取对应科室的导航信息
+    const navigationInfo = navigationConfig[department];
     
-    eventChannel.on('sendNavigationData', (data) => {
+    if (navigationInfo) {
       this.setData({
-        department: data.department,
-        steps: data.navigationInfo.steps,
-        totalSteps: data.navigationInfo.steps.length
+        department: department,
+        steps: navigationInfo.steps,
+        totalSteps: navigationInfo.steps.length
       });
       this.updateCurrentStep();
-    });
+    } else {
+      // 如果找不到对应科室，显示错误信息
+      wx.showModal({
+        title: '提示',
+        content: `未找到${department}的导航信息`,
+        showCancel: false,
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateBack();
+          }
+        }
+      });
+    }
   },
 
   updateCurrentStep() {

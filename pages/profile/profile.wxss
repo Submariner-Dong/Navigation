@@ -138,6 +138,86 @@
   margin-left: 15rpx;
 }
 
+/* AI问诊记录列表 */
+.diagnosis-list {
+  margin: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  border: 1rpx solid #e0e0e0;
+  overflow: visible;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.diagnosis-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 25rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: #fff;
+  min-height: 100rpx;
+}
+
+.diagnosis-item:last-child {
+  border-bottom: none;
+}
+
+.diagnosis-item:active {
+  background-color: #f8f9fa;
+}
+
+.diagnosis-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.diagnosis-symptoms {
+  font-size: 30rpx;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.diagnosis-time {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  font-weight: 400;
+}
+
+.toggle-section {
+  margin: 0 30rpx;
+}
+
+.loading-section {
+  margin: 0 30rpx;
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.no-records {
+  margin: 0 30rpx;
+}
+
+.no-records-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.no-records-hint {
+  font-size: 22rpx;
+  color: #ccc;
+}
+
 .appointment-info {
   font-size: 26rpx;
   color: #52c41a;

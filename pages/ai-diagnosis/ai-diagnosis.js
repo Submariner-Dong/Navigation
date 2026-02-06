@@ -280,8 +280,11 @@ Page({
 
   navigateToDepartment() {
     const { recommendedDepartment } = this.data;
+    console.log('推荐科室：', recommendedDepartment)
+    
+    // 直接跳转到科室导航页面，不经过选择界面
     wx.navigateTo({
-      url: `/pages/navigation/navigation?department=${recommendedDepartment}`
+      url: `/pages/navigation/department/department?d=${recommendedDepartment}`
     });
   }
 })

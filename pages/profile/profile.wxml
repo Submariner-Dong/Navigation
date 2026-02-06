@@ -37,39 +37,57 @@
   <view class="cards-section">
     <!-- 第一卡片：我的健康档案 -->
     <view class="health-card">
+      <!-- 健康日志卡片 -->
       <t-cell-group title="我的口腔健康日志">
         <t-cell arrow bindtap="viewAiDiagnosisHistory">
           <view slot="title">
             <t-tag theme="primary" variant="light" size="small">AI问诊记录</t-tag>
-            <text class="card-content">{{latestDiagnosis || '暂无记录'}}</text>
           </view>
           <view slot="note">
             <text class="record-count">{{aiRecordsCount}} 次记录</text>
           </view>
         </t-cell>
         
-        <!-- AI问诊记录列表 -->
-        <view wx:if="{{aiDiagnosisList.length > 0 && showAllDiagnosis}}" class="diagnosis-list">
-          <view wx:for="{{aiDiagnosisList}}" wx:key="id" class="diagnosis-item" bindtap="viewAiDiagnosisDetail" data-index="{{index}}">
+        <!-- 加载状态 -->
+        <view wx:if="{{loading}}" class="loading-section">
+          <t-cell>
+            <view slot="title">
+              <text class="loading-text">正在加载AI问诊记录...</text>
+            </view>
+            <view slot="note">
+              <t-icon name="loading" size="16" color="#999"></t-icon>
+            </view>
+          </t-cell>
+        </view>
+        
+        <!-- 无记录时的提示 -->
+        <view wx:if="{{!loading && aiDiagnosisList.length === 0}}" class="no-records">
+          <t-cell>
+            <view slot="title">
+              <text class="no-records-text">暂无AI问诊记录</text>
+            </view>
+            <view slot="note">
+              <text class="no-records-hint">点击上方AI问诊记录开始使用</text>
+            </view>
+          </t-cell>
+        </view>
+        
+        <!-- AI问诊记录列表 - 默认显示前3条 -->
+        <view wx:if="{{!loading && aiDiagnosisList.length > 0}}" class="diagnosis-list">
+          <view wx:for="{{aiDiagnosisList.slice(0, 3)}}" wx:key="id" class="diagnosis-item" bindtap="viewAiDiagnosisDetail" data-index="{{index}}">
             <view class="diagnosis-content">
-              <text class="diagnosis-symptoms">{{item.symptoms}}</text>
-              <view class="diagnosis-meta">
-                <t-tag theme="{{item.severity === 'severe' ? 'danger' : item.severity === 'moderate' ? 'warning' : 'primary'}}" 
-                       variant="light" size="mini">
-                  {{item.department}}
-                </t-tag>
-                <text class="diagnosis-time">{{item.timestamp ? item.timestamp.split('T')[0] : '未知时间'}}</text>
-              </view>
+              <text class="diagnosis-symptoms">{{index + 1}}. {{item.symptoms}}</text>
+              <text class="diagnosis-time">{{item.timestamp ? item.timestamp.split('T')[0] : '未知时间'}}</text>
             </view>
             <t-icon name="chevron-right" size="16" color="#999"></t-icon>
           </view>
         </view>
         
-        <!-- 折叠/展开按钮 -->
-        <view wx:if="{{aiDiagnosisList.length > 1}}" class="toggle-section">
+        <!-- 查看更多记录 -->
+        <view wx:if="{{!loading && aiDiagnosisList.length > 3}}" class="toggle-section">
           <t-cell bindtap="toggleDiagnosisList">
             <view slot="title">
-              <text class="toggle-text">{{showAllDiagnosis ? '收起记录' : '查看更多(' + (aiDiagnosisList.length - 3) + '条)'}}</text>
+              <text class="toggle-text">{{showAllDiagnosis ? '收起更多记录' : '查看更多记录(' + (aiDiagnosisList.length - 3) + '条)'}}</text>
             </view>
             <view slot="note">
               <t-icon name="{{showAllDiagnosis ? 'chevron-up' : 'chevron-down'}}" size="16" color="#999"></t-icon>
@@ -77,17 +95,26 @@
           </t-cell>
         </view>
         
-        <t-cell arrow bindtap="viewSelfCheckRecords">
-          <view slot="title">
-            <t-tag theme="success" variant="light" size="small">自查记录</t-tag>
-            <text class="card-content">{{selfCheckCount}} 次自查</text>
+        <!-- 展开时显示全部记录 -->
+        <view wx:if="{{!loading && aiDiagnosisList.length > 3 && showAllDiagnosis}}" class="diagnosis-list">
+          <view wx:for="{{aiDiagnosisList.slice(3)}}" wx:key="id" class="diagnosis-item" bindtap="viewAiDiagnosisDetail" data-index="{{index + 3}}">
+            <view class="diagnosis-content">
+              <text class="diagnosis-symptoms">{{index + 4}}. {{item.symptoms}}</text>
+              <text class="diagnosis-time">{{item.timestamp ? item.timestamp.split('T')[0] : '未知时间'}}</text>
+            </view>
+            <t-icon name="chevron-right" size="16" color="#999"></t-icon>
           </view>
-        </t-cell>
+        </view>
         
         <view class="card-tip">
           <t-message theme="info" size="small">定期记录，更了解自己的口腔</t-message>
         </view>
       </t-cell-group>
+      
+      <!-- 调试信息 -->
+      <view wx:if="{{!loading && aiDiagnosisList.length > 0}}" style="margin: 20rpx 30rpx; padding: 20rpx; background: #f0f8ff; border-radius: 10rpx; font-size: 24rpx; color: #666;">
+        <text>调试信息：已加载 {{aiDiagnosisList.length}} 条记录</text>
+      </view>
     </view>
 
     <!-- 第二卡片：我的知识库 -->
