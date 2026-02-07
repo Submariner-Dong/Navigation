@@ -96,15 +96,15 @@
         </view>
         
         <!-- 展开时显示剩余记录 -->
-        <view wx:if="{{!loading && remainingDiagnosisList.length > 0 && showAllDiagnosis}}" class="diagnosis-list">
+        <!-- view wx:if="{{!loading && remainingDiagnosisList.length > 0 && showAllDiagnosis}}" class="diagnosis-list">
           <view wx:for="{{remainingDiagnosisList}}" wx:key="id" class="diagnosis-item" bindtap="viewAiDiagnosisDetail" data-index="{{index + 3}}">
             <view class="diagnosis-content">
               <text class="diagnosis-symptoms">{{index + 4}}. {{item.symptoms}}</text>
               <text class="diagnosis-time">{{item.formattedTime}}</text>
             </view>
-            <!-- t-icon name="chevron-right" size="16" color="#999"></t-icon -->
+            <t-icon name="chevron-right" size="16" color="#999"></t-icon>
           </view>
-        </view>
+        </view -->
         
         <!-- 收起时不应该显示剩余记录 -->
         
