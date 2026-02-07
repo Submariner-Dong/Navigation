@@ -98,6 +98,14 @@ Page({
       
       console.log('处理后的诊断列表:', aiDiagnosisList);
       
+      // 在JS中预先切分数组
+      const displayedDiagnosisList = aiDiagnosisList.slice(0, 3);
+      const remainingDiagnosisList = aiDiagnosisList.slice(3);
+
+      console.log('切分后的诊断列表:');
+      console.log('  - 显示前3条:', displayedDiagnosisList);
+      console.log('  - 剩余记录:', remainingDiagnosisList);
+      
       // 计算最新诊断（使用缓存的总结）
       const latestDiagnosis = aiDiagnosisHistory.length > 0 ? 
         aiDiagnosisHistory[aiDiagnosisHistory.length - 1].summary || 
@@ -109,6 +117,8 @@ Page({
       this.setData({
         aiRecordsCount: aiDiagnosisHistory.length,
         aiDiagnosisList: aiDiagnosisList,
+        displayedDiagnosisList: displayedDiagnosisList, // 显示前3条
+        remainingDiagnosisList: remainingDiagnosisList, // 剩余记录
         selfCheckCount: selfCheckRecords.length,
         latestDiagnosis: latestDiagnosis,
         healthStatus: healthStatus,
@@ -154,6 +164,8 @@ Page({
       this.setData({
         aiRecordsCount: 0,
         aiDiagnosisList: [],
+        displayedDiagnosisList: [],
+        remainingDiagnosisList: [],
         selfCheckCount: 0,
         latestDiagnosis: '',
         healthStatus: {
@@ -184,17 +196,42 @@ Page({
         await this.saveSummaryToStorage(record.timestamp, symptomsSummary);
       }
       
+      // 格式化时间
+      const formattedTime = this.formatTimestamp(record.timestamp);
+      
       processedList.push({
         id: record.timestamp || Date.now(),
         symptoms: symptomsSummary,
         department: record.department,
         severity: record.severity,
         timestamp: record.timestamp,
+        formattedTime: formattedTime,
         fullRecord: record
       });
     }
     
     return processedList.reverse(); // 最新的在前
+  },
+
+  // 时间格式化函数
+  formatTimestamp(timestamp) {
+    if (!timestamp) return '未知时间';
+    
+    // 如果是ISO格式时间戳，提取日期部分
+    if (timestamp.includes('T')) {
+      return timestamp.split('T')[0];
+    }
+    
+    // 其他格式的时间戳处理
+    try {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        return '未知时间';
+      }
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      return '未知时间';
+    }
   },
 
   extractKeywords(symptoms) {
@@ -380,9 +417,22 @@ Page({
   },
 
   toggleDiagnosisList() {
-    this.setData({
-      showAllDiagnosis: !this.data.showAllDiagnosis
-    });
+    const showAllDiagnosis = !this.data.showAllDiagnosis;
+    
+    // 根据是否展开来决定显示哪些记录
+    if (showAllDiagnosis) {
+      // 展开时显示所有记录，保持剩余记录不变
+      this.setData({
+        showAllDiagnosis: showAllDiagnosis,
+        displayedDiagnosisList: this.data.aiDiagnosisList
+      });
+    } else {
+      // 收起时只显示前3条
+      this.setData({
+        showAllDiagnosis: showAllDiagnosis,
+        displayedDiagnosisList: this.data.aiDiagnosisList.slice(0, 3)
+      });
+    }
   },
 
   viewAiDiagnosisDetail(e) {
@@ -442,14 +492,6 @@ Page({
     wx.showModal({
       title: '常用科室',
       content: '此功能正在开发中，将展示您常用的科室列表',
-      showCancel: false
-    });
-  },
-
-  viewFavoriteHospitals() {
-    wx.showModal({
-      title: '关注的医院',
-      content: '此功能正在开发中，将展示您关注的医院信息',
       showCancel: false
     });
   },

@@ -181,7 +181,7 @@
   display: block;
   margin-bottom: 8rpx;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1;
 }
 
 .diagnosis-time {
