@@ -41,7 +41,7 @@
       <t-cell-group title="我的口腔健康日志">
         <t-cell arrow bindtap="viewAiDiagnosisHistory">
           <view slot="title">
-            <t-tag theme="primary" variant="light" size="small">AI问诊记录</t-tag>
+            <t-tag theme="primary" variant="light" size="small">智能问诊记录</t-tag>
           </view>
           <view slot="note">
             <text class="record-count">{{aiRecordsCount}} 次记录</text>
@@ -52,7 +52,7 @@
         <view wx:if="{{loading}}" class="loading-section">
           <t-cell>
             <view slot="title">
-              <text class="loading-text">正在加载AI问诊记录...</text>
+              <text class="loading-text">正在加载智能问诊记录...</text>
             </view>
             <view slot="note">
               <t-icon name="loading" size="16" color="#999"></t-icon>
@@ -64,11 +64,8 @@
         <view wx:if="{{!loading && aiDiagnosisList.length === 0}}" class="no-records">
           <t-cell>
             <view slot="title">
-              <text class="no-records-text">暂无AI问诊记录</text>
+              <text class="no-records-text">您还没有智能问诊记录，请先使用智能问诊功能</text>
             </view>
-            <!-- view slot="note">
-              <text class="no-records-hint">点击上方AI问诊记录开始使用</text>
-            </view -->
           </t-cell>
         </view>
         
@@ -120,14 +117,25 @@
     </view>
 
     <!-- 第二卡片：我的知识库 -->
-    <view class="service-card" wx:if="{{favoriteArticles > 0}}">
+    <view class="service-card">
       <t-cell-group title="我的收藏">
         <t-cell>
           <view slot="title">
-            <text class="card-title">收藏的文章</text>
-            <text class="card-desc">{{favoriteArticles}} 篇收藏</text>
+            <t-tag theme="primary" variant="light" size="small">收藏的文章</t-tag>
+          </view>
+          <view slot="note">
+            <text class="record-count">{{favoriteArticles}} 篇收藏</text>
           </view>
         </t-cell>
+        
+        <!-- 无收藏文章时的提示 -->
+        <view wx:if="{{!loading && favoriteArticles === 0}}" class="no-records">
+          <t-cell>
+            <view slot="title">
+              <text class="no-records-text">您还没有收藏的文章，请先使用科普知识收藏文章</text>
+            </view>
+          </t-cell>
+        </view>
         
         <!-- 收藏文章列表 - 默认显示前3条 -->
         <view wx:if="{{displayedFavoriteArticles.length > 0}}" class="favorite-list">
@@ -150,7 +158,7 @@
         </view>
         
         <!-- 展开时显示剩余收藏 -->
-        <view wx:if="{{remainingFavoriteArticles.length > 0 && showAllFavorites}}" class="favorite-list">
+        <!-- view wx:if="{{remainingFavoriteArticles.length > 0 && showAllFavorites}}" class="favorite-list">
           <view wx:for="{{remainingFavoriteArticles}}" wx:key="id" class="favorite-item" bindtap="viewFavoriteArticle" data-id="{{item.id}}">
             <view class="favorite-content">
               <text class="favorite-title">{{index + 4}}. {{item.title}}</text>
@@ -158,26 +166,42 @@
             </view>
             <t-icon name="chevron-right" size="16" color="#999"></t-icon>
           </view>
-        </view>
+        </view-->
       </t-cell-group>
     </view>
 
     <!-- 第三卡片：我的就诊服务 -->
     <view class="service-card">
       <t-cell-group title="我的就诊相关">
-        <t-cell arrow bindtap="viewCommonDepartments">
+        <t-cell>
           <view slot="title">
-            <text class="card-title">常用科室</text>
-            <text class="card-desc">{{commonDepartmentsCount}} 个常用</text>
+            <t-tag theme="primary" variant="light" size="small">常用科室</t-tag>
+          </view>
+          <view slot="note">
+            <text class="record-count">{{commonDepartmentsCount}} 个常用</text>
           </view>
         </t-cell>
         
-        <t-cell wx:if="{{latestAppointment}}" arrow bindtap="viewAppointments">
-          <view slot="title">
-            <t-tag theme="success" variant="light" size="small">最近预约</t-tag>
-            <text class="appointment-info">{{latestAppointment}}</text>
+        <!-- 无常用科室时的提示 -->
+        <view wx:if="{{!loading && commonDepartmentsCount === 0}}" class="no-records">
+          <t-cell>
+            <view slot="title">
+              <text class="no-records-text">您还没有常用的科室记录，请先使用智能问诊或院内导航功能</text>
+            </view>
+          </t-cell>
+        </view>
+        
+        <!-- 常用科室列表 - 显示前3个 -->
+        <view wx:if="{{commonDepartmentsList.length > 0}}" class="common-departments-list">
+          <view wx:for="{{commonDepartmentsList}}" wx:key="id" class="department-item" bindtap="navigateToDepartment" data-name="{{item.name}}">
+            <view class="department-content">
+              <text class="department-name">{{index + 1}}. {{item.name}}</text>
+              <text class="department-count">使用 {{item.count}} 次</text>
+            </view>
           </view>
-        </t-cell>
+        </view>
+        
+        
       </t-cell-group>
     </view>
   </view>
@@ -194,34 +218,13 @@
           <text class="status-text">{{userInfo.phone ? '已绑定' : '未绑定'}}</text>
         </view>
       </t-cell>
-      
-      <t-cell arrow bindtap="privacySettings">
-        <view slot="title">
-          <text>隐私设置</text>
-        </view>
-      </t-cell>
     </t-cell-group>
 
     <!-- 偏好设置 -->
     <t-cell-group title="偏好设置">
-      <t-cell arrow bindtap="notificationSettings">
-        <view slot="title">
-          <text>消息通知</text>
-        </view>
-        <view slot="note">
-          <t-switch checked="{{notificationEnabled}}" bindchange="toggleNotification" />
-        </view>
-      </t-cell>
-      
       <t-cell arrow bindtap="dataManagement">
         <view slot="title">
           <text>数据管理</text>
-        </view>
-      </t-cell>
-      
-      <t-cell arrow bindtap="clearCache">
-        <view slot="title">
-          <text>清除缓存</text>
         </view>
       </t-cell>
     </t-cell-group>

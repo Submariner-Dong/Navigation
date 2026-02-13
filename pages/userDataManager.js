@@ -215,58 +215,6 @@ function getCommonDepartments() {
   return loadUserData().preferences.commonDepartments;
 }
 
-// 收藏医院
-function addFavoriteHospital(hospital) {
-  const data = loadUserData();
-  
-  const exists = data.preferences.favoriteHospitals.some(
-    item => item.id === hospital.id
-  );
-  
-  if (!exists) {
-    hospital.timestamp = hospital.timestamp || new Date().toISOString();
-    data.preferences.favoriteHospitals.unshift(hospital);
-    return saveUserData(data);
-  }
-  
-  return false;
-}
-
-// 获取收藏医院
-function getFavoriteHospitals() {
-  return loadUserData().preferences.favoriteHospitals;
-}
-
-// 添加观看视频记录
-function addWatchedVideo(video) {
-  const data = loadUserData();
-  
-  const exists = data.preferences.watchedVideos.some(
-    item => item.id === video.id
-  );
-  
-  if (!exists) {
-    video.timestamp = video.timestamp || new Date().toISOString();
-    video.watchCount = 1;
-    data.preferences.watchedVideos.unshift(video);
-  } else {
-    // 增加观看次数
-    const existingVideo = data.preferences.watchedVideos.find(
-      item => item.id === video.id
-    );
-    if (existingVideo) {
-      existingVideo.watchCount = (existingVideo.watchCount || 0) + 1;
-      existingVideo.timestamp = new Date().toISOString();
-    }
-  }
-  
-  return saveUserData(data);
-}
-
-// 获取观看视频记录
-function getWatchedVideos() {
-  return loadUserData().preferences.watchedVideos;
-}
 
 // === 设置操作 ===
 
@@ -356,10 +304,6 @@ module.exports = {
   getFavoriteArticles,
   addCommonDepartment,
   getCommonDepartments,
-  addFavoriteHospital,
-  getFavoriteHospitals,
-  addWatchedVideo,
-  getWatchedVideos,
   updateNotificationSetting,
   getNotificationSetting,
   updateTheme,

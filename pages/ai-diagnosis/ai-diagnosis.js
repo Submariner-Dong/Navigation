@@ -1,3 +1,5 @@
+const UserDataManager = require('../../utils/userDataManager.js');
+
 Page({
   data: {
     messages: [],
@@ -268,9 +270,16 @@ Page({
       suggestions: result.suggestions
     };
 
-    const history = wx.getStorageSync('aiDiagnosisHistory') || [];
-    history.push(diagnosisRecord);
-    wx.setStorageSync('aiDiagnosisHistory', history);
+    // 使用统一数据管理模块保存诊断记录
+    UserDataManager.addAiDiagnosisRecord(diagnosisRecord);
+    
+    // 统计常用科室
+    const departmentRecord = {
+      id: result.department,
+      name: result.department,
+      timestamp: new Date().toISOString()
+    };
+    UserDataManager.addCommonDepartment(departmentRecord);
   },
 
   addMessage(content, type) {

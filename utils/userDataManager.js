@@ -152,17 +152,28 @@ function getMedicalRecords() {
 function addFavoriteArticle(article) {
   const data = loadUserData();
   
-  // 检查是否已收藏
+  console.log('=== addFavoriteArticle 开始 ===');
+  console.log('要添加的文章:', article);
+  console.log('当前收藏文章:', data.preferences.favoriteArticles);
+  
+  // 检查是否已收藏 - 只按ID检查
   const exists = data.preferences.favoriteArticles.some(
-    item => item.id === article.id || item.url === article.url
+    item => item.id === article.id
   );
+  
+  console.log('文章是否已存在:', exists);
   
   if (!exists) {
     article.timestamp = article.timestamp || new Date().toISOString();
     data.preferences.favoriteArticles.unshift(article);
-    return saveUserData(data);
+    const result = saveUserData(data);
+    console.log('添加收藏成功，结果:', result);
+    console.log('=== addFavoriteArticle 完成 ===');
+    return result;
   }
   
+  console.log('文章已存在，不重复添加');
+  console.log('=== addFavoriteArticle 完成 ===');
   return false; // 已存在
 }
 
@@ -213,59 +224,6 @@ function addCommonDepartment(department) {
 // 获取常用科室
 function getCommonDepartments() {
   return loadUserData().preferences.commonDepartments;
-}
-
-// 收藏医院
-function addFavoriteHospital(hospital) {
-  const data = loadUserData();
-  
-  const exists = data.preferences.favoriteHospitals.some(
-    item => item.id === hospital.id
-  );
-  
-  if (!exists) {
-    hospital.timestamp = hospital.timestamp || new Date().toISOString();
-    data.preferences.favoriteHospitals.unshift(hospital);
-    return saveUserData(data);
-  }
-  
-  return false;
-}
-
-// 获取收藏医院
-function getFavoriteHospitals() {
-  return loadUserData().preferences.favoriteHospitals;
-}
-
-// 添加观看视频记录
-function addWatchedVideo(video) {
-  const data = loadUserData();
-  
-  const exists = data.preferences.watchedVideos.some(
-    item => item.id === video.id
-  );
-  
-  if (!exists) {
-    video.timestamp = video.timestamp || new Date().toISOString();
-    video.watchCount = 1;
-    data.preferences.watchedVideos.unshift(video);
-  } else {
-    // 增加观看次数
-    const existingVideo = data.preferences.watchedVideos.find(
-      item => item.id === video.id
-    );
-    if (existingVideo) {
-      existingVideo.watchCount = (existingVideo.watchCount || 0) + 1;
-      existingVideo.timestamp = new Date().toISOString();
-    }
-  }
-  
-  return saveUserData(data);
-}
-
-// 获取观看视频记录
-function getWatchedVideos() {
-  return loadUserData().preferences.watchedVideos;
 }
 
 // === 设置操作 ===
@@ -356,10 +314,6 @@ module.exports = {
   getFavoriteArticles,
   addCommonDepartment,
   getCommonDepartments,
-  addFavoriteHospital,
-  getFavoriteHospitals,
-  addWatchedVideo,
-  getWatchedVideos,
   updateNotificationSetting,
   getNotificationSetting,
   updateTheme,

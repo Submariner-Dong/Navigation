@@ -103,6 +103,9 @@ Page({
     }
 
     if (isLastStep) {
+      // 导航完成，统计常用科室
+      this.recordDepartmentUsage();
+      
       wx.showModal({
         title: '导航完成',
         content: `您已成功到达${this.data.department}`,
@@ -139,5 +142,24 @@ Page({
       
       this.updateCurrentStep();
     }
+  },
+
+  // 记录科室使用情况
+  recordDepartmentUsage() {
+    const { department } = this.data;
+    
+    // 导入UserDataManager
+    const UserDataManager = require('../../../utils/userDataManager.js');
+    
+    // 统计常用科室
+    const departmentRecord = {
+      id: department,
+      name: department,
+      timestamp: new Date().toISOString()
+    };
+    
+    UserDataManager.addCommonDepartment(departmentRecord);
+    
+    console.log(`已记录科室使用：${department}`);
   }
 })

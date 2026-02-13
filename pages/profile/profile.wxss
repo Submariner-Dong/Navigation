@@ -1,10 +1,12 @@
+/* ========== 页面基础布局 ========== */
 .container {
   background-color: #f8f9fa;
   min-height: 100vh;
   padding-bottom: 40rpx;
 }
 
-/* 顶部身份区 */
+/* ========== 顶部身份区域 ========== */
+/* 渐变背景区域，包含用户头像和健康状态 */
 .identity-section {
   background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
   padding: 40rpx 30rpx 30rpx;
@@ -17,6 +19,7 @@
   align-items: center;
 }
 
+/* 头像区域 */
 .avatar-area {
   display: flex;
   align-items: center;
@@ -28,6 +31,7 @@
   margin-right: 20rpx;
 }
 
+/* 用户头像样式 */
 .user-avatar {
   width: 120rpx;
   height: 120rpx;
@@ -36,6 +40,7 @@
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
+/* 默认头像（用户未设置时显示） */
 .default-avatar {
   width: 120rpx;
   height: 120rpx;
@@ -53,6 +58,7 @@
   color: #fff;
 }
 
+/* 问候语区域 */
 .greeting-area {
   flex: 1;
 }
@@ -71,6 +77,7 @@
   display: block;
 }
 
+/* 健康状态标识 */
 .health-status {
   text-align: center;
   margin-top: 20rpx;
@@ -86,13 +93,14 @@
   display: block;
 }
 
-/* 卡片区域 */
+/* ========== 卡片区域 ========== */
+/* 主要功能卡片区域，包含AI问诊记录、收藏文章等 */
 .cards-section {
   padding: 30rpx;
 }
 
+/* 卡片通用样式 */
 .health-card,
-.knowledge-card,
 .service-card {
   margin-bottom: 30rpx;
   background: #fff;
@@ -100,45 +108,34 @@
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
-.card-content {
-  font-size: 28rpx;
-  color: #333;
-  margin-left: 15rpx;
-}
-
-.record-count {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.card-tip {
-  padding: 20rpx 30rpx;
-  border-top: 1rpx solid #f0f0f0;
-}
-
+/* 卡片标题样式 */
 .card-title {
   font-size: 28rpx;
   color: #333;
   margin-right: 15rpx;
 }
 
+/* 卡片计数和描述文字 */
 .card-count,
 .card-desc {
   font-size: 24rpx;
   color: #999;
 }
 
-.recommendation {
+/* 记录数量显示 */
+.record-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 卡片提示信息 */
+.card-tip {
+  padding: 20rpx 30rpx;
   border-top: 1rpx solid #f0f0f0;
 }
 
-.recommend-text {
-  font-size: 26rpx;
-  color: #666;
-  margin-left: 15rpx;
-}
-
-/* AI问诊记录列表 */
+/* ========== AI问诊记录列表 ========== */
+/* AI诊断历史记录列表样式 */
 .diagnosis-list {
   margin: 20rpx 30rpx;
   background: #fff;
@@ -150,6 +147,7 @@
   z-index: 1;
 }
 
+/* 诊断记录项 */
 .diagnosis-item {
   display: flex;
   align-items: center;
@@ -157,7 +155,7 @@
   padding: 30rpx 25rpx;
   border-bottom: 1rpx solid #f0f0f0;
   background: #fff;
-  min-height: 100rpx;
+  min-height: 50rpx; 
 }
 
 .diagnosis-item:last-child {
@@ -191,10 +189,127 @@
   font-weight: 400;
 }
 
+/* ========== 收藏文章列表 ========== */
+.favorite-list {
+  margin: 0 30rpx;
+  margin: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  border: 1rpx solid #e0e0e0;
+  overflow: visible;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.favorite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 25rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: #fff;
+  min-height: 50rpx;
+}
+
+.favorite-item:last-child {
+  border-bottom: none;
+}
+
+.favorite-item:active {
+  background-color: #f8f9fa;
+}
+
+.favorite-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.favorite-title {
+  font-size: 30rpx;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.favorite-time {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  font-weight: 400;
+}
+
+/* ========== 常用科室列表 ========== */
+.common-departments-list {
+  margin: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  border: 1rpx solid #e0e0e0;
+  overflow: visible;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.department-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 25rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: #fff;
+  min-height: 50rpx;
+}
+
+.department-item:last-child {
+  border-bottom: none;
+}
+
+.department-item:active {
+  background-color: #f8f9fa;
+}
+
+.department-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.department-name {
+  font-size: 30rpx;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.department-count {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  font-weight: 400;
+}
+
+/* ========== 通用组件样式 ========== */
+/* 展开/收起区域 */
 .toggle-section {
   margin: 0 30rpx;
 }
 
+.toggle-text {
+  font-size: 26rpx;
+  color: #1976d2;
+  text-align: center;
+  display: block;
+}
+
+/* 加载状态 */
 .loading-section {
   margin: 0 30rpx;
 }
@@ -204,6 +319,7 @@
   color: #999;
 }
 
+/* 无记录提示 */
 .no-records {
   margin: 0 30rpx;
 }
@@ -213,18 +329,14 @@
   color: #999;
 }
 
-.no-records-hint {
-  font-size: 22rpx;
-  color: #ccc;
-}
-
+/* 预约信息 */
 .appointment-info {
   font-size: 26rpx;
   color: #52c41a;
   margin-left: 15rpx;
 }
 
-/* 设置区域 */
+/* ========== 设置区域 ========== */
 .settings-section {
   padding: 0 30rpx;
 }
@@ -234,7 +346,7 @@
   color: #999;
 }
 
-/* 底部安全操作区 */
+/* ========== 底部安全操作区 ========== */
 .security-section {
   padding: 30rpx;
   margin-top: 20rpx;
@@ -248,7 +360,7 @@
   text-align: center;
 }
 
-/* 响应式调整 */
+/* ========== 响应式设计 ========== */
 @media (max-width: 375px) {
   .identity-section {
     padding: 30rpx 20rpx 20rpx;
@@ -263,15 +375,14 @@
   }
 }
 
-/* 动画效果 */
+/* ========== 交互效果 ========== */
+/* 卡片点击效果 */
 .health-card,
-.knowledge-card,
 .service-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .health-card:active,
-.knowledge-card:active,
 .service-card:active {
   transform: translateY(-2rpx);
   box-shadow: 0 6rpx 25rpx rgba(0, 0, 0, 0.1);
@@ -287,7 +398,7 @@
   outline-offset: 2rpx;
 }
 
-/* 高对比度模式支持 */
+/* ========== 高对比度模式支持 ========== */
 @media (prefers-contrast: high) {
   .identity-section {
     background: #e8f4fd;
@@ -295,55 +406,7 @@
   }
   
   .health-card,
-  .knowledge-card,
   .service-card {
     border: 1rpx solid #ddd;
   }
-}
-
-/* 收藏文章列表样式 */
-.favorite-list {
-  margin: 0 30rpx;
-}
-
-.favorite-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
-  cursor: pointer;
-}
-
-.favorite-item:last-child {
-  border-bottom: none;
-}
-
-.favorite-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.favorite-title {
-  font-size: 28rpx;
-  color: #333;
-  line-height: 1.4;
-  margin-bottom: 8rpx;
-}
-
-.favorite-time {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.toggle-section {
-  margin-top: 10rpx;
-}
-
-.toggle-text {
-  font-size: 26rpx;
-  color: #1976d2;
-  text-align: center;
-  display: block;
 }

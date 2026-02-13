@@ -1,4 +1,4 @@
-const UserDataManager = require('../userDataManager.js');
+const UserDataManager = require('../../utils/userDataManager.js');
 
 Page({
   data: {
@@ -26,9 +26,9 @@ Page({
     watchedVideos: 0,
     recommendedArticle: '',
     commonDepartmentsCount: 0,
+    commonDepartmentsList: [],
     favoriteHospitals: 0,
     latestAppointment: '',
-    notificationEnabled: true,
     
     // 新增：加载状态
     loading: true
@@ -101,7 +101,13 @@ Page({
       const commonDepartments = userData.preferences.commonDepartments;
       const favoriteHospitals = userData.preferences.favoriteHospitals;
       
-      console.log('加载的诊断历史:', aiDiagnosisHistory);
+      // 处理常用科室列表 - 按使用次数排序，取前3个
+      const commonDepartmentsList = commonDepartments
+        .sort((a, b) => (b.count || 0) - (a.count || 0))
+        .slice(0, 3);
+      
+      //console.log('加载的诊断历史:', aiDiagnosisHistory);
+      //console.log('加载的收藏文章:', favoriteArticles);
       
       // 处理AI诊断列表（异步）
       const aiDiagnosisList = await this.processDiagnosisList(aiDiagnosisHistory);
@@ -112,9 +118,9 @@ Page({
       const displayedDiagnosisList = aiDiagnosisList.slice(0, 3);
       const remainingDiagnosisList = aiDiagnosisList.slice(3);
 
-      console.log('切分后的诊断列表:');
-      console.log('  - 显示前3条:', displayedDiagnosisList);
-      console.log('  - 剩余记录:', remainingDiagnosisList);
+      //console.log('切分后的诊断列表:');
+      //console.log('  - 显示前3条:', displayedDiagnosisList);
+      //console.log('  - 剩余记录:', remainingDiagnosisList);
       
       // 计算最新诊断（使用缓存的总结）
       const latestDiagnosis = aiDiagnosisHistory.length > 0 ? 
@@ -124,10 +130,18 @@ Page({
       // 根据诊断历史更新健康状态
       const healthStatus = this.calculateHealthStatus(aiDiagnosisHistory);
       
-      // 处理收藏文章列表
-      const processedFavoriteArticles = this.processFavoriteArticles(favoriteArticles);
+      // 处理收藏文章列表 - 确保标题正确显示
+      const processedFavoriteArticles = favoriteArticles.map(article => ({
+        ...article,
+        formattedTime: this.formatTime(article.timestamp)
+      }));
+      
       const displayedFavoriteArticles = processedFavoriteArticles.slice(0, 3);
       const remainingFavoriteArticles = processedFavoriteArticles.slice(3);
+      
+      console.log('处理后的收藏文章列表:', processedFavoriteArticles);
+      //console.log('显示前3篇收藏:', displayedFavoriteArticles);
+      //console.log('剩余收藏:', remainingFavoriteArticles);
       
       this.setData({
         aiRecordsCount: aiDiagnosisHistory.length,
@@ -142,23 +156,24 @@ Page({
         remainingFavoriteArticles: remainingFavoriteArticles, // 剩余收藏
         watchedVideos: watchedVideos.length,
         commonDepartmentsCount: commonDepartments.length,
+        commonDepartmentsList: commonDepartmentsList, // 常用科室列表
         favoriteHospitals: favoriteHospitals.length,
         recommendedArticle: this.getRecommendedArticle(aiDiagnosisHistory),
         showAllFavorites: false, // 默认不展开所有收藏
         loading: false
       });
       
-      console.log('设置数据完成，aiDiagnosisList长度:', aiDiagnosisList.length);
-      console.log('aiDiagnosisList内容:', aiDiagnosisList);
-      console.log('页面数据状态:', this.data);
+      //console.log('设置数据完成，aiDiagnosisList长度:', aiDiagnosisList.length);
+      //console.log('aiDiagnosisList内容:', aiDiagnosisList);
+      //console.log('页面数据状态:', this.data);
       
       // 详细调试信息
-      console.log('=== 详细调试信息 ===');
-      console.log('aiDiagnosisList类型:', typeof aiDiagnosisList);
-      console.log('aiDiagnosisList是否为数组:', Array.isArray(aiDiagnosisList));
-      console.log('aiDiagnosisList长度:', aiDiagnosisList.length);
+      //console.log('=== 详细调试信息 ===');
+      //console.log('aiDiagnosisList类型:', typeof aiDiagnosisList);
+      //console.log('aiDiagnosisList是否为数组:', Array.isArray(aiDiagnosisList));
+      //console.log('aiDiagnosisList长度:', aiDiagnosisList.length);
       
-      if (aiDiagnosisList.length > 0) {
+      /*if (aiDiagnosisList.length > 0) {
         console.log('第一条记录详情:');
         console.log('  - ID:', aiDiagnosisList[0].id);
         console.log('  - Symptoms:', aiDiagnosisList[0].symptoms);
@@ -170,12 +185,12 @@ Page({
         aiDiagnosisList.forEach((record, index) => {
           console.log(`  ${index + 1}. ${record.symptoms} (${typeof record.symptoms})`);
         });
-      }
+      }*/
       
-      console.log('loading状态:', this.data.loading);
-      console.log('aiRecordsCount:', this.data.aiRecordsCount);
-      console.log('showAllDiagnosis:', this.data.showAllDiagnosis);
-      console.log('=== 调试信息结束 ===');
+      //console.log('loading状态:', this.data.loading);
+      //console.log('aiRecordsCount:', this.data.aiRecordsCount);
+      //console.log('showAllDiagnosis:', this.data.showAllDiagnosis);
+      //console.log('=== 调试信息结束 ===');
     } catch (error) {
       console.error('加载健康数据失败:', error);
       // 出错时使用空数据
@@ -476,39 +491,70 @@ Page({
 
   // 处理收藏文章列表
   processFavoriteArticles(favoriteArticles) {
-    return favoriteArticles.map(article => ({
-      ...article,
-      formattedTime: this.formatTime(article.timestamp)
-    }));
+    console.log('=== 开始处理收藏文章列表 ===');
+    console.log('原始收藏文章数量:', favoriteArticles.length);
+    console.log('原始收藏文章详情:', favoriteArticles);
+    
+    const processedArticles = favoriteArticles.map(article => {
+      console.log('处理文章 ID:', article.id, '标题:', article.title);
+      console.log('原始时间戳:', article.timestamp);
+      const formattedTime = this.formatTime(article.timestamp);
+      console.log('格式化后时间:', formattedTime);
+      
+      return {
+        ...article,
+        formattedTime: formattedTime
+      };
+    });
+    
+    console.log('处理后的收藏文章列表:', processedArticles);
+    console.log('=== 收藏文章处理完成 ===');
+    
+    return processedArticles;
   },
 
   // 切换收藏列表展开/收起状态
   toggleFavoriteList() {
     const { showAllFavorites, favoriteArticles } = this.data;
     
+    console.log('=== 切换收藏列表展开状态 ===');
+    console.log('当前状态 showAllFavorites:', showAllFavorites);
+    console.log('收藏文章总数 favoriteArticles:', favoriteArticles);
+    
     if (favoriteArticles <= 3) {
+      console.log('收藏文章数量 <= 3，不需要切换');
       return; // 只有3篇或更少，不需要切换
     }
     
+    const newShowAllFavorites = !showAllFavorites;
+    console.log('切换后状态:', newShowAllFavorites);
+    
     this.setData({
-      showAllFavorites: !showAllFavorites
+      showAllFavorites: newShowAllFavorites
     });
     
+    // 获取最新的收藏文章数据
+    const currentFavoriteArticles = UserDataManager.getFavoriteArticles();
+    console.log('当前收藏文章数据:', currentFavoriteArticles);
+    const processedFavoriteArticles = this.processFavoriteArticles(currentFavoriteArticles);
+    
     // 根据展开状态更新显示的收藏列表
-    if (showAllFavorites) {
-      // 收起时只显示前3篇
-      const processedFavoriteArticles = this.processFavoriteArticles(UserDataManager.getFavoriteArticles());
+    if (newShowAllFavorites) {
+      console.log('展开状态：显示所有收藏文章');
+      this.setData({
+        displayedFavoriteArticles: processedFavoriteArticles
+      });
+      console.log('显示所有收藏文章，数量:', processedFavoriteArticles.length);
+    } else {
+      console.log('收起状态：只显示前3篇收藏文章');
       this.setData({
         displayedFavoriteArticles: processedFavoriteArticles.slice(0, 3),
         remainingFavoriteArticles: processedFavoriteArticles.slice(3)
       });
-    } else {
-      // 展开时显示所有收藏
-      const processedFavoriteArticles = this.processFavoriteArticles(UserDataManager.getFavoriteArticles());
-      this.setData({
-        displayedFavoriteArticles: processedFavoriteArticles
-      });
+      console.log('显示前3篇，剩余:', processedFavoriteArticles.slice(3).length, '篇');
     }
+    
+    console.log('=== 收藏列表切换完成 ===');
   },
 
   // 查看收藏文章详情
@@ -569,19 +615,20 @@ Page({
     });
   },
 
-  viewCommonDepartments() {
-    wx.showModal({
-      title: '常用科室',
-      content: '此功能正在开发中，将展示您常用的科室列表',
-      showCancel: false
-    });
-  },
+  // 直接跳转到科室导航
+  navigateToDepartment(e) {
+    const departmentName = e.currentTarget.dataset.name;
+    
+    if (!departmentName) {
+      console.error('科室名称为空');
+      return;
+    }
 
-  viewAppointments() {
-    wx.showModal({
-      title: '预约记录',
-      content: '此功能正在开发中，将展示您的预约信息',
-      showCancel: false
+    console.log(`跳转到科室：${departmentName}`);
+    
+    // 直接跳转到对应科室的导航页面
+    wx.navigateTo({
+      url: `/pages/navigation/department/department?d=${departmentName}`
     });
   },
 
@@ -594,36 +641,142 @@ Page({
     });
   },
 
-  privacySettings() {
-    wx.showModal({
-      title: '隐私设置',
-      content: '此功能正在开发中，将用于管理您的隐私设置',
-      showCancel: false
-    });
-  },
-
-  toggleNotification(e) {
-    const enabled = e.detail.value;
-    this.setData({ notificationEnabled: enabled });
-    wx.setStorageSync('notificationEnabled', enabled);
-    wx.showToast({
-      title: enabled ? '通知已开启' : '通知已关闭',
-      icon: 'success'
-    });
-  },
-
   dataManagement() {
-    wx.showModal({
-      title: '数据管理',
-      content: '此功能正在开发中，将用于管理您的健康数据',
-      showCancel: false
+    wx.showActionSheet({
+      itemList: ['删除智能问诊记录', '删除收藏的文章', '删除常用科室', '清除缓存'],
+      success: (res) => {
+        const tapIndex = res.tapIndex;
+        switch (tapIndex) {
+          case 0:
+            this.deleteAiDiagnosisRecords();
+            break;
+          case 1:
+            this.deleteFavoriteArticles();
+            break;
+          case 2:
+            this.deleteCommonDepartments();
+            break;
+          case 3:
+            this.clearAllCache();
+            break;
+        }
+      }
     });
   },
 
-  clearCache() {
+  // 删除智能问诊记录
+  deleteAiDiagnosisRecords() {
+    const aiDiagnosisCount = this.data.aiRecordsCount;
+    
+    if (aiDiagnosisCount === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '您还没有智能问诊记录',
+        showCancel: false
+      });
+      return;
+    }
+
+    wx.showModal({
+      title: '删除智能问诊记录',
+      content: `确定要删除所有${aiDiagnosisCount}条智能问诊记录吗？此操作不可逆。`,
+      confirmText: '删除',
+      confirmColor: '#fa5151',
+      success: (res) => {
+        if (res.confirm) {
+          const userData = UserDataManager.loadUserData();
+          userData.medicalData.aiDiagnosisHistory = [];
+          UserDataManager.saveUserData(userData);
+          
+          wx.showToast({
+            title: '问诊记录已删除',
+            icon: 'success'
+          });
+          
+          // 重新加载数据
+          this.loadHealthData();
+        }
+      }
+    });
+  },
+
+  // 删除收藏的文章
+  deleteFavoriteArticles() {
+    const favoriteCount = this.data.favoriteArticles;
+    
+    if (favoriteCount === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '您还没有收藏的文章',
+        showCancel: false
+      });
+      return;
+    }
+
+    wx.showModal({
+      title: '删除收藏的文章',
+      content: `确定要删除所有${favoriteCount}篇收藏文章吗？此操作不可逆。`,
+      confirmText: '删除',
+      confirmColor: '#fa5151',
+      success: (res) => {
+        if (res.confirm) {
+          const userData = UserDataManager.loadUserData();
+          userData.preferences.favoriteArticles = [];
+          UserDataManager.saveUserData(userData);
+          
+          wx.showToast({
+            title: '收藏文章已删除',
+            icon: 'success'
+          });
+          
+          // 重新加载数据
+          this.loadHealthData();
+        }
+      }
+    });
+  },
+
+  // 删除常用科室
+  deleteCommonDepartments() {
+    const departmentsCount = this.data.commonDepartmentsCount;
+    
+    if (departmentsCount === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '您还没有常用科室记录',
+        showCancel: false
+      });
+      return;
+    }
+
+    wx.showModal({
+      title: '删除常用科室',
+      content: `确定要删除所有${departmentsCount}个常用科室记录吗？此操作不可逆。`,
+      confirmText: '删除',
+      confirmColor: '#fa5151',
+      success: (res) => {
+        if (res.confirm) {
+          const userData = UserDataManager.loadUserData();
+          userData.preferences.commonDepartments = [];
+          UserDataManager.saveUserData(userData);
+          
+          wx.showToast({
+            title: '常用科室已删除',
+            icon: 'success'
+          });
+          
+          // 重新加载数据
+          this.loadHealthData();
+        }
+      }
+    });
+  },
+
+  // 清除所有缓存（合并到数据管理）
+  clearAllCache() {
     wx.showModal({
       title: '清除缓存',
-      content: '确定要清除所有缓存数据吗？此操作不可逆。',
+      content: '确定要清除所有缓存数据吗？此操作将删除所有本地存储的数据，不可逆。',
       confirmText: '清除',
       confirmColor: '#fa5151',
       success: (res) => {
@@ -633,6 +786,11 @@ Page({
             title: '缓存已清除',
             icon: 'success'
           });
+          
+          // 重新初始化用户数据
+          const defaultData = UserDataManager.loadUserData();
+          UserDataManager.saveUserData(defaultData);
+          
           this.loadUserData();
           this.loadHealthData();
         }

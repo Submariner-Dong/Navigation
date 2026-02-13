@@ -1,0 +1,24 @@
+{
+  "name": "navigation",
+  "version": "1.0.0",
+  "description": "1. **AI问诊导航直接跳转功能**：    - 优化AI问诊页面导航按钮，点击后直接跳转到对应科室导航页面    - 不再需要用户再次选择目的地，提高用户体验连贯性    - 修复科室导航页面参数传递问题",
+  "main": "app.js",
+  "dependencies": {
+    "@babel/runtime": "^7.28.6",
+    "tdesign-miniprogram": "^1.12.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Submariner-Dong/Navigation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Submariner-Dong/Navigation/issues"
+  },
+  "homepage": "https://github.com/Submariner-Dong/Navigation#readme"
+}

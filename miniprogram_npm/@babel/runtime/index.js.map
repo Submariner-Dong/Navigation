@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.js"],"names":[],"mappings":";;;;;;;AAAA;AACA;AACA;AACA","file":"index.js","sourcesContent":["// 为微信小程序创建的入口文件\nmodule.exports = {\n  // 空的导出对象，因为微信小程序只需要文件存在\n};"]}
