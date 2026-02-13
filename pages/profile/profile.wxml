@@ -66,9 +66,9 @@
             <view slot="title">
               <text class="no-records-text">暂无AI问诊记录</text>
             </view>
-            <view slot="note">
+            <!-- view slot="note">
               <text class="no-records-hint">点击上方AI问诊记录开始使用</text>
-            </view>
+            </view -->
           </t-cell>
         </view>
         
@@ -120,29 +120,44 @@
     </view>
 
     <!-- 第二卡片：我的知识库 -->
-    <view class="knowledge-card">
-      <t-cell-group title="我的科普收藏">
-        <t-cell arrow bindtap="viewFavorites">
+    <view class="service-card" wx:if="{{favoriteArticles > 0}}">
+      <t-cell-group title="我的收藏">
+        <t-cell>
           <view slot="title">
             <text class="card-title">收藏的文章</text>
-            <text class="card-count">{{favoriteArticles}} 篇</text>
+            <text class="card-desc">{{favoriteArticles}} 篇收藏</text>
           </view>
         </t-cell>
         
-        <t-cell arrow bindtap="viewWatchedVideos">
-          <view slot="title">
-            <text class="card-title">看过的视频</text>
-            <text class="card-count">{{watchedVideos}} 个</text>
+        <!-- 收藏文章列表 - 默认显示前3条 -->
+        <view wx:if="{{displayedFavoriteArticles.length > 0}}" class="favorite-list">
+          <view wx:for="{{displayedFavoriteArticles}}" wx:key="id" class="favorite-item" bindtap="viewFavoriteArticle" data-id="{{item.id}}">
+            <view class="favorite-content">
+              <text class="favorite-title">{{index + 1}}. {{item.title}}</text>
+              <text class="favorite-time">{{item.formattedTime}}</text>
+            </view>
+            <t-icon name="chevron-right" size="16" color="#999"></t-icon>
           </view>
-        </t-cell>
+        </view>
         
-        <view wx:if="{{recommendedArticle}}" class="recommendation">
-          <t-cell arrow bindtap="viewRecommendedArticle">
+        <!-- 查看更多收藏 -->
+        <view wx:if="{{remainingFavoriteArticles.length > 0}}" class="toggle-section">
+          <t-cell bindtap="toggleFavoriteList">
             <view slot="title">
-              <t-tag theme="warning" variant="light" size="small">推荐阅读</t-tag>
-              <text class="recommend-text">{{recommendedArticle}}</text>
+              <text class="toggle-text">{{showAllFavorites ? '收起更多收藏' : '查看更多收藏(' + remainingFavoriteArticles.length + '篇)'}}</text>
             </view>
           </t-cell>
+        </view>
+        
+        <!-- 展开时显示剩余收藏 -->
+        <view wx:if="{{remainingFavoriteArticles.length > 0 && showAllFavorites}}" class="favorite-list">
+          <view wx:for="{{remainingFavoriteArticles}}" wx:key="id" class="favorite-item" bindtap="viewFavoriteArticle" data-id="{{item.id}}">
+            <view class="favorite-content">
+              <text class="favorite-title">{{index + 4}}. {{item.title}}</text>
+              <text class="favorite-time">{{item.formattedTime}}</text>
+            </view>
+            <t-icon name="chevron-right" size="16" color="#999"></t-icon>
+          </view>
         </view>
       </t-cell-group>
     </view>

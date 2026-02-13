@@ -1,4 +1,11 @@
 <view class="container">
   <image src="{{imageUrl}}" mode="widthFix"></image>
-  <button bindtap="goBack">返回</button>
+  
+  <!-- 底部操作栏 -->
+  <view class="action-bar">
+    <button class="back-btn" bindtap="goBack">返回</button>
+    <button class="favorite-btn {{isFavorite ? 'favorited' : ''}}" bindtap="toggleFavorite">
+      {{isFavorite ? '已收藏' : '收藏'}}
+    </button>
+  </view>
 </view>

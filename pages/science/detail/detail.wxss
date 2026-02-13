@@ -1,11 +1,48 @@
 .container {
-  padding: 20px;
+  padding: 20rpx;
   text-align: center;
+  padding-bottom: 120rpx; /* 为底部操作栏留出空间 */
 }
+
 image {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 20rpx;
 }
-button {
-  margin-top: 20px;
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 40rpx;
+  background: #fff;
+  border-top: 1rpx solid #f0f0f0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.back-btn {
+  background: #f8f8f8;
+  color: #333;
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+}
+
+.favorite-btn {
+  background: #f8f8f8;
+  color: #666;
+  border: 1rpx solid #ddd;
+  border-radius: 10rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+}
+
+.favorite-btn.favorited {
+  background: #ff6b6b;
+  color: #fff;
+  border-color: #ff6b6b;
 }

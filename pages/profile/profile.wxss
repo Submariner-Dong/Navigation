@@ -300,3 +300,50 @@
     border: 1rpx solid #ddd;
   }
 }
+
+/* 收藏文章列表样式 */
+.favorite-list {
+  margin: 0 30rpx;
+}
+
+.favorite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  cursor: pointer;
+}
+
+.favorite-item:last-child {
+  border-bottom: none;
+}
+
+.favorite-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.favorite-title {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.4;
+  margin-bottom: 8rpx;
+}
+
+.favorite-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.toggle-section {
+  margin-top: 10rpx;
+}
+
+.toggle-text {
+  font-size: 26rpx;
+  color: #1976d2;
+  text-align: center;
+  display: block;
+}

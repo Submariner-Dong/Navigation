@@ -1,3 +1,5 @@
+const UserDataManager = require('../userDataManager.js');
+
 Page({
   data: {
     userAccount: null,
@@ -39,9 +41,11 @@ Page({
   },
 
   loadUserData() {
-    const userInfo = wx.getStorageSync('userInfo') || {};
-    const medicalRecords = wx.getStorageSync('medicalRecords') || [];
-    this.setData({ userInfo, medicalRecords });
+    const userData = UserDataManager.loadUserData();
+    this.setData({ 
+      userInfo: userData.userInfo,
+      medicalRecords: userData.medicalData.medicalRecords 
+    });
   },
 
   saveUserInfo(e) {
@@ -49,7 +53,7 @@ Page({
     const value = e.detail.value;
     const userInfo = { ...this.data.userInfo, [field]: value };
     this.setData({ userInfo });
-    wx.setStorageSync('userInfo', userInfo);
+    UserDataManager.updateUserInfo(userInfo);
   },
 
   onGenderChange(e) {
@@ -58,7 +62,7 @@ Page({
     const selectedGender = genderOptions[index];
     const userInfo = { ...this.data.userInfo, gender: selectedGender };
     this.setData({ userInfo });
-    wx.setStorageSync('userInfo', userInfo);
+    UserDataManager.updateUserInfo(userInfo);
   },
 
   addMedicalRecord() {
@@ -71,7 +75,11 @@ Page({
     const { index } = e.currentTarget.dataset;
     const medicalRecords = this.data.medicalRecords.filter((_, i) => i !== index);
     this.setData({ medicalRecords });
-    wx.setStorageSync('medicalRecords', medicalRecords);
+    
+    // 更新到统一数据管理
+    const userData = UserDataManager.loadUserData();
+    userData.medicalData.medicalRecords = medicalRecords;
+    UserDataManager.saveUserData(userData);
   },
 
   loadUserAccount() {
@@ -83,13 +91,15 @@ Page({
 
   async loadHealthData() {
     try {
-      // 加载AI诊断历史（包含缓存的总结）
-      const aiDiagnosisHistory = await this.loadCachedDiagnosisHistory();
-      const selfCheckRecords = wx.getStorageSync('selfCheckRecords') || [];
-      const favoriteArticles = wx.getStorageSync('favoriteArticles') || [];
-      const watchedVideos = wx.getStorageSync('watchedVideos') || [];
-      const commonDepartments = wx.getStorageSync('commonDepartments') || [];
-      const favoriteHospitals = wx.getStorageSync('favoriteHospitals') || [];
+      // 从统一数据管理模块加载数据
+      const userData = UserDataManager.loadUserData();
+      
+      const aiDiagnosisHistory = userData.medicalData.aiDiagnosisHistory;
+      const selfCheckRecords = userData.medicalData.selfCheckRecords;
+      const favoriteArticles = userData.preferences.favoriteArticles;
+      const watchedVideos = userData.preferences.watchedVideos;
+      const commonDepartments = userData.preferences.commonDepartments;
+      const favoriteHospitals = userData.preferences.favoriteHospitals;
       
       console.log('加载的诊断历史:', aiDiagnosisHistory);
       
@@ -108,11 +118,16 @@ Page({
       
       // 计算最新诊断（使用缓存的总结）
       const latestDiagnosis = aiDiagnosisHistory.length > 0 ? 
-        aiDiagnosisHistory[aiDiagnosisHistory.length - 1].summary || 
-        await this.summarizeSymptoms(aiDiagnosisHistory[aiDiagnosisHistory.length - 1].symptoms) : '';
+        aiDiagnosisHistory[0].summary || 
+        await this.summarizeSymptoms(aiDiagnosisHistory[0].symptoms) : '';
       
       // 根据诊断历史更新健康状态
       const healthStatus = this.calculateHealthStatus(aiDiagnosisHistory);
+      
+      // 处理收藏文章列表
+      const processedFavoriteArticles = this.processFavoriteArticles(favoriteArticles);
+      const displayedFavoriteArticles = processedFavoriteArticles.slice(0, 3);
+      const remainingFavoriteArticles = processedFavoriteArticles.slice(3);
       
       this.setData({
         aiRecordsCount: aiDiagnosisHistory.length,
@@ -123,10 +138,13 @@ Page({
         latestDiagnosis: latestDiagnosis,
         healthStatus: healthStatus,
         favoriteArticles: favoriteArticles.length,
+        displayedFavoriteArticles: displayedFavoriteArticles, // 显示前3篇收藏
+        remainingFavoriteArticles: remainingFavoriteArticles, // 剩余收藏
         watchedVideos: watchedVideos.length,
         commonDepartmentsCount: commonDepartments.length,
         favoriteHospitals: favoriteHospitals.length,
         recommendedArticle: this.getRecommendedArticle(aiDiagnosisHistory),
+        showAllFavorites: false, // 默认不展开所有收藏
         loading: false
       });
       
@@ -456,27 +474,90 @@ Page({
     this.toggleDiagnosisList();
   },
 
-  viewSelfCheckRecords() {
-    wx.showModal({
-      title: '自查记录',
-      content: '此功能正在开发中，将展示您的口腔自查记录',
-      showCancel: false
+  // 处理收藏文章列表
+  processFavoriteArticles(favoriteArticles) {
+    return favoriteArticles.map(article => ({
+      ...article,
+      formattedTime: this.formatTime(article.timestamp)
+    }));
+  },
+
+  // 切换收藏列表展开/收起状态
+  toggleFavoriteList() {
+    const { showAllFavorites, favoriteArticles } = this.data;
+    
+    if (favoriteArticles <= 3) {
+      return; // 只有3篇或更少，不需要切换
+    }
+    
+    this.setData({
+      showAllFavorites: !showAllFavorites
+    });
+    
+    // 根据展开状态更新显示的收藏列表
+    if (showAllFavorites) {
+      // 收起时只显示前3篇
+      const processedFavoriteArticles = this.processFavoriteArticles(UserDataManager.getFavoriteArticles());
+      this.setData({
+        displayedFavoriteArticles: processedFavoriteArticles.slice(0, 3),
+        remainingFavoriteArticles: processedFavoriteArticles.slice(3)
+      });
+    } else {
+      // 展开时显示所有收藏
+      const processedFavoriteArticles = this.processFavoriteArticles(UserDataManager.getFavoriteArticles());
+      this.setData({
+        displayedFavoriteArticles: processedFavoriteArticles
+      });
+    }
+  },
+
+  // 查看收藏文章详情
+  viewFavoriteArticle(e) {
+    const articleId = e.currentTarget.dataset.id;
+    
+    // 跳转到对应文章详情页
+    wx.navigateTo({
+      url: `/pages/science/detail/detail?id=${articleId}`
     });
   },
 
-  viewFavorites() {
-    wx.showModal({
-      title: '收藏的文章',
-      content: '此功能正在开发中，将展示您收藏的科普文章',
-      showCancel: false
-    });
-  },
-
-  viewWatchedVideos() {
-    wx.showModal({
-      title: '看过的视频',
-      content: '此功能正在开发中，将展示您观看过的视频',
-      showCancel: false
+  // 格式化时间
+  formatTime(timestamp) {
+    if (!timestamp) return '';
+    
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    
+    // 如果是今天
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString('zh-CN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+    
+    // 如果是昨天
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+      return '昨天 ' + date.toLocaleTimeString('zh-CN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+    
+    // 一周内
+    if (diff < 7 * 24 * 60 * 60 * 1000) {
+      const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+      return `${days}天前`;
+    }
+    
+    // 更早的时间
+    return date.toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
     });
   },
 
