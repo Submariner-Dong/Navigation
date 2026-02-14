@@ -1,3 +1,6 @@
+/* ========== 首页样式 - index.wxml对应 ========== */
+
+/* 主容器 - 对应index.wxml中的<view class="container"> */
 .container {
   display: flex;
   flex-direction: column;
@@ -9,34 +12,63 @@
   min-height: 100vh;
 }
 
+/* 头部区域 - 对应<view class="header">中的"青芽智医"标题 */
 .header {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
 }
+
+/* 内容区域 - 对应<view class="content">，包含所有功能入口 */
 .content {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  align-items: center;
 }
+
+/* 按钮网格容器 - 对应<view class="button-grid">，实现2x2布局 */
+.button-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* 网格行 - 对应<view class="grid-row">，每行包含2个按钮 */
+.grid-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0px;
+}
+
+/* 网格项 - 对应<view class="grid-item">，每个按钮容器 */
+.grid-item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* 按钮样式 - 对应<navigator class="btn">，用于功能入口导航 */
 .btn {
   padding: 10px 20px;
-  background-color: #11ffee00;
+  background-color: #11ffee00; /* 透明背景色 */
   color: black;
   text-align: center;
   border-radius: 5px;
-}
-.logo {
-  width: 40px;
-  height: 40px;
-  
-}
-.image-container {
-  width: 900px;
-  height: 900px;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* 按钮图片样式 - 对应<image class="button-image"> */
+.button-image {
+  width: 150px;
+  height: 150px;
+}
+
+/* 备用按钮图片样式（当前未使用） */
 .button-image1 {
   width: 80px;
   height: 80px;

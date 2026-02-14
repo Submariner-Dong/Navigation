@@ -1,32 +1,56 @@
+/* ========== 科普知识页面样式 - science.wxml对应 ========== */
+
+/* 主容器 - 对应science.wxml中的<view class="container"> */
 .container {
   padding: 20px;
 }
+
+/* 头部区域 - 对应<view class="header">中的"口腔健康科普"标题 */
 .header {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 20px;
 }
+
+/* 圆点图片容器 - 对应<view class="dots-container">，包含wx:for循环的图片圆点 */
 .dots-container {
   display: flex;
   justify-content: space-around;
   margin-bottom: 20px;
 }
+
+/* 单个圆点样式 - 对应<view class="dot" wx:for="{{imageList}}"> */
 .dot {
   width: 60px;
   height: 60px;
   border-radius: 50%;
   overflow: hidden;
 }
+
+/* 圆点中的图片样式 - 对应<image src="{{item[0]}}"> */
 .dot image {
   width: 100%;
   height: 100%;
 }
+
+/* 内容区域 - 对应<view class="content">，包含文章列表 */
 .content {
   margin-top: 10px;
 }
+
+/* 文章项样式 - 对应<view class="article" wx:for="{{articles}}">，可点击进入详情 */
 .article {
   margin-bottom: 15px;
   padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+/* 文章项悬停效果 */
+.article:active {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }

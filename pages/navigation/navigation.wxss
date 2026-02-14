@@ -1,3 +1,6 @@
+/* ========== 院内导航页面样式 - navigation.wxml对应 ========== */
+
+/* 主容器 - 对应navigation.wxml中的<view class="container"> */
 .container {
   display: flex;
   flex-direction: column;
@@ -5,6 +8,7 @@
   align-items: center;
 }
 
+/* 输入容器 - 对应<view class="input-container" wx:if="{{!showNavigation}}"> */
 .input-container {
   display: flex;
   flex-direction: column;
@@ -13,6 +17,7 @@
   width: 80%;
 }
 
+/* 选择器容器 - 当前未使用，备用样式 */
 .picker-container {
   display: flex;
   flex-direction: column;
@@ -21,11 +26,13 @@
   width: 80%;
 }
 
+/* 输入容器中的文本样式 - 对应<text>欢迎来到同济大学附属口腔医院</text> */
 .input-container text {
   font-size: 16px;
   color: #333;
 }
 
+/* 输入框样式 - 当前未使用，备用样式 */
 .input-container input {
   width: 100%;
   padding: 10px;
@@ -33,6 +40,7 @@
   border-radius: 4px;
 }
 
+/* 搜索按钮样式 - 对应<button class="search-button" bindtap="handleSearch">前往</button> */
 .search-button {
   width: 100%;
   padding: 10px;
@@ -42,6 +50,7 @@
   border-radius: 4px;
 }
 
+/* 图片容器 - 当前未使用，用于导航地图显示 */
 .image-container {
   flex: 1;
   display: flex;
@@ -50,10 +59,12 @@
   background-color: #f5f5f5;
 }
 
+/* 导航图片样式 - 当前未使用 */
 .navigation-image {
   display: flex;
 }
 
+/* 文本容器 - 当前未使用 */
 .text-container {
   flex: 1;
   padding: 20px;
@@ -63,6 +74,7 @@
   background-color: #ffffff;
 }
 
+/* 选项容器 - 当前未使用 */
 .options-container {
   display: flex;
   flex-direction: column;
@@ -71,6 +83,7 @@
   margin: 20px 0;
 }
 
+/* 选项按钮样式 - 当前未使用 */
 .options-container button {
   width: 100%;
   padding: 15px;
@@ -80,6 +93,7 @@
   border-radius: 4px;
 }
 
+/* 下一步按钮 - 当前未使用 */
 .next-button {
   position: fixed;
   right: 20px;

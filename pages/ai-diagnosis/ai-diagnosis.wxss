@@ -1,37 +1,46 @@
+/* ========== AI智能问诊页面样式 - ai-diagnosis.wxml对应 ========== */
+
+/* 主容器 - 对应ai-diagnosis.wxml中的<view class="container"> */
 .container {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
+/* 聊天容器 - 对应<view class="chat-container">，显示对话消息 */
 .chat-container {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
 }
 
+/* 消息基础样式 - 对应<view class="message {{item.type}}"> */
 .message {
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 8px;
 }
 
+/* 用户消息样式 - 对应<view class="message user"> */
 .message.user {
   background-color: #e3f2fd;
   align-self: flex-end;
 }
 
+/* AI回复消息样式 - 对应<view class="message ai"> */
 .message.ai {
   background-color: #f5f5f5;
   align-self: flex-start;
 }
 
+/* 输入容器 - 对应<view class="input-container">，包含输入框和发送按钮 */
 .input-container {
   display: flex;
   padding: 10px;
   border-top: 1px solid #ddd;
 }
 
+/* 输入框样式 - 对应<input placeholder="请描述您的症状"> */
 .input-container input {
   flex: 1;
   padding: 8px;
@@ -39,6 +48,7 @@
   border-radius: 4px;
 }
 
+/* 发送按钮样式 - 对应<button bindtap="sendMessage">发送</button> */
 .input-container button {
   margin-left: 10px;
   padding: 8px 16px;
@@ -48,22 +58,26 @@
   border-radius: 4px;
 }
 
+/* 推荐区域 - 对应<view class="recommendation" wx:if="{{recommendedDepartment}}"> */
 .recommendation {
   padding: 20px;
   background-color: #fff3e0;
   border-top: 1px solid #ddd;
 }
 
+/* 推荐标题样式 - 对应<text class="title">推荐科室：{{recommendedDepartment}}</text> */
 .title {
   font-weight: bold;
   font-size: 16px;
 }
 
+/* 推荐原因样式 - 当前未使用，备用样式 */
 .reason {
   margin: 10px 0;
   color: #666;
 }
 
+/* 导航按钮样式 - 对应<button class="nav-btn" bindtap="navigateToDepartment">前往导航</button> */
 .nav-btn {
   background-color: #ff9800;
   color: white;

@@ -4,34 +4,33 @@
     <text>青芽智医</text>
   </view>
   <view class="content">
-    <view class="image-container">
-      <view class="image-item">
-        <navigator url="/pages/science/science" class="btn">
-          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-1.png" mode="aspectFit" class="button-image"></image>
-        </navigator>
-        <!--<navigator url="/pages/science/science" class="btn">科普知识</navigator>-->
+    <view class="button-grid">
+      <!-- 第一行：科普知识和院内导航 -->
+      <view class="grid-row">
+        <view class="grid-item">
+          <navigator url="/pages/science/science" class="btn">
+            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-1.png" mode="aspectFit" class="button-image"></image>
+          </navigator>
+        </view>
+        <view class="grid-item">
+          <navigator url="/pages/navigation/navigation" class="btn">
+            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button3.png" mode="aspectFit" class="button-image"></image>
+          </navigator>
+        </view>
       </view>
-      <!-- <view class="image-item">
-        <navigator url="/pages/map/map" class="btn">
-          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button2.png" mode="aspectFit" class="button-image"></image>
-        </navigator>
-        <navigator url="/pages/map/map" class="btn">医院地图</navigator>
-      </view> -->
-      <view class="image-item">
-        <navigator url="/pages/navigation/navigation" class="btn">
-          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button3.png" mode="aspectFit" class="button-image"></image>
-        </navigator>
-        <!--<navigator url="/pages/navigation/navigation" class="btn">院内导航</navigator>-->
-      </view>
-      <view class="image-item">
-        <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
-          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-4%28needchange%29.png" mode="aspectFit" class="button-image"></image>
-        </navigator>
-      </view>
-      <view class="image-item">
-        <navigator url="/pages/profile/profile" class="btn">
-          <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-5%28needchange%29.png" mode="aspectFit" class="button-image"></image>
-        </navigator>
+      
+      <!-- 第二行：AI智能问诊和个人中心 -->
+      <view class="grid-row">
+        <view class="grid-item">
+          <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
+            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-4%28needchange%29.png" mode="aspectFit" class="button-image"></image>
+          </navigator>
+        </view>
+        <view class="grid-item">
+          <navigator url="/pages/profile/profile" class="btn">
+            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-5%28needchange%29.png" mode="aspectFit" class="button-image"></image>
+          </navigator>
+        </view>
       </view>
     </view>
   </view>
