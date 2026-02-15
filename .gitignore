@@ -12,3 +12,23 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/
+
+# Security files
+SECURITY_GUIDE.md
+
+# OS generated files
+.DS_Store
+Thumbs.db

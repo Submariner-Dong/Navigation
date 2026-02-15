@@ -118,8 +118,9 @@ Page({
       return aiResponse;
     } catch (error) {
       console.error('AI分析失败:', error);
-      // 失败时使用备用逻辑
-      return this.fallbackAnalyze(symptoms);
+      // 失败时使用备用逻辑，传递错误码
+      const errorCode = error.statusCode || error.message;
+      return this.fallbackAnalyze(symptoms, errorCode);
     }
   },
 
@@ -199,7 +200,9 @@ Page({
       return this.parseTextResponse(content);
     } catch (error) {
       console.error('解析AI响应失败:', error);
-      return this.fallbackAnalyze('');
+      // 传递解析错误信息
+      const errorCode = `PARSE_ERROR: ${error.message}`;
+      return this.fallbackAnalyze('', errorCode);
     }
   },
 
@@ -227,10 +230,35 @@ Page({
       }
     }
 
-    return this.fallbackAnalyze('');
+    // 文本分析失败时使用备用逻辑
+    const errorCode = 'TEXT_ANALYSIS_FAILED';
+    return this.fallbackAnalyze('', errorCode);
   },
 
-  fallbackAnalyze(symptoms) {
+  fallbackAnalyze(symptoms, errorCode = null) {
+    // 检查网络连接状态
+    wx.getNetworkType({
+      success: (res) => {
+        if (res.networkType === 'none') {
+          wx.showToast({
+            title: '网络连接失败，请检查网络设置',
+            icon: 'none',
+            duration: 3000
+          });
+        } else {
+          let errorMessage = 'AI服务暂时不可用，请稍后重试';
+          if (errorCode) {
+            errorMessage += `（错误码：${errorCode}）`;
+          }
+          wx.showToast({
+            title: errorMessage,
+            icon: 'none',
+            duration: 3000
+          });
+        }
+      }
+    });
+
     // 备用分析逻辑
     const keywordMap = {
       '牙痛': '牙体牙髓病科',
@@ -243,20 +271,30 @@ Page({
 
     for (const keyword in keywordMap) {
       if (symptoms.includes(keyword)) {
+        let reason = `根据您的症状"${keyword}"，建议您前往${keywordMap[keyword]}就诊。\n\n（AI分析服务暂时不可用，已使用本地备用分析）`;
+        if (errorCode) {
+          reason += `\n错误码：${errorCode}`;
+        }
         return {
           department: keywordMap[keyword],
-          reason: `根据您的症状"${keyword}"，建议您前往${keywordMap[keyword]}就诊。`,
+          reason: reason,
           severity: 'mild',
-          suggestions: []
+          suggestions: [],
+          errorCode: errorCode
         };
       }
     }
 
+    let reason = '根据您的描述，建议您先前往口腔颌面外科进行初步检查。\n\n（AI分析服务暂时不可用，已使用本地备用分析）';
+    if (errorCode) {
+      reason += `\n错误码：${errorCode}`;
+    }
     return {
       department: '口腔颌面外科',
-      reason: '根据您的描述，建议您先前往口腔颌面外科进行初步检查。',
+      reason: reason,
       severity: 'mild',
-      suggestions: []
+      suggestions: [],
+      errorCode: errorCode
     };
   },
 
