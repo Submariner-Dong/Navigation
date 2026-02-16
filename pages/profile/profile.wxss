@@ -2,7 +2,7 @@
 .container {
   background-color: #f8f9fa;
   min-height: 100vh;
-  padding-bottom: 40rpx;
+  padding-bottom: 120rpx; /* 增加底部内边距，为固定导航栏留出空间 */
 }
 
 /* ========== 顶部身份区域 ========== */
@@ -409,4 +409,45 @@
   .service-card {
     border: 1rpx solid #ddd;
   }
+}
+
+/* ========== 底部导航栏固定样式 ========== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+  height: 60px;
+  z-index: 1000;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.nav-item.active {
+  background-color: #f0f8ff;
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.nav-text {
+  font-size: 12rpx;
+  color: #000000;
+}
+
+.nav-item.active .nav-text {
+  color: #1aad19;
 }

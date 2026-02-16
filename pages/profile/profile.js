@@ -1,4 +1,16 @@
+// 数据缓存机制
+const cachedHealthData = {
+  timestamp: 0,
+  data: null
+};
+const CACHE_DURATION = 30000; // 30秒缓存
+
+// 导入数据管理模块
 const UserDataManager = require('../../utils/userDataManager.js');
+const AvatarManager = require('../../utils/avatarManager.js');
+
+// 导入图片配置
+import imageConfig from '../../config/imageConfig.js'
 
 Page({
   data: {
@@ -10,6 +22,10 @@ Page({
       phone: ''
     },
     medicalRecords: [],
+    
+    // 图片配置
+    images: imageConfig,
+    currentPage: 'profile',
     
     // 新增健康管理相关数据
     healthStatus: {
@@ -30,14 +46,20 @@ Page({
     favoriteHospitals: 0,
     latestAppointment: '',
     
-    // 新增：加载状态
-    loading: true
+    // 新增：加载状态和分页控制
+    loading: true,
+    diagnosisPage: 1,
+    pageSize: 10,
+    hasMore: true
   },
 
   async onLoad() {
-    this.loadUserData();
-    this.loadUserAccount();
-    await this.loadHealthData();
+    // 并行加载数据
+    await Promise.all([
+      this.loadUserData(),
+      this.loadUserAccount(),
+      this.loadHealthData()
+    ]);
   },
 
   loadUserData() {
@@ -83,13 +105,25 @@ Page({
   },
 
   loadUserAccount() {
-    const userAccount = wx.getStorageSync('userAccount');
-    if (userAccount) {
-      this.setData({ userAccount });
-    }
+    // 使用统一的头像管理模块加载用户信息
+    const userData = UserDataManager.loadUserData() || {};
+    const userAccount = {
+      avatarUrl: AvatarManager.getUserAvatar(),
+      nickName: userData.userInfo.name || '用户',
+      // 其他用户信息...
+    };
+    
+    this.setData({ userAccount });
   },
 
   async loadHealthData() {
+    // 检查缓存
+    const now = Date.now();
+    if (cachedHealthData.data && now - cachedHealthData.timestamp < CACHE_DURATION) {
+      this.setData(cachedHealthData.data);
+      return;
+    }
+    
     try {
       // 从统一数据管理模块加载数据
       const userData = UserDataManager.loadUserData();
@@ -101,67 +135,52 @@ Page({
       const commonDepartments = userData.preferences.commonDepartments;
       const favoriteHospitals = userData.preferences.favoriteHospitals;
       
+      // 并行处理数据
+      const [aiDiagnosisList, healthStatus, latestDiagnosis] = await Promise.all([
+        this.processDiagnosisListAsync(aiDiagnosisHistory.slice(0, 10)), // 只处理前10条
+        this.calculateHealthStatus(aiDiagnosisHistory),
+        aiDiagnosisHistory.length > 0 ? 
+          (aiDiagnosisHistory[0].summary || this.summarizeSymptoms(aiDiagnosisHistory[0].symptoms)) : ''
+      ]);
+      
       // 处理常用科室列表 - 按使用次数排序，取前3个
       const commonDepartmentsList = commonDepartments
         .sort((a, b) => (b.count || 0) - (a.count || 0))
         .slice(0, 3);
       
-      //console.log('加载的诊断历史:', aiDiagnosisHistory);
-      //console.log('加载的收藏文章:', favoriteArticles);
-      
-      // 处理AI诊断列表（异步）
-      const aiDiagnosisList = await this.processDiagnosisList(aiDiagnosisHistory);
-      
-      console.log('处理后的诊断列表:', aiDiagnosisList);
-      
-      // 在JS中预先切分数组
-      const displayedDiagnosisList = aiDiagnosisList.slice(0, 3);
-      const remainingDiagnosisList = aiDiagnosisList.slice(3);
-
-      //console.log('切分后的诊断列表:');
-      //console.log('  - 显示前3条:', displayedDiagnosisList);
-      //console.log('  - 剩余记录:', remainingDiagnosisList);
-      
-      // 计算最新诊断（使用缓存的总结）
-      const latestDiagnosis = aiDiagnosisHistory.length > 0 ? 
-        aiDiagnosisHistory[0].summary || 
-        await this.summarizeSymptoms(aiDiagnosisHistory[0].symptoms) : '';
-      
-      // 根据诊断历史更新健康状态
-      const healthStatus = this.calculateHealthStatus(aiDiagnosisHistory);
-      
-      // 处理收藏文章列表 - 确保标题正确显示
-      const processedFavoriteArticles = favoriteArticles.map(article => ({
+      // 批量处理收藏文章
+      const displayedFavoriteArticles = favoriteArticles.slice(0, 3).map(article => ({
         ...article,
         formattedTime: this.formatTime(article.timestamp)
       }));
       
-      const displayedFavoriteArticles = processedFavoriteArticles.slice(0, 3);
-      const remainingFavoriteArticles = processedFavoriteArticles.slice(3);
-      
-      console.log('处理后的收藏文章列表:', processedFavoriteArticles);
-      //console.log('显示前3篇收藏:', displayedFavoriteArticles);
-      //console.log('剩余收藏:', remainingFavoriteArticles);
-      
-      this.setData({
+      const pageData = {
         aiRecordsCount: aiDiagnosisHistory.length,
         aiDiagnosisList: aiDiagnosisList,
-        displayedDiagnosisList: displayedDiagnosisList, // 显示前3条
-        remainingDiagnosisList: remainingDiagnosisList, // 剩余记录
+        displayedDiagnosisList: aiDiagnosisList.slice(0, 3), // 显示前3条
+        remainingDiagnosisList: aiDiagnosisList.slice(3), // 剩余记录
         selfCheckCount: selfCheckRecords.length,
         latestDiagnosis: latestDiagnosis,
         healthStatus: healthStatus,
         favoriteArticles: favoriteArticles.length,
         displayedFavoriteArticles: displayedFavoriteArticles, // 显示前3篇收藏
-        remainingFavoriteArticles: remainingFavoriteArticles, // 剩余收藏
+        remainingFavoriteArticles: favoriteArticles.slice(3), // 剩余收藏
         watchedVideos: watchedVideos.length,
         commonDepartmentsCount: commonDepartments.length,
         commonDepartmentsList: commonDepartmentsList, // 常用科室列表
         favoriteHospitals: favoriteHospitals.length,
         recommendedArticle: this.getRecommendedArticle(aiDiagnosisHistory),
         showAllFavorites: false, // 默认不展开所有收藏
-        loading: false
-      });
+        loading: false,
+        currentPage: 1,
+        hasMore: aiDiagnosisHistory.length > 3
+      };
+      
+      // 更新缓存
+      cachedHealthData.data = pageData;
+      cachedHealthData.timestamp = now;
+      
+      this.setData(pageData);
       
       //console.log('设置数据完成，aiDiagnosisList长度:', aiDiagnosisList.length);
       //console.log('aiDiagnosisList内容:', aiDiagnosisList);
@@ -215,35 +234,63 @@ Page({
     }
   },
 
-  async processDiagnosisList(history) {
-    const processedList = [];
+  // 优化的异步处理诊断列表
+  async processDiagnosisListAsync(history) {
+    if (!history || history.length === 0) return [];
     
-    // 处理每条记录的症状总结
-    for (const record of history) {
-      // 检查是否已经有缓存的总结
-      let symptomsSummary = record.summary;
-      if (!symptomsSummary) {
-        // 如果没有缓存，调用AI总结
-        symptomsSummary = await this.summarizeSymptoms(record.symptoms);
-        // 保存总结结果到存储
-        await this.saveSummaryToStorage(record.timestamp, symptomsSummary);
-      }
-      
-      // 格式化时间
-      const formattedTime = this.formatTimestamp(record.timestamp);
-      
-      processedList.push({
-        id: record.timestamp || Date.now(),
-        symptoms: symptomsSummary,
-        department: record.department,
-        severity: record.severity,
-        timestamp: record.timestamp,
-        formattedTime: formattedTime,
-        fullRecord: record
-      });
-    }
+    // 批量处理记录
+    const processedList = await Promise.all(
+      history.map(async (record) => {
+        // 检查是否已经有缓存的总结
+        let symptomsSummary = record.summary;
+        if (!symptomsSummary) {
+          // 如果没有缓存，提取关键词（避免AI调用）
+          symptomsSummary = this.extractKeywords(record.symptoms);
+        }
+        
+        // 格式化时间
+        const formattedTime = this.formatTimestamp(record.timestamp);
+        
+        return {
+          id: record.timestamp || Date.now(),
+          symptoms: symptomsSummary,
+          department: record.department,
+          severity: record.severity,
+          timestamp: record.timestamp,
+          formattedTime: formattedTime,
+          fullRecord: record
+        };
+      })
+    );
     
     return processedList.reverse(); // 最新的在前
+  },
+
+  // 分页加载更多诊断记录
+  async loadMoreDiagnosisHistory() {
+    if (!this.data.hasMore) return;
+    
+    const userData = UserDataManager.loadUserData();
+    const aiDiagnosisHistory = userData.medicalData.aiDiagnosisHistory;
+    
+    const startIndex = (this.data.diagnosisPage - 1) * this.data.pageSize;
+    const endIndex = startIndex + this.data.pageSize;
+    
+    if (startIndex >= aiDiagnosisHistory.length) {
+      this.setData({ hasMore: false });
+      return;
+    }
+    
+    const newRecords = aiDiagnosisHistory.slice(startIndex, endIndex);
+    const processedRecords = await this.processDiagnosisListAsync(newRecords);
+    
+    if (processedRecords.length > 0) {
+      this.setData({
+        displayedDiagnosisList: [...this.data.displayedDiagnosisList, ...processedRecords],
+        diagnosisPage: this.data.diagnosisPage + 1,
+        hasMore: endIndex < aiDiagnosisHistory.length
+      });
+    }
   },
 
   // 时间格式化函数
@@ -442,12 +489,21 @@ Page({
       sourceType: ['album', 'camera'],
       success: (res) => {
         const tempFilePath = res.tempFilePaths[0];
-        const userAccount = { ...this.data.userAccount, avatarUrl: tempFilePath };
+        
+        // 使用统一的头像管理模块
+        AvatarManager.setUserAvatar(tempFilePath);
+        
+        // 更新当前页面显示
+        const userAccount = { 
+          ...this.data.userAccount, 
+          avatarUrl: AvatarManager.getUserAvatar() 
+        };
         this.setData({ userAccount });
-        wx.setStorageSync('userAccount', userAccount);
       }
     });
   },
+
+
 
   toggleDiagnosisList() {
     const showAllDiagnosis = !this.data.showAllDiagnosis;
@@ -534,7 +590,8 @@ Page({
     });
     
     // 获取最新的收藏文章数据
-    const currentFavoriteArticles = UserDataManager.getFavoriteArticles();
+    const userData = UserDataManager.loadUserData();
+    const currentFavoriteArticles = userData.preferences.favoriteArticles;
     console.log('当前收藏文章数据:', currentFavoriteArticles);
     const processedFavoriteArticles = this.processFavoriteArticles(currentFavoriteArticles);
     
@@ -872,5 +929,36 @@ Page({
 
   goToLogin() {
     wx.navigateBack();
+  },
+
+  /**
+   * 切换到首页
+   */
+  switchToIndex() {
+    //console.log('点击首页按钮');
+    if (this.data.currentPage !== 'index') {
+      this.setData({
+        currentPage: 'index'
+      });
+      //console.log('已切换到首页');
+      wx.navigateBack();
+    } else {
+      //console.log('当前已在首页');
+    }
+  },
+
+  /**
+   * 切换到个人中心
+   */
+  switchToProfile() {
+    //console.log('点击我的按钮');
+    if (this.data.currentPage !== 'profile') {
+      wx.navigateTo({
+        url: '/pages/profile/profile'
+      });
+      //console.log('跳转到个人中心');
+    } else {
+      //console.log('当前已在个人中心页面');
+    }
   }
 })

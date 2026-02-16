@@ -1,66 +1,122 @@
-/* ========== AI智能问诊页面样式 - ai-diagnosis.wxml对应 ========== */
+/* ========== AI智能问诊页面样式 - 对话式布局 ========== */
 
 /* 主容器 - 对应ai-diagnosis.wxml中的<view class="container"> */
 .container {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background-color: #f8f9fa;
 }
 
-/* 聊天容器 - 对应<view class="chat-container">，显示对话消息 */
+/* 聊天容器 - 对应<scroll-view class="chat-container">，支持滚动 */
 .chat-container {
   flex: 1;
-  padding: 20px;
-  overflow-y: auto;
+  padding: 0;
+  background-color: #f8f9fa;
 }
 
-/* 消息基础样式 - 对应<view class="message {{item.type}}"> */
-.message {
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 8px;
+/* 消息容器 - 对应<view class="message-container {{item.type}}"> */
+.message-container {
+  padding: 0 16px;
+  margin-bottom: 16px;
 }
 
-/* 用户消息样式 - 对应<view class="message user"> */
-.message.user {
-  background-color: #e3f2fd;
-  align-self: flex-end;
+/* 消息项 - 对应<view class="message-item ai">和<view class="message-item user"> */
+.message-item {
+  display: flex;
+  align-items: flex-start;
 }
 
-/* AI回复消息样式 - 对应<view class="message ai"> */
-.message.ai {
-  background-color: #f5f5f5;
-  align-self: flex-start;
+.message-item.ai {
+  justify-content: flex-start;
 }
 
-/* 输入容器 - 对应<view class="input-container">，包含输入框和发送按钮 */
+.message-item.user {
+  justify-content: flex-end;
+}
+
+/* 头像样式 - 对应<image class="avatar"> */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+}
+
+.message-item.ai .avatar {
+  margin-right: 8px;
+}
+
+.message-item.user .avatar {
+  margin-left: 8px;
+}
+
+/* 消息气泡 - 对应<view class="message-bubble ai">和<view class="message-bubble user"> */
+.message-bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.message-bubble.ai {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 4px;
+}
+
+.message-bubble.user {
+  background-color: #07c160;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* 消息内容 - 对应<text class="message-content"> */
+.message-content {
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* 输入容器 - 对应<view class="input-container"> */
 .input-container {
   display: flex;
-  padding: 10px;
-  border-top: 1px solid #ddd;
+  padding: 12px 16px;
+  background-color: white;
+  border-top: 1px solid #e0e0e0;
+  align-items: center;
 }
 
-/* 输入框样式 - 对应<input placeholder="请描述您的症状"> */
-.input-container input {
+/* 输入框样式 - 对应<input class="input-box"> */
+.input-box {
   flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 14px;
+  background-color: #f8f9fa;
 }
 
-/* 发送按钮样式 - 对应<button bindtap="sendMessage">发送</button> */
-.input-container button {
-  margin-left: 10px;
-  padding: 8px 16px;
-  background-color: #4CAF50;
+/* 发送按钮样式 - 对应<button class="send-btn"> */
+.send-btn {
+  margin-left: 8px;
+  padding: 10px 20px;
+  background-color: #07c160;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
+  font-size: 14px;
+  min-width: 60px;
+}
+
+.send-btn:active {
+  background-color: #009146;
 }
 
 /* 推荐区域 - 对应<view class="recommendation" wx:if="{{recommendedDepartment}}"> */
 .recommendation {
-  padding: 20px;
+  padding: 16px;
   background-color: #fff3e0;
   border-top: 1px solid #ddd;
 }
@@ -69,18 +125,20 @@
 .title {
   font-weight: bold;
   font-size: 16px;
-}
-
-/* 推荐原因样式 - 当前未使用，备用样式 */
-.reason {
-  margin: 10px 0;
-  color: #666;
+  color: #333;
 }
 
 /* 导航按钮样式 - 对应<button class="nav-btn" bindtap="navigateToDepartment">前往导航</button> */
 .nav-btn {
   background-color: #ff9800;
   color: white;
-  padding: 10px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.nav-btn:active {
+  background-color: #e68900;
 }

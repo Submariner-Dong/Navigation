@@ -1,11 +1,14 @@
 // pages/index/index.js
+import imageConfig from '../../config/imageConfig.js'
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+    images: imageConfig,
+    currentPage: 'index' // 当前页面标识
   },
 
   /**
@@ -126,5 +129,35 @@ Page({
     wx.setStorageSync('existingAccounts', existingAccounts);
     
     return `匿名${accountNumber}`;
+  },
+
+  /**
+   * 切换到首页
+   */
+  switchToIndex() {
+    //console.log('点击首页按钮');
+    if (this.data.currentPage !== 'index') {
+      this.setData({
+        currentPage: 'index'
+      });
+      //console.log('已切换到首页');
+    } else {
+      //console.log('当前已在首页');
+    }
+  },
+
+  /**
+   * 切换到个人中心
+   */
+  switchToProfile() {
+    //console.log('点击我的按钮');
+    if (this.data.currentPage !== 'profile') {
+      wx.navigateTo({
+        url: '/pages/profile/profile'
+      });
+      //console.log('跳转到个人中心');
+    } else {
+      //console.log('当前已在个人中心页面');
+    }
   }
 })

@@ -1,5 +1,5 @@
 // utils/userDataManager.js
-// 统一用户数据管理模块
+// 统一用户数据管理模块 - 优化版
 
 // 数据模型定义
 const userDataSchema = {
@@ -27,29 +27,60 @@ const userDataSchema = {
   }
 };
 
-// 加载用户数据
+// 缓存机制
+let userDataCache = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 5000; // 5秒缓存
+
+// 创建默认数据（避免重复JSON操作）
+function createDefaultData() {
+  return {
+    userInfo: { ...userDataSchema.userInfo },
+    medicalData: { ...userDataSchema.medicalData },
+    preferences: { ...userDataSchema.preferences },
+    settings: { ...userDataSchema.settings }
+  };
+}
+
+// 加载用户数据（优化版）
 function loadUserData() {
+  // 检查缓存是否有效
+  if (userDataCache && Date.now() - cacheTimestamp < CACHE_DURATION) {
+    return userDataCache;
+  }
+  
   try {
     const storedData = wx.getStorageSync('userData');
     if (!storedData) {
       // 首次使用，创建默认数据
-      const defaultData = JSON.parse(JSON.stringify(userDataSchema));
+      const defaultData = createDefaultData();
       saveUserData(defaultData);
+      userDataCache = defaultData;
+      cacheTimestamp = Date.now();
       return defaultData;
     }
     
     // 数据合并，确保新字段有默认值
-    return mergeWithDefault(storedData);
+    const mergedData = mergeWithDefault(storedData);
+    userDataCache = mergedData;
+    cacheTimestamp = Date.now();
+    return mergedData;
   } catch (error) {
     console.error('加载用户数据失败:', error);
-    return JSON.parse(JSON.stringify(userDataSchema));
+    const defaultData = createDefaultData();
+    userDataCache = defaultData;
+    cacheTimestamp = Date.now();
+    return defaultData;
   }
 }
 
-// 保存用户数据
+// 保存用户数据（优化版）
 function saveUserData(data) {
   try {
     wx.setStorageSync('userData', data);
+    // 更新缓存
+    userDataCache = data;
+    cacheTimestamp = Date.now();
     return true;
   } catch (error) {
     console.error('保存用户数据失败:', error);
@@ -57,20 +88,34 @@ function saveUserData(data) {
   }
 }
 
-// 数据合并，确保完整性
+// 批量更新数据（减少磁盘IO）
+function batchUpdate(updates) {
+  const data = loadUserData();
+  Object.assign(data, updates);
+  return saveUserData(data);
+}
+
+// 数据合并，确保完整性（优化版）
 function mergeWithDefault(storedData) {
-  const result = JSON.parse(JSON.stringify(userDataSchema));
+  const result = createDefaultData();
   
-  // 深度合并
+  // 优化的深度合并函数
   const mergeDeep = (target, source) => {
     for (const key in source) {
-      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        if (!target[key]) target[key] = {};
-        mergeDeep(target[key], source[key]);
-      } else if (Array.isArray(source[key])) {
-        target[key] = source[key] || [];
-      } else {
-        target[key] = source[key] !== undefined ? source[key] : target[key];
+      if (source.hasOwnProperty(key)) {
+        const sourceValue = source[key];
+        const targetValue = target[key];
+        
+        if (Array.isArray(sourceValue)) {
+          target[key] = sourceValue.length > 0 ? [...sourceValue] : [];
+        } else if (sourceValue && typeof sourceValue === 'object') {
+          if (!targetValue || typeof targetValue !== 'object') {
+            target[key] = {};
+          }
+          mergeDeep(target[key], sourceValue);
+        } else if (sourceValue !== undefined) {
+          target[key] = sourceValue;
+        }
       }
     }
   };

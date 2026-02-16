@@ -15,6 +15,7 @@
             <text class="avatar-icon">🦷</text>
           </view>
         </view>
+        
         <view class="greeting-area">
           <text class="greeting-text">
             {{userAccount ? '欢迎回来，' + userAccount.nickName + '！' : '您好，欢迎使用青芽智医'}}
@@ -86,34 +87,13 @@
             <view slot="title">
               <text class="toggle-text">{{showAllDiagnosis ? '收起更多记录' : '查看更多记录(' + remainingDiagnosisList.length + '条)'}}</text>
             </view>
-            <!-- view slot="note">
-              <t-icon name="{{showAllDiagnosis ? 'chevron-up' : 'chevron-down'}}" size="16" color="#999"></t-icon>
-            </view -->
           </t-cell>
         </view>
-        
-        <!-- 展开时显示剩余记录 -->
-        <!-- view wx:if="{{!loading && remainingDiagnosisList.length > 0 && showAllDiagnosis}}" class="diagnosis-list">
-          <view wx:for="{{remainingDiagnosisList}}" wx:key="id" class="diagnosis-item" bindtap="viewAiDiagnosisDetail" data-index="{{index + 3}}">
-            <view class="diagnosis-content">
-              <text class="diagnosis-symptoms">{{index + 4}}. {{item.symptoms}}</text>
-              <text class="diagnosis-time">{{item.formattedTime}}</text>
-            </view>
-            <t-icon name="chevron-right" size="16" color="#999"></t-icon>
-          </view>
-        </view -->
-        
-        <!-- 收起时不应该显示剩余记录 -->
         
         <view class="card-tip">
           <t-message theme="info" size="small">定期记录，更了解自己的口腔</t-message>
         </view>
       </t-cell-group>
-      
-      <!-- 调试信息 -->
-      <!-- <view wx:if="{{!loading && aiDiagnosisList.length > 0}}" style="margin: 20rpx 30rpx; padding: 20rpx; background: #f0f8ff; border-radius: 10rpx; font-size: 24rpx; color: #666;">
-        <text>调试信息：已加载 {{aiDiagnosisList.length}} 条记录</text>
-      </view> -->
     </view>
 
     <!-- 第二卡片：我的知识库 -->
@@ -156,17 +136,6 @@
             </view>
           </t-cell>
         </view>
-        
-        <!-- 展开时显示剩余收藏 -->
-        <!-- view wx:if="{{remainingFavoriteArticles.length > 0 && showAllFavorites}}" class="favorite-list">
-          <view wx:for="{{remainingFavoriteArticles}}" wx:key="id" class="favorite-item" bindtap="viewFavoriteArticle" data-id="{{item.id}}">
-            <view class="favorite-content">
-              <text class="favorite-title">{{index + 4}}. {{item.title}}</text>
-              <text class="favorite-time">{{item.formattedTime}}</text>
-            </view>
-            <t-icon name="chevron-right" size="16" color="#999"></t-icon>
-          </view>
-        </view-->
       </t-cell-group>
     </view>
 
@@ -200,8 +169,6 @@
             </view>
           </view>
         </view>
-        
-        
       </t-cell-group>
     </view>
   </view>
@@ -262,5 +229,17 @@
         您的健康数据将严格保密，仅用于为您提供更好的服务
       </t-message>
     </view>
+  </view>
+</view>
+
+<!-- 底部导航栏 -->
+<view class="bottom-nav">
+  <view class="nav-item {{currentPage === 'index' ? 'active' : ''}}" bindtap="switchToIndex">
+    <image src="{{images.HOME_ICON}}" mode="aspectFit" class="nav-icon"></image>
+    <text class="nav-text">首页</text>
+  </view>
+  <view class="nav-item {{currentPage === 'profile' ? 'active' : ''}}" bindtap="switchToProfile">
+    <image src="{{images.PROFILE_ICON}}" mode="aspectFit" class="nav-icon"></image>
+    <text class="nav-text">我的</text>
   </view>
 </view>

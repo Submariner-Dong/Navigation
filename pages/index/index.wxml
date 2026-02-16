@@ -1,20 +1,32 @@
 <view class="container">
-  <view class="header">
-    <!--<image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/logo.png" mode="aspectFill" class="logo"></image>-->
-    <text>青芽智医</text>
+  <!-- 顶部轮播图区域 -->
+  <view class="carousel-section">
+    <swiper class="carousel" indicator-dots="true" autoplay="true" interval="3000" duration="500">
+      <swiper-item>
+        <image src="{{images.CAROUSEL_1}}" mode="aspectFill" class="carousel-image"></image>
+      </swiper-item>
+      <swiper-item>
+        <image src="{{images.CAROUSEL_2}}" mode="aspectFill" class="carousel-image"></image>
+      </swiper-item>
+      <swiper-item>
+        <image src="{{images.CAROUSEL_3}}" mode="aspectFill" class="carousel-image"></image>
+      </swiper-item>
+    </swiper>
   </view>
+
+  <!-- 原有内容区域，向下移动 -->
   <view class="content">
     <view class="button-grid">
       <!-- 第一行：科普知识和院内导航 -->
       <view class="grid-row">
         <view class="grid-item">
           <navigator url="/pages/science/science" class="btn">
-            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-1.png" mode="aspectFit" class="button-image"></image>
+            <image src="{{images.INDEX_BUTTON_1}}" mode="aspectFit" class="button-image"></image>
           </navigator>
         </view>
         <view class="grid-item">
           <navigator url="/pages/navigation/navigation" class="btn">
-            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button3.png" mode="aspectFit" class="button-image"></image>
+            <image src="{{images.INDEX_BUTTON_2}}" mode="aspectFit" class="button-image"></image>
           </navigator>
         </view>
       </view>
@@ -23,15 +35,27 @@
       <view class="grid-row">
         <view class="grid-item">
           <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
-            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-4%28needchange%29.png" mode="aspectFit" class="button-image"></image>
+            <image src="{{images.INDEX_BUTTON_3}}" mode="aspectFit" class="button-image"></image>
           </navigator>
         </view>
         <view class="grid-item">
           <navigator url="/pages/profile/profile" class="btn">
-            <image src="https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/index-button-5%28needchange%29.png" mode="aspectFit" class="button-image"></image>
+            <image src="{{images.INDEX_BUTTON_4}}" mode="aspectFit" class="button-image"></image>
           </navigator>
         </view>
       </view>
+    </view>
+  </view>
+
+  <!-- 底部导航栏 -->
+  <view class="bottom-nav">
+    <view class="nav-item {{currentPage === 'index' ? 'active' : ''}}" bindtap="switchToIndex">
+      <image src="{{images.HOME_ICON}}" mode="aspectFit" class="nav-icon"></image>
+      <text class="nav-text">首页</text>
+    </view>
+    <view class="nav-item {{currentPage === 'profile' ? 'active' : ''}}" bindtap="switchToProfile">
+      <image src="{{images.PROFILE_ICON}}" mode="aspectFit" class="nav-icon"></image>
+      <text class="nav-text">我的</text>
     </view>
   </view>
 </view>
