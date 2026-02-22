@@ -17,7 +17,7 @@
   <!-- 原有内容区域，向下移动 -->
   <view class="content">
     <view class="button-grid">
-      <!-- 第一行：科普知识和院内导航 -->
+      <!-- 第一行：科普知识和AI智能问诊 -->
       <view class="grid-row">
         <view class="grid-item">
           <navigator url="/pages/science/science" class="btn">
@@ -25,22 +25,22 @@
           </navigator>
         </view>
         <view class="grid-item">
-          <navigator url="/pages/navigation/navigation" class="btn">
-            <image src="{{images.INDEX_BUTTON_2}}" mode="aspectFit" class="button-image"></image>
-          </navigator>
-        </view>
-      </view>
-      
-      <!-- 第二行：AI智能问诊和个人中心 -->
-      <view class="grid-row">
-        <view class="grid-item">
           <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
             <image src="{{images.INDEX_BUTTON_3}}" mode="aspectFit" class="button-image"></image>
           </navigator>
         </view>
+      </view>
+      
+      <!-- 第二行：院内导航和医院地图 -->
+      <view class="grid-row">
         <view class="grid-item">
-          <navigator url="/pages/profile/profile" class="btn">
-            <image src="{{images.INDEX_BUTTON_4}}" mode="aspectFit" class="button-image"></image>
+          <navigator url="/pages/navigation/navigation" class="btn">
+            <image src="{{images.INDEX_BUTTON_2}}" mode="aspectFit" class="button-image"></image>
+          </navigator>
+        </view>
+        <view class="grid-item">
+          <navigator url="/pages/map/map" class="btn">
+            <image src="{{images.INDEX_BUTTON_5}}" mode="aspectFit" class="button-image"></image>
           </navigator>
         </view>
       </view>

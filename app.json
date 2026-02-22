@@ -7,7 +7,8 @@
     "pages/navigation/department/department",
     "pages/science/detail/detail",
     "pages/profile/profile",
-    "pages/ai-diagnosis/ai-diagnosis"
+    "pages/ai-diagnosis/ai-diagnosis",
+    "pages/map/map"
   ],
   "window": {
     "navigationBarTitleText": "青芽智医",

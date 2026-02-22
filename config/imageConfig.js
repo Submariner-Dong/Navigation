@@ -17,9 +17,10 @@ const avatarImages = {
 // 首页按钮图片配置
 const indexButtonImages = {
   INDEX_BUTTON_1: "index-button-1.png",
-  INDEX_BUTTON_2: "index-button3.png",
+  INDEX_BUTTON_2: "index-button-3.png",
   INDEX_BUTTON_3: "index-button-4(needchange).png",
-  INDEX_BUTTON_4: "index-button-5(needchange).png"
+  INDEX_BUTTON_4: "index-button-5(needchange).png",
+  INDEX_BUTTON_5: "index-button-2.png"
 };
 
 // 导航图片配置
