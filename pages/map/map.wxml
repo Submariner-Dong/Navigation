@@ -1,30 +1,105 @@
 <view class="container">
-  <view class="search-bar">
-    <input placeholder="输入目标地址" bindinput="onInput" />
-    <button bindtap="onSearch">搜索</button>
+  <!-- 顶部地图区域 -->
+  <view class="map-section {{isNavigating ? 'navigating' : ''}}">
+    <map
+      class="map"
+      id="map"
+      style="width: 100%; height: {{isNavigating ? '60vh' : '300rpx'}};"
+      longitude="{{longitude}}"
+      latitude="{{latitude}}"
+      scale="{{mapScale}}"
+      show-location
+      markers="{{markers}}"
+      polyline="{{polyline}}"
+      bindmarkertap="onMarkerTap"
+    ></map>
   </view>
-  <view class="tips-list">
-    <view wx:for="{{tips}}" wx:key="id" class="tip-item" bindtap="onInputButtonTap" data-tip-index="{{index}}">
-      <text>{{item.name}}</text>
+
+  <!-- 导航模式下的导航信息 -->
+  <view class="navigation-info {{isNavigating ? 'show' : ''}}">
+    <view class="nav-progress">
+      <view class="current-step">{{routeSteps[currentStep] ? routeSteps[currentStep].instruction : '导航完成'}}</view>
+      <view class="step-count">{{currentStep + 1}}/{{routeSteps.length}}</view>
+    </view>
+    <view class="nav-controls">
+      <view class="control-btn" bindtap="stopNavigation">
+        <text>结束导航</text>
+      </view>
+      <view class="control-btn" bindtap="nextStep">
+        <text>下一站</text>
+      </view>
     </view>
   </view>
-  <map
-    class="map"
-    id="map"
-    style="width: 100%; height: 300px;"
-    longitude="{{longitude}}"
-    latitude="{{latitude}}"
-    markers="{{markers}}"
-    scale="16"
-    show-location
-    bindmarkertap="onMarkerTap"
-  ></map>
-  <view class="location-list">
-    <block wx:for="{{markers}}" wx:key="id">
-      <view class="location-item" bindtap="onTextButtonTap" data-marker-id="{{item.id}}">
-        <text>{{item.name}}</text>
-        <text>{{item.address}}</text>
+
+  <!-- 导航信息区域 -->
+  <view class="nav-section {{isNavigating ? 'hide' : ''}}">
+    <!-- 医院信息 -->
+    <view class="hospital-info">
+      <view class="hospital-name">同济大学附属口腔医院</view>
+      <view class="distance-info">
+        <text class="distance">{{distance}} 公里</text>
+        <text class="time">{{duration}} 分钟</text>
       </view>
-    </block>
+    </view>
+
+    <!-- 导航方式选择 -->
+    <view class="nav-methods">
+      <view class="nav-title">推荐导航方式</view>
+      
+      <!-- 汽车导航 -->
+      <view class="nav-method {{currentNavMethod === 'driving' ? 'active' : ''}}" bindtap="switchNavMethod" data-method="driving">
+        <view class="method-icon">🚗</view>
+        <view class="method-info">
+          <view class="method-name">驾车</view>
+          <view class="method-detail">{{drivingInfo.distance}} 公里 / {{drivingInfo.duration}} 分钟</view>
+        </view>
+      </view>
+
+      <!-- 公共交通 -->
+      <view class="nav-method {{currentNavMethod === 'transit' ? 'active' : ''}}" bindtap="switchNavMethod" data-method="transit">
+        <view class="method-icon">🚇</view>
+        <view class="method-info">
+          <view class="method-name">公共交通</view>
+          <view class="method-detail">{{transitInfo.distance}} 公里 / {{transitInfo.duration}} 分钟</view>
+        </view>
+      </view>
+
+      <!-- 步行导航（近距离显示） -->
+      <view wx:if="{{showWalking}}" class="nav-method {{currentNavMethod === 'walking' ? 'active' : ''}}" bindtap="switchNavMethod" data-method="walking">
+        <view class="method-icon">🚶</view>
+        <view class="method-info">
+          <view class="method-name">步行</view>
+          <view class="method-detail">{{walkingInfo.distance}} 公里 / {{walkingInfo.duration}} 分钟</view>
+        </view>
+      </view>
+
+      <!-- 骑行导航（近距离显示） -->
+      <view wx:if="{{showBicycling}}" class="nav-method {{currentNavMethod === 'bicycling' ? 'active' : ''}}" bindtap="switchNavMethod" data-method="bicycling">
+        <view class="method-icon">🚲</view>
+        <view class="method-info">
+          <view class="method-name">骑行</view>
+          <view class="method-detail">{{bicyclingInfo.distance}} 公里 / {{bicyclingInfo.duration}} 分钟</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 导航详情 -->
+    <view class="nav-details">
+      <view class="details-title">路线详情</view>
+      <scroll-view class="route-list" scroll-y>
+        <view wx:for="{{routeSteps}}" wx:key="index" class="route-step">
+          <view class="step-icon">{{item.icon}}</view>
+          <view class="step-info">
+            <view class="step-instruction">{{item.instruction}}</view>
+            <view class="step-distance">{{item.distance}} 米</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 开始导航按钮 -->
+    <view class="start-nav-btn" bindtap="startNavigation">
+      <text class="btn-text">开始导航</text>
+    </view>
   </view>
 </view>
