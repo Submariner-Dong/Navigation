@@ -20,7 +20,7 @@
       "desc": "你的位置信息将用于小程序定位功能"
     }
   },
-  "requiredPrivateInfos": ["getLocation"],
+  "requiredPrivateInfos": ["getLocation", "onLocationChange", "startLocationUpdate"],
   "networkTimeout": {
     "request": 10000
   },

@@ -12,29 +12,27 @@
       markers="{{markers}}"
       polyline="{{polyline}}"
       bindmarkertap="onMarkerTap"
+      bindregionchange="onMapRegionChange"
     ></map>
   </view>
 
-  <!-- 导航模式下的导航信息 -->
-  <view class="navigation-info {{isNavigating ? 'show' : ''}}">
-    <view class="nav-progress">
-      <view class="current-step">{{routeSteps[currentStep] ? routeSteps[currentStep].instruction : '导航完成'}}</view>
-      <view class="step-count">{{currentStep + 1}}/{{routeSteps.length}}</view>
-    </view>
-    <view class="nav-controls">
-      <view class="control-btn" bindtap="stopNavigation">
-        <text>结束导航</text>
+    <!-- 导航模式下的导航信息 -->
+    <view class="navigation-info {{isNavigating ? 'show' : ''}}">
+      <view class="nav-progress">
+        <view class="current-step">{{routeSteps[currentStep] ? routeSteps[currentStep].instruction : '导航完成'}}</view>
+        <view class="step-count">{{currentStep + 1}}/{{routeSteps.length}}</view>
       </view>
-      <view class="control-btn" bindtap="nextStep">
-        <text>下一站</text>
+      <view class="nav-controls">
+        <view class="control-btn" bindtap="stopNavigation">
+          <text>结束导航</text>
+        </view>
       </view>
     </view>
-  </view>
 
   <!-- 导航信息区域 -->
-  <view class="nav-section {{isNavigating ? 'hide' : ''}}">
+  <view class="nav-section">
     <!-- 医院信息 -->
-    <view class="hospital-info">
+    <view class="hospital-info" wx:if="{{!isNavigating}}">
       <view class="hospital-name">同济大学附属口腔医院</view>
       <view class="distance-info">
         <text class="distance">{{distance}} 公里</text>
@@ -43,7 +41,7 @@
     </view>
 
     <!-- 导航方式选择 -->
-    <view class="nav-methods">
+    <view class="nav-methods" wx:if="{{!isNavigating}}">
       <view class="nav-title">推荐导航方式</view>
       
       <!-- 汽车导航 -->
@@ -59,7 +57,10 @@
       <view class="nav-method {{currentNavMethod === 'transit' ? 'active' : ''}}" bindtap="switchNavMethod" data-method="transit">
         <view class="method-icon">🚇</view>
         <view class="method-info">
-          <view class="method-name">公共交通</view>
+          <view class="method-name">
+            公共交通
+            <view wx:if="{{transitRoutes.length > 1}}" class="route-indicator">{{selectedTransitIndex + 1}}/{{transitRoutes.length}}</view>
+          </view>
           <view class="method-detail">{{transitInfo.distance}} 公里 / {{transitInfo.duration}} 分钟</view>
         </view>
       </view>
