@@ -982,6 +982,9 @@ Page({
       latitude: this.data.latitude
     });
 
+    // 强制重新绘制路线，确保导航模式下路线可见
+    this.redrawRoute();
+    
     // 重新设置路线数据，确保导航模式下路线可见
     this.ensureRouteVisible();
 
@@ -1092,9 +1095,6 @@ Page({
     
     // 更新已走过的路线颜色
     this.updateRouteColor(location);
-    
-    // 确保路线在导航模式下始终可见
-    this.ensureRouteVisible();
   },
 
   // 计算当前位置与步骤的距离
@@ -1233,29 +1233,37 @@ Page({
     );
 
     // 找到距离最近的路线点索引
-    const nearestIndex = distances.indexOf(Math.min(...distances));
+    const minDistance = Math.min(...distances);
+    const nearestIndex = distances.indexOf(minDistance);
+
+    // 只有当最近距离在合理范围内时才更新颜色，避免位置未变化时的错误更新
+    if (minDistance > 1000) { // 如果最近点距离超过1公里，说明位置数据可能有问题，不更新
+      return;
+    }
 
     // 将路线分为已走过和未走过两部分
     const passedPoints = routePoints.slice(0, nearestIndex + 1);
     const remainingPoints = routePoints.slice(nearestIndex + 1);
 
-    // 更新路线颜色
-    this.setData({
-      polyline: [
-        {
-          points: passedPoints,
-          color: '#CCCCCC', // 灰色 - 已走过的路线
-          width: 6,
-          arrowLine: true
-        },
-        {
-          points: remainingPoints,
-          color: '#0091ff', // 蓝色 - 未走过的路线
-          width: 6,
-          arrowLine: true
-        }
-      ]
-    });
+    // 确保两部分都有数据才更新
+    if (passedPoints.length > 0 && remainingPoints.length > 0) {
+      this.setData({
+        polyline: [
+          {
+            points: passedPoints,
+            color: '#CCCCCC', // 灰色 - 已走过的路线
+            width: 6,
+            arrowLine: true
+          },
+          {
+            points: remainingPoints,
+            color: '#0091ff', // 蓝色 - 未走过的路线
+            width: 6,
+            arrowLine: true
+          }
+        ]
+      });
+    }
   },
 
   // 计算两点间距离（米）
@@ -1276,6 +1284,11 @@ Page({
     const origin = `${this.data.longitude},${this.data.latitude}`;
     const destination = `${this.data.hospital.longitude},${this.data.hospital.latitude}`;
 
+    // 首先确保当前路线数据存在，如果不存在则立即更新详情
+    if (this.data.routeSteps.length === 0 || !this.data.polyline || this.data.polyline.length === 0) {
+      this.updateRouteDetails();
+    }
+
     // 重新获取当前导航方式的路线信息
     switch (currentMethod) {
       case 'driving':
@@ -1295,7 +1308,7 @@ Page({
     // 延迟更新路线详情，确保API调用完成
     setTimeout(() => {
       this.updateRouteDetails();
-    }, 500);
+    }, 1000);
   },
 
   // 地图区域变化时重新绘制路线

@@ -171,6 +171,66 @@
         </view>
       </t-cell-group>
     </view>
+
+    <!-- 第四卡片：我的病历信息 -->
+    <view class="medical-record-card">
+      <t-cell-group title="我的病历信息">
+        <t-cell arrow bindtap="fetchMedicalRecords">
+          <view slot="title">
+            <t-tag theme="success" variant="light" size="small">医院病历</t-tag>
+          </view>
+          <view slot="note">
+            <text class="record-count">{{medicalRecordsCount}} 份病历</text>
+          </view>
+        </t-cell>
+        
+        <!-- 加载状态 -->
+        <view wx:if="{{medicalRecordsLoading}}" class="loading-section">
+          <t-cell>
+            <view slot="title">
+              <text class="loading-text">正在获取病历信息...</text>
+            </view>
+            <view slot="note">
+              <t-icon name="loading" size="16" color="#999"></t-icon>
+            </view>
+          </t-cell>
+        </view>
+        
+        <!-- 无病历信息时的提示 -->
+        <view wx:if="{{!medicalRecordsLoading && medicalRecordsCount === 0}}" class="no-records">
+          <t-cell>
+            <view slot="title">
+              <text class="no-records-text">暂无医院病历信息，点击上方卡片同步</text>
+            </view>
+          </t-cell>
+        </view>
+        
+        <!-- 病历信息列表 - 显示前3份 -->
+        <view wx:if="{{!medicalRecordsLoading && displayedMedicalRecords.length > 0}}" class="medical-records-list">
+          <view wx:for="{{displayedMedicalRecords}}" wx:key="id" class="medical-record-item" bindtap="viewMedicalRecordDetail" data-id="{{item.id}}" data-index="{{index}}">
+            <view class="medical-record-content">
+              <text class="record-department">{{index + 1}}. {{item.department}} - {{item.doctor}}</text>
+              <text class="record-diagnosis">{{item.diagnosis}}</text>
+              <text class="record-time">{{item.visitTime}}</text>
+            </view>
+            <t-icon name="chevron-right" size="16" color="#999"></t-icon>
+          </view>
+        </view>
+        
+        <!-- 查看更多病历 -->
+        <view wx:if="{{!medicalRecordsLoading && remainingMedicalRecords.length > 0}}" class="toggle-section">
+          <t-cell bindtap="toggleMedicalRecordsList">
+            <view slot="title">
+              <text class="toggle-text">{{showAllMedicalRecords ? '收起更多病历' : '查看更多病历(' + remainingMedicalRecords.length + '份)'}}</text>
+            </view>
+          </t-cell>
+        </view>
+        
+        <view class="card-tip">
+          <t-message theme="success" size="small">与医院系统同步，查看完整就诊记录</t-message>
+        </view>
+      </t-cell-group>
+    </view>
   </view>
 
   <!-- 设置与信息管理列表 -->

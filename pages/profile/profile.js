@@ -50,7 +50,15 @@ Page({
     loading: true,
     diagnosisPage: 1,
     pageSize: 10,
-    hasMore: true
+    hasMore: true,
+    
+    // 病历信息相关数据
+    medicalRecordsLoading: false,
+    medicalRecordsCount: 0,
+    medicalRecordsList: [],
+    displayedMedicalRecords: [],
+    remainingMedicalRecords: [],
+    showAllMedicalRecords: false
   },
 
   async onLoad() {
@@ -959,6 +967,152 @@ Page({
       //console.log('跳转到个人中心');
     } else {
       //console.log('当前已在个人中心页面');
+    }
+  },
+
+  // 病历信息相关方法
+
+  // 获取病历信息（模拟医院系统接口）
+  fetchMedicalRecords() {
+    if (this.data.medicalRecordsLoading) return;
+    
+    this.setData({
+      medicalRecordsLoading: true
+    });
+
+    // 模拟API调用延迟
+    setTimeout(() => {
+      try {
+        // 模拟从医院系统获取的病历数据
+        const mockMedicalRecords = this.generateMockMedicalRecords();
+        
+        this.setData({
+          medicalRecordsList: mockMedicalRecords,
+          medicalRecordsCount: mockMedicalRecords.length,
+          displayedMedicalRecords: mockMedicalRecords.slice(0, 3),
+          remainingMedicalRecords: mockMedicalRecords.slice(3),
+          medicalRecordsLoading: false
+        });
+
+        wx.showToast({
+          title: '病历信息同步成功',
+          icon: 'success'
+        });
+      } catch (error) {
+        console.error('获取病历信息失败:', error);
+        this.setData({
+          medicalRecordsLoading: false
+        });
+        
+        wx.showToast({
+          title: '病历信息获取失败',
+          icon: 'none'
+        });
+      }
+    }, 1500);
+  },
+
+  // 生成模拟病历数据
+  generateMockMedicalRecords() {
+    const departments = [
+      '牙体牙髓病科', '牙周科', '口腔修复科', '口腔正畸科', 
+      '口腔颌面外科', '儿童口腔科', '口腔预防科'
+    ];
+    
+    const doctors = [
+      '张医生', '李医生', '王医生', '赵医生', '刘医生',
+      '陈医生', '杨医生', '黄医生', '周医生', '吴医生'
+    ];
+    
+    const diagnoses = [
+      '龋齿修复', '牙龈炎治疗', '牙齿矫正', '智齿拔除',
+      '牙周炎治疗', '根管治疗', '牙齿美白', '口腔检查',
+      '牙体修复', '口腔卫生指导'
+    ];
+    
+    const records = [];
+    const recordCount = Math.floor(Math.random() * 3) + 3; // 3-5份病历
+    
+    for (let i = 0; i < recordCount; i++) {
+      const randomDept = departments[Math.floor(Math.random() * departments.length)];
+      const randomDoctor = doctors[Math.floor(Math.random() * doctors.length)];
+      const randomDiagnosis = diagnoses[Math.floor(Math.random() * diagnoses.length)];
+      
+      // 生成随机的就诊时间（过去一年内）
+      const randomDays = Math.floor(Math.random() * 365);
+      const visitDate = new Date();
+      visitDate.setDate(visitDate.getDate() - randomDays);
+      const visitTime = visitDate.toLocaleDateString('zh-CN');
+      
+      records.push({
+        id: `medical_${Date.now()}_${i}`,
+        department: randomDept,
+        doctor: randomDoctor,
+        diagnosis: randomDiagnosis,
+        visitTime: visitTime,
+        description: `${randomDept}就诊记录，${randomDiagnosis}治疗`,
+        treatment: '常规治疗完成',
+        nextVisit: randomDays > 180 ? '建议3个月后复查' : '暂无复诊需求'
+      });
+    }
+    
+    // 按就诊时间倒序排列
+    return records.sort((a, b) => new Date(b.visitTime) - new Date(a.visitTime));
+  },
+
+  // 查看病历详情
+  viewMedicalRecordDetail(e) {
+    const recordId = e.currentTarget.dataset.id;
+    const index = e.currentTarget.dataset.index;
+    
+    // 直接从当前显示的记录中获取，避免查找错误
+    let record = null;
+    if (index !== undefined) {
+      record = this.data.displayedMedicalRecords[index];
+    }
+    
+    // 如果通过index找不到，再尝试通过id查找
+    if (!record) {
+      record = this.data.medicalRecordsList.find(r => r.id === recordId);
+    }
+    
+    if (!record) {
+      wx.showToast({
+        title: '病历信息不存在',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 跳转到病历详情页面
+    wx.navigateTo({
+      url: `/pages/profile/medical-record-detail/medical-record-detail?record=${encodeURIComponent(JSON.stringify(record))}`
+    });
+  },
+
+  // 切换病历列表展开/收起状态
+  toggleMedicalRecordsList() {
+    const { showAllMedicalRecords, medicalRecordsList } = this.data;
+    
+    if (medicalRecordsList.length <= 3) {
+      return; // 只有3份或更少，不需要切换
+    }
+    
+    const newShowAll = !showAllMedicalRecords;
+    
+    if (newShowAll) {
+      // 展开所有病历
+      this.setData({
+        showAllMedicalRecords: newShowAll,
+        displayedMedicalRecords: medicalRecordsList
+      });
+    } else {
+      // 收起，只显示前3份
+      this.setData({
+        showAllMedicalRecords: newShowAll,
+        displayedMedicalRecords: medicalRecordsList.slice(0, 3),
+        remainingMedicalRecords: medicalRecordsList.slice(3)
+      });
     }
   }
 })

@@ -7,6 +7,7 @@
     "pages/navigation/department/department",
     "pages/science/detail/detail",
     "pages/profile/profile",
+    "pages/profile/medical-record-detail/medical-record-detail",
     "pages/ai-diagnosis/ai-diagnosis",
     "pages/map/map"
   ],

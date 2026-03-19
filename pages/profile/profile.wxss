@@ -451,3 +451,77 @@
 .nav-item.active .nav-text {
   color: #1aad19;
 }
+
+/* ========== 病历信息卡片样式 ========== */
+.medical-record-card {
+  margin-bottom: 30rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.medical-record-card:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 6rpx 25rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 病历信息列表 */
+.medical-records-list {
+  margin: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  border: 1rpx solid #e0e0e0;
+  overflow: visible;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.medical-record-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 25rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: #fff;
+  min-height: 80rpx;
+}
+
+.medical-record-item:last-child {
+  border-bottom: none;
+}
+
+.medical-record-item:active {
+  background-color: #f8f9fa;
+}
+
+.medical-record-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.record-department {
+  font-size: 28rpx;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 5rpx;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.record-diagnosis {
+  font-size: 24rpx;
+  color: #52c41a;
+  display: block;
+  margin-bottom: 5rpx;
+  font-weight: 400;
+}
+
+.record-time {
+  font-size: 22rpx;
+  color: #666;
+  display: block;
+  font-weight: 400;
+}
