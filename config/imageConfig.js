@@ -4,7 +4,7 @@ const BASE_URL = "https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud
 // 轮播图片配置
 const carouselImages = {
   CAROUSEL_1: "carousel-1.png",  // 轮播图1
-  CAROUSEL_2: "carousel-2.png",  // 轮播图2
+  CAROUSEL_2: "carousel-2.jpg",  // 轮播图2
   CAROUSEL_3: "carousel-3.png"   // 轮播图3
 };
 
@@ -18,7 +18,7 @@ const avatarImages = {
 const indexButtonImages = {
   INDEX_BUTTON_1: "index-button-1.png",
   INDEX_BUTTON_2: "index-button-3.png",
-  INDEX_BUTTON_3: "index-button-4(needchange).png",
+  INDEX_BUTTON_3: "index-button-4.png",
   INDEX_BUTTON_4: "index-button-5(needchange).png",
   INDEX_BUTTON_5: "index-button-2.png"
 };
