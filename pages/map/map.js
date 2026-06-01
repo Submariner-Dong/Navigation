@@ -1326,7 +1326,7 @@ Page({
   // 重新绘制路线
   redrawRoute: function() {
     const currentMethod = this.data.currentNavMethod;
-    
+    console.log("Route redrawed")
     // 根据当前导航方式重新绘制路线
     switch (currentMethod) {
       case 'driving':
