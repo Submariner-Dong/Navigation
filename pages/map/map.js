@@ -1313,47 +1313,49 @@ Page({
 
   // 地图区域变化时重新绘制路线
   onMapRegionChange: function(e) {
-    // 如果正在导航，重新绘制路线
+    // 只有在特定情况下才重新绘制路线，避免频繁重画
     if (this.data.isNavigating) {
-      this.redrawRoute();
+      // 只在真正需要时重画路线，比如地图区域变化较大时
+      const { type } = e;
+      if (type === 'end') {
+        // 只在拖动结束时重画，避免拖动过程中的频繁重画
+        this.optimizedRedrawRoute();
+      }
     }
-    // 非导航模式下，如果路线数据存在也重新绘制
-    else if (this.data.routeSteps.length > 0) {
-      this.redrawRoute();
-    }
+    // 非导航模式下，路线应该保持稳定，不需要重画
   },
 
-  // 重新绘制路线
-  redrawRoute: function() {
-    const currentMethod = this.data.currentNavMethod;
-    console.log("Route redrawed")
-    // 根据当前导航方式重新绘制路线
-    switch (currentMethod) {
-      case 'driving':
-      case 'walking':
-        if (this.data.routeSteps.length > 0) {
-          // 重新设置polyline数据
-          this.setData({
-            polyline: this.data.polyline || []
-          });
-        }
-        break;
-      case 'transit':
-        if (this.data.transitRoutes.length > 0) {
-          // 重新设置公交路线
-          this.setData({
-            polyline: this.data.polyline || []
-          });
-        }
-        break;
-      case 'bicycling':
-        if (this.data.routeSteps.length > 0) {
-          // 重新设置骑行路线
-          this.setData({
-            polyline: this.data.polyline || []
-          });
-        }
-        break;
+
+  // 优化的路线重绘函数
+  optimizedRedrawRoute: function() {
+    // 只有在需要时才重绘路线
+    if (!this.data.polyline || this.data.polyline.length === 0) {
+      return;
+
     }
+    
+    // 添加防抖逻辑，避免频繁重绘
+    if (this._redrawTimer) {
+      clearTimeout(this._redrawTimer);
+    }
+    
+    this._redrawTimer = setTimeout(() => {
+      // 检查路线是否仍然有效
+      if (this.data.routeSteps.length === 0) {
+        return;
+      }
+      
+      // 重新绘制路线，但避免不必要的闪烁
+      this.setData({
+        polyline: [...this.data.polyline] // 创建新的数组引用触发重绘
+      });
+      
+      this._redrawTimer = null;
+    }, 200); // 200ms防抖延迟
+  },
+
+  // 重新绘制路线（保留原函数，供其他代码调用）
+  redrawRoute: function() {
+    this.optimizedRedrawRoute();
   }
 })
