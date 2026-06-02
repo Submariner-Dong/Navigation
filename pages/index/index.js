@@ -21,13 +21,22 @@ Page({
     wx.cloud.callFunction({
       name: "chatAI",
       data: {
-        a: 1,
-        b: 2,
+        text: "你好?"
       },
       success: function(res) {
-        console.log(res.result.sum)
+        if (res.result.success) {
+          console.log("专家回答：", res.result.answer);
+          
+          // this.setData({ aiResponse: res.result.answer })
+        } else {
+          console.error("AI 问诊失败：", res.result.error);
+          wx.showToast({ title: '系统忙，请稍后再试', icon: 'none' });
+        }
       },
-      fail: console.error
+      fail: function(err) {
+        wx.hideLoading();
+        console.error("呼叫云函数失败：", err);
+      }
     })
   },
 
