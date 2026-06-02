@@ -16,6 +16,19 @@ Page({
    */
   onLoad(options) {
     this.checkLoginStatus();
+
+    wx.cloud.init()
+    wx.cloud.callFunction({
+      name: "chatAI",
+      data: {
+        a: 1,
+        b: 2,
+      },
+      success: function(res) {
+        console.log(res.result.sum)
+      },
+      fail: console.error
+    })
   },
 
   /**
