@@ -2,6 +2,24 @@
 
 ## 更新日志
 
+### 2026-06-03: API 安全防护 & 老年友好模式
+
+1. **API Key 安全保护**：
+   - 新增统一云函数代理 `cloudfunctions/aiDiagnosis`，支持 `diagnosis` / `summary` / `expertAvatar` 三种调用模式
+   - 所有 DeepSeek API Key 从前端硬编码迁移至云函数环境变量 (`process.env.DEEPSEEK_API_KEY`)
+   - 前端通过 `wx.cloud.callFunction()` 安全调用，彻底消除 3 处高危 API Key 泄露风险
+   - 同步修复 `cloudfunctions/chatAI/index.js` 的硬编码问题
+
+2. **老年友好模式 UI**：
+   - 首页新增老年模式切换开关，支持跨会话持久化存储（`wx.setStorageSync`）
+   - 老年版采用大字体设计（标题 64rpx、按钮文字 56rpx），适配老花眼用户
+   - 极简 2×2 四宫格布局：医院导航、院内导航、智能问诊、我的信息
+   - 渐变蓝配色方案与加大触控区域，提升老年人操作体验
+
+3. **RAG 专家数字分身规划**：
+   - 完成 Dify 平台 RAG 方案调研，确定「Dify 知识库 + DeepSeek LLM」架构
+   - 规划实施路径：知识库构建 → Dify 应用创建 → 云函数集成 → 小程序对接
+
 ### 2026-03-19: 病历详情页面功能
 1. **新增病历详情页面**：
    - 创建完整的病历详情展示页面，替代原有的弹窗显示
@@ -94,6 +112,18 @@
 - **病历详情页**：独立的病历详情展示页面，支持信息复制与分享
 - **数据安全**：所有用户数据通过微信本地存储加密保存
 
+### 7. 老年友好模式（无障碍访问）
+- 首页顶部提供老年模式切换开关，偏好设置跨会话持久化存储
+- 老年版采用**大字体设计**（标题 64rpx、按钮文字 56rpx），适配老花眼及视力障碍人群
+- 极简 **2×2 四宫格布局**：医院导航、院内导航、智能问诊、我的信息
+- 渐变蓝配色方案 + 加大触控区域（padding 70rpx），提升老年人操作体验
+
+### 8. API 安全防护体系
+- 统一云函数代理层 `aiDiagnosis`，集中管理所有 AI API 调用
+- 支持 `diagnosis`（智能分诊）/ `summary`（报告解读）/ `expertAvatar`（专家数字分身）三种模式
+- 所有敏感 API Key 存储于云函数环境变量，前端零硬编码
+- 前端仅通过 `wx.cloud.callFunction()` 安全调用，彻底消除密钥泄露风险
+
 ## 程序结构
 
 ```
@@ -101,13 +131,19 @@ Navigation/
 ├── app.js                          # 小程序入口文件
 ├── app.json                        # 全局配置（页面路由、权限声明、网络超时）
 ├── app.wxss                        # 全局样式
+├── cloudfunctions/                 # 微信云函数
+│   ├── aiDiagnosis/                # 🔒 AI 统一安全代理（P0 新增）
+│   │   ├── index.js                #    支持 diagnosis / summary / expertAvatar 三种模式
+│   │   ├── config.json             #    云函数配置（Node.js 18）
+│   │   └── package.json            #    依赖：axios + wx-server-sdk
+│   └── chatAI/                     #    AI 聊天云函数（张教授数字分身原型）
 ├── config/
 │   ├── imageConfig.js              # 图片资源统一地址配置（腾讯云 COS 托管）
 │   └── navigationConfig.js         # 院内科室导航配置（科室信息与路径数据）
 ├── libs/
 │   └── amap-wx.130.js             # 高德地图微信小程序 SDK
 ├── pages/
-│   ├── index/                      # 首页（功能入口 + 登录流程）
+│   ├── index/                      # 首页（功能入口 + 登录流程 + 老年模式切换）
 │   │   ├── index.js / .wxml / .wxss / .json
 │   ├── map/                        # 地图导航页（高德地图集成核心）
 │   │   ├── map.js / .wxml / .wxss / .json
@@ -115,13 +151,13 @@ Navigation/
 │   │   ├── navigation.js / .wxml / .wxss / .json
 │   ├── navigation/department/      # 科室导航详情页
 │   │   ├── department.js / .wxml / .wxss / .json
-│   ├── ai-diagnosis/               # AI 智能分诊页
+│   ├── ai-diagnosis/               # AI 智能分诊页（通过云函数安全调用 API）
 │   │   ├── ai-diagnosis.js / .wxml / .wxss / .json
 │   ├── science/                    # 科普文章列表页
 │   │   ├── science.js / .wxml / .wxss / .json
 │   ├── science/detail/             # 科普文章详情页
 │   │   ├── detail.js / .wxml / .wxss / .json
-│   ├── profile/                    # 个人中心页
+│   ├── profile/                    # 个人中心页（报告解读功能已迁移至云函数代理）
 │   │   ├── profile.js / .wxml / . .wxss / .json
 │   └── profile/medical-record-detail/  # 病历详情页
 │       ├── medical-record-detail.js / .wxml / .wxss / .json
@@ -140,60 +176,68 @@ Navigation/
 | 地图服务 | 高德地图微信小程序 SDK（amap-wx.130）|
 | 云存储 | 腾讯云 COS（图片资源托管）|
 | AI 能力 | DeepSeek API（智能分诊）|
+| 云计算 | 微信云开发（云函数 + 环境变量安全存储）|
 | 数据存储 | wx.setStorageSync / wx.getStorageSync（本地持久化）|
 
 ### 核心模块职责
 | 文件 | 职责 |
 |------|------|
 | `map.js`（1359行）| 高德地图 SDK 集成、多模式路线规划（驾车/公交/步行/骑行）、路线折线解析与渲染、标记点管理、语音导航 |
-| `profile.js`（1118行）| 个人信息管理、病历 CRUD 操作、用户登录注册、数据校验与持久化 |
-| `ai-diagnosis.js`（453行）| AI 对话式问诊交互、症状分析与科室推荐、问诊历史管理 |
+| `profile.js`（1118行）| 个人信息管理、病历 CRUD 操作、用户登录注册、数据校验与持久化、报告解读（已迁移至云函数代理调用）|
+| `ai-diagnosis.js`（453行）| AI 对话式问诊交互、症状分析与科室推荐、问诊历史管理（API 调用已迁移至云函数代理）|
+| `aiDiagnosis/index.js`（🆕新增）| **统一 API 安全代理**：支持 diagnosis / summary / expertAvatar 三种模式，环境变量密钥管理，前端零硬编码 |
+| `index.js`（首页）| 功能入口路由、老年模式切换与持久化、登录流程管理 |
 | `userDataManager.js`（370行）| 用户数据的本地读写封装、数据迁移与版本兼容 |
 | `navigationConfig.js`（89行）| 院内各科室的图文导航配置数据 |
 
 ## 使用说明
 
 1. **打开小程序**：在微信中搜索并打开「青芽智医」小程序，首次使用可选择微信授权登录。
-2. **AI 智能分诊**：点击首页「智能问诊」入口，描述您的口腔不适症状，AI 将为您推荐合适的就诊科室及依据。
-3. **前往医院**：点击首页「地图导航」，小程序将自动获取您的当前位置，规划前往同济大学附属口腔医院的最优路线（支持驾车/公交/步行/骑行四种方式）。
-4. **院内导航**：到达医院后，选择目标科室即可获得院内楼层导航指引，包含图文路径说明。
-5. **健康科普**：在「科普资讯」中浏览口腔医学知识文章。
-6. **个人档案**：在「我的」中管理个人信息和就诊病历记录，支持随时查阅和向医生展示。
+2. **老年模式切换**：首页顶部提供老年模式开关，开启后显示大字体极简界面（2×2 四宫格），偏好自动保存。
+3. **AI 智能分诊**：点击首页「智能问诊」入口，描述您的口腔不适症状，AI 将为您推荐合适的就诊科室及依据（API 调用经云函数安全代理，无密钥泄露风险）。
+4. **前往医院**：点击首页「地图导航」，小程序将自动获取您的当前位置，规划前往同济大学附属口腔医院的最优路线（支持驾车/公交/步行/骑行四种方式）。
+5. **院内导航**：到达医院后，选择目标科室即可获得院内楼层导航指引，包含图文路径说明。
+6. **健康科普**：在「科普资讯」中浏览口腔医学知识文章。
+7. **个人档案**：在「我的」中管理个人信息和就诊病历记录，支持随时查阅和向医生展示。
+
+### 部署注意事项
+
+> **云函数环境变量配置（必须）**
+>
+> 上传云函数后，需在微信开发者工具中为以下云函数配置环境变量：
+>
+> | 云函数 | 环境变量 | 说明 |
+> |--------|----------|------|
+> | `aiDiagnosis` | `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
+> | `aiDiagnosis` | `DIFY_API_BASE_URL`（可选）| Dify 服务地址（RAG 专家数字分身功能启用时需要）|
+> | `aiDiagnosis` | `DIFY_API_KEY`（可选）| Dify 应用 API Key（RAG 专家数字分身功能启用时需要）|
+> | `chatAI` | `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
+>
+> **部署步骤**：
+> 1. 右键 `cloudfunctions/aiDiagnosis` → **上传并部署：云端安装依赖**
+> 2. 右键 `cloudfunctions/chatAI` → **上传并部署：云端安装依赖**
+> 3. 右键各云函数 → **配置** → **环境变量** → 填入上述 Key
 
 ## 待实现功能（技术债务与规划）
 
-### ⚠️ 一、RAG 专家数字分身（当前状态：未实现）
+### ⚠️ 一、RAG 专家数字分身（当前状态：方案已确定，待开发）
+
+**目标**：基于 **Dify 平台** 构建医学知识库驱动的 AI 专家数字分身（张教授），让 AI 回答基于真实医学文献而非仅靠 prompt 角色扮演。
 
 **当前进展：**
-- `cloudfunctions/chatAI/index.js` 中已编写"张教授"数字分身的 system prompt（角色扮演），但**仅为纯文本提示词**，无知识库支撑。
-- 该云函数仅在首页 `index.js` 加载时做了一次连通性测试（传 `"你好?"`），**未接入实际问诊流程**。
-- 用户实际的 AI 问诊走的是 `ai-diagnosis.js` 中独立的 `wx.request` 直连 DeepSeek API 路径，与云函数的"数字分身"互不关联。
+- ✅ Dify RAG 方案调研完成，确定架构：`Dify 知识库(向量检索) + DeepSeek LLM + 云函数代理`
+- ✅ 云函数 `aiDiagnosis` 已预留 `expertAvatar` 模式接口
+- ❌ Dify 平台尚未创建知识库和应用
+- ❌ 医学文档素材未整理上传
 
-**RAG 技术缺失的核心组件：**
-| 缺失组件 | 说明 |
-|---------|------|
-| 向量数据库 | Milvus / Pinecode / 腾讯云向量数据库 等 |
-| Embedding 模型调用 | 将医院知识库文档转为向量表示 |
-| 知识库文档 | 专家论文、临床指南、科室介绍等结构化数据源 |
-| 检索模块 | 用户提问 → 向量相似度搜索 → 取回相关知识片段 |
-| RAG 链路拼接 | 将检索结果注入 LLM prompt 的完整管道 |
-
-### ⚠️ 二、API Key 安全保护（当前状态：存在安全隐患）
-
-**明文硬编码位置（4处）：**
-
-| 文件 | 行号 | Key 类型 | 风险等级 |
-|------|------|----------|----------|
-| `pages/ai-diagnosis/ai-diagnosis.js` | :186 | DeepSeek API Key | 🔴 **高危** — 前端直连 API，反编译即可窃取 |
-| `pages/profile/profile.js` | :376 | DeepSeek API Key | 🔴 高危 |
-| `cloudfunctions/chatAI/index.js` | :10 | DeepSeek API Key | 🟡 中危 — 云函数侧，但仍是硬编码 |
-| `pages/map/map.js` | :10 | 高德地图 API Key | 🟢 低危 — 通常允许前端使用 |
-
-**缺失的安全措施：**
-- ❌ 环境变量管理（`.gitignore` 已排除 `.env.local/.env.production`，但代码中从未读取环境变量）
-- ❌ 后端代理中转层（AI 问诊从前端直接调用 DeepSeek API）
-- ❌ Key 加密存储 / 密钥轮换机制
-- ❌ API 调用频率限制与签名验证
+**实施步骤：**
+| 步骤 | 内容 | 状态 |
+|------|------|------|
+| 1 | 整理医学知识库素材（诊疗规范、FAQ、科普文章等） | 待开始 |
+| 2 | 在 Dify 创建知识库，配置 Embedding 模型与分段策略 | 待开始 |
+| 3 | 创建聊天机器人应用，关联知识库，编写系统提示词 | 待开始 |
+| 4 | 获取 Dify API Key，在云函数环境变量中配置 `DIFY_API_BASE_URL` 和 `DIFY_API_KEY` | 待开始 |
+| 5 | 实现云函数 expertAvatar 模式代码，前端添加「咨询专家」入口 | 待开始 |
 
 ---
 

@@ -369,40 +369,29 @@ Page({
   },
 
   async callDeepSeekForSummary(symptoms) {
+    // 通过云函数安全代理调用 DeepSeek API（Key 不暴露给前端）
     return new Promise((resolve, reject) => {
-      wx.request({
-        url: 'https://api.deepseek.com/chat/completions',
-        method: 'POST',
-        header: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer sk-68966a908d44452ca87264e055e9863e'
-        },
+      wx.cloud.callFunction({
+        name: 'aiDiagnosis',
         data: {
-          model: 'deepseek-chat',
-          messages: [
-            {
-              role: 'system',
-              content: '你是一个医疗AI助手。请将用户描述的症状总结为2-3个关键词或简短描述，用中文逗号分隔。只需要总结症状本身，不需要分析或建议。例如："牙齿疼痛持续三天，牙龈有些红肿" → "牙痛、牙龈红肿"'
-            },
-            {
-              role: 'user',
-              content: `症状描述：${symptoms}`
-            }
-          ],
+          mode: 'summary',
+          systemPrompt: '你是一个医疗AI助手。请将用户描述的症状总结为2-3个关键词或简短描述，用中文逗号分隔。只需要总结症状本身，不需要分析或建议。例如："牙齿疼痛持续三天，牙龈有些红肿" → "牙痛、牙龈红肿"',
+          userMessage: `症状描述：${symptoms}`,
           temperature: 0.1,
-          max_tokens: 30
+          maxTokens: 30
         },
         success: (res) => {
-          if (res.statusCode === 200) {
-            const content = res.data.choices[0].message.content;
-            // 清理响应内容，去除多余的标点符号
+          const result = res.result;
+          if (result && result.success) {
+            const content = result.content;
             const cleanedContent = content.replace(/[，。、！？；：,.!?;:\s]+$/, '');
             resolve(cleanedContent);
           } else {
-            reject(new Error(`API请求失败: ${res.statusCode}`));
+            reject(new Error(result?.error || 'AI 服务调用失败'));
           }
         },
         fail: (error) => {
+          console.error('调用 aiDiagnosis 云函数(summary模式)失败:', error);
           reject(error);
         }
       });

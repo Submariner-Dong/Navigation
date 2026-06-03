@@ -174,41 +174,32 @@ Page({
   },
 
   async callDeepSeekAPI(symptoms) {
-    // 优化：预先计算消息历史，避免重复构建
+    // 预先计算消息历史，避免重复构建
     const messageHistory = this.buildMessageHistory();
-    
+
+    // 通过云函数安全代理调用 DeepSeek API（Key 不暴露给前端）
     return new Promise((resolve, reject) => {
-      wx.request({
-        url: 'https://api.deepseek.com/chat/completions',
-        method: 'POST',
-        header: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer sk-68966a908d44452ca87264e055e9863e'
-        },
+      wx.cloud.callFunction({
+        name: 'aiDiagnosis',
         data: {
-          model: 'deepseek-chat',
-          messages: [
-            {
-              role: 'system',
-              content: cache.systemPrompt
-            },
-            ...messageHistory,
-            {
-              role: 'user',
-              content: `当前患者症状描述：${symptoms}`
-            }
-          ],
-          temperature: 0.3,
-          max_tokens: 800
+          mode: 'diagnosis',
+          systemPrompt: cache.systemPrompt,
+          messages: messageHistory,
+          userMessage: `当前患者症状描述：${symptoms}`
         },
         success: (res) => {
-          if (res.statusCode === 200) {
-            resolve(res.data);
+          const result = res.result;
+          if (result && result.success) {
+            resolve(result.data);
           } else {
-            reject(new Error(`API请求失败: ${res.statusCode}`));
+            // 将云函数错误转换为前端可识别的错误格式
+            const error = new Error(result?.error || 'AI 服务调用失败');
+            error.statusCode = result?.code || 'CLOUD_ERROR';
+            reject(error);
           }
         },
         fail: (error) => {
+          console.error('调用 aiDiagnosis 云函数失败:', error);
           reject(error);
         }
       });
