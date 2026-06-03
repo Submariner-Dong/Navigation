@@ -1,61 +1,103 @@
 <view class="container">
-  <!-- 顶部轮播图区域 -->
-  <view class="carousel-section">
-    <swiper class="carousel" indicator-dots="true" autoplay="true" interval="3000" duration="500">
-      <swiper-item>
-        <image src="{{images.CAROUSEL_1}}" mode="aspectFill" class="carousel-image"></image>
-      </swiper-item>
-      <swiper-item>
-        <image src="{{images.CAROUSEL_2}}" mode="aspectFill" class="carousel-image"></image>
-      </swiper-item>
-      <swiper-item>
-        <image src="{{images.CAROUSEL_3}}" mode="aspectFill" class="carousel-image"></image>
-      </swiper-item>
-    </swiper>
+  <!-- 模式切换开关 -->
+  <view class="mode-switch-bar" wx:if="{{!isElderlyMode}}">
+    <text class="mode-switch-label">标准版</text>
+    <switch checked="{{isElderlyMode}}" bindchange="toggleElderlyMode" color="#1aad19" />
+    <text class="mode-switch-label">老年版</text>
   </view>
 
-  <!-- 原有内容区域，向下移动 -->
-  <view class="content">
-    <view class="button-grid">
-      <!-- 第一行：科普知识和AI智能问诊 -->
-      <view class="grid-row">
-        <view class="grid-item">
-          <navigator url="/pages/science/science" class="btn">
-            <image src="{{images.INDEX_BUTTON_1}}" mode="aspectFit" class="button-image"></image>
-          </navigator>
+  <view class="mode-switch-bar elderly-switch" wx:else>
+    <text class="mode-switch-label elderly-text">当前：老年模式（大字版）</text>
+    <switch checked="{{isElderlyMode}}" bindchange="toggleElderlyMode" color="#1aad19" scale="1.3" />
+  </view>
+
+  <!-- ===== 标准版 UI ===== -->
+  <block wx:if="{{!isElderlyMode}}">
+    <!-- 顶部轮播图区域 -->
+    <view class="carousel-section">
+      <swiper class="carousel" indicator-dots="true" autoplay="true" interval="3000" duration="500">
+        <swiper-item>
+          <image src="{{images.CAROUSEL_1}}" mode="aspectFill" class="carousel-image"></image>
+        </swiper-item>
+        <swiper-item>
+          <image src="{{images.CAROUSEL_2}}" mode="aspectFill" class="carousel-image"></image>
+        </swiper-item>
+        <swiper-item>
+          <image src="{{images.CAROUSEL_3}}" mode="aspectFill" class="carousel-image"></image>
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <!-- 原有内容区域，向下移动 -->
+    <view class="content">
+      <view class="button-grid">
+        <!-- 第一行：科普知识和AI智能问诊 -->
+        <view class="grid-row">
+          <view class="grid-item">
+            <navigator url="/pages/science/science" class="btn">
+              <image src="{{images.INDEX_BUTTON_1}}" mode="aspectFit" class="button-image"></image>
+            </navigator>
+          </view>
+          <view class="grid-item">
+            <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
+              <image src="{{images.INDEX_BUTTON_3}}" mode="aspectFit" class="button-image"></image>
+            </navigator>
+          </view>
         </view>
-        <view class="grid-item">
-          <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
-            <image src="{{images.INDEX_BUTTON_3}}" mode="aspectFit" class="button-image"></image>
-          </navigator>
-        </view>
-      </view>
-      
-      <!-- 第二行：院内导航和医院地图 -->
-      <view class="grid-row">
-        <view class="grid-item">
-          <navigator url="/pages/navigation/navigation" class="btn">
-            <image src="{{images.INDEX_BUTTON_2}}" mode="aspectFit" class="button-image"></image>
-          </navigator>
-        </view>
-        <view class="grid-item">
-          <navigator url="/pages/map/map" class="btn">
-            <image src="{{images.INDEX_BUTTON_5}}" mode="aspectFit" class="button-image"></image>
-          </navigator>
+        
+        <!-- 第二行：院内导航和医院地图 -->
+        <view class="grid-row">
+          <view class="grid-item">
+            <navigator url="/pages/navigation/navigation" class="btn">
+              <image src="{{images.INDEX_BUTTON_2}}" mode="aspectFit" class="button-image"></image>
+            </navigator>
+          </view>
+          <view class="grid-item">
+            <navigator url="/pages/map/map" class="btn">
+              <image src="{{images.INDEX_BUTTON_5}}" mode="aspectFit" class="button-image"></image>
+            </navigator>
+          </view>
         </view>
       </view>
     </view>
-  </view>
+  </block>
+
+  <!-- ===== 老年版 UI ===== -->
+  <block wx:if="{{isElderlyMode}}">
+    <view class="elderly-container">
+      <!-- 老年版标题 -->
+      <view class="elderly-header">
+        <text class="elderly-title">青芽智医</text>
+        <text class="elderly-subtitle">同济大学附属口腔医院导诊助手</text>
+      </view>
+
+      <!-- 老年版 2x2 大按钮 -->
+      <view class="elderly-grid">
+        <view class="elderly-btn" bindtap="elderlyNavigateToMap">
+          <text class="elderly-btn-text">医院导航</text>
+        </view>
+        <view class="elderly-btn" bindtap="elderlyNavigateToNavigation">
+          <text class="elderly-btn-text">院内导航</text>
+        </view>
+        <view class="elderly-btn" bindtap="elderlyNavigateToAI">
+          <text class="elderly-btn-text">智能问诊</text>
+        </view>
+        <view class="elderly-btn" bindtap="elderlyNavigateToProfile">
+          <text class="elderly-btn-text">我的信息</text>
+        </view>
+      </view>
+    </view>
+  </block>
 
   <!-- 底部导航栏 -->
-  <view class="bottom-nav">
-    <view class="nav-item {{currentPage === 'index' ? 'active' : ''}}" bindtap="switchToIndex">
-      <image src="{{images.HOME_ICON}}" mode="aspectFit" class="nav-icon"></image>
-      <text class="nav-text">首页</text>
+  <view class="bottom-nav {{isElderlyMode ? 'elderly-bottom-nav' : ''}}">
+    <view class="nav-item {{currentPage === 'index' ? 'active' : ''}} {{isElderlyMode ? 'elderly-nav-item' : ''}}" bindtap="switchToIndex">
+      <image src="{{images.HOME_ICON}}" mode="aspectFit" class="nav-icon {{isElderlyMode ? 'elderly-nav-icon' : ''}}"></image>
+      <text class="nav-text {{isElderlyMode ? 'elderly-nav-text' : ''}}">首页</text>
     </view>
-    <view class="nav-item {{currentPage === 'profile' ? 'active' : ''}}" bindtap="switchToProfile">
-      <image src="{{images.PROFILE_ICON}}" mode="aspectFit" class="nav-icon"></image>
-      <text class="nav-text">我的</text>
+    <view class="nav-item {{currentPage === 'profile' ? 'active' : ''}} {{isElderlyMode ? 'elderly-nav-item' : ''}}" bindtap="switchToProfile">
+      <image src="{{images.PROFILE_ICON}}" mode="aspectFit" class="nav-icon {{isElderlyMode ? 'elderly-nav-icon' : ''}}"></image>
+      <text class="nav-text {{isElderlyMode ? 'elderly-nav-text' : ''}}">我的</text>
     </view>
   </view>
 </view>

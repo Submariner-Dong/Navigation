@@ -5,7 +5,8 @@
   "main": "app.js",
   "dependencies": {
     "@babel/runtime": "^7.28.6",
-    "tdesign-miniprogram": "^1.12.3"
+    "tdesign-miniprogram": "^1.12.3",
+    "wx-server-sdk": "^3.0.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

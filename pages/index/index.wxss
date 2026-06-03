@@ -12,6 +12,120 @@
   min-height: 100vh;
 }
 
+/* ========== 模式切换开关栏 ========== */
+.mode-switch-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 30rpx;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  gap: 16rpx;
+}
+
+.mode-switch-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.elderly-switch {
+  background-color: #fff8e1;
+  border-bottom: 2px solid #ffc107;
+  padding: 12rpx 30rpx;
+}
+
+.elderly-text {
+  font-size: 32rpx !important;
+  color: #e65100 !important;
+  font-weight: bold;
+}
+
+/* ========== 老年版 UI 样式 ========== */
+.elderly-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.elderly-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 60rpx;
+  margin-top: 20rpx;
+}
+
+.elderly-title {
+  font-size: 64rpx;
+  font-weight: bold;
+  color: #1a73e8;
+  margin-bottom: 16rpx;
+}
+
+.elderly-subtitle {
+  font-size: 36rpx;
+  color: #5f6368;
+}
+
+.elderly-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40rpx;
+  width: 100%;
+  max-width: 700rpx;
+  padding: 20rpx 0;
+}
+
+.elderly-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+  border-radius: 32rpx;
+  padding: 70rpx 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(26, 115, 232, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  active: scale(0.96);
+}
+
+.elderly-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 4rpx 12rpx rgba(26, 115, 232, 0.25);
+}
+
+.elderly-btn-text {
+  font-size: 56rpx;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 6rpx;
+}
+
+/* ========== 老年版底部导航栏 ========== */
+.elderly-bottom-nav {
+  height: 90rpx !important;
+}
+
+.elderly-nav-item {
+  padding: 16rpx 0 !important;
+}
+
+.elderly-nav-icon {
+  width: 44rpx !important;
+  height: 44rpx !important;
+  margin-bottom: 6rpx !important;
+}
+
+.elderly-nav-text {
+  font-size: 28rpx !important;
+  font-weight: bold;
+}
+
 /* 轮播图区域 - 占屏幕顶部三分之一 */
 .carousel-section {
   width: 100%;

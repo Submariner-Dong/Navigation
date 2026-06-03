@@ -1,6 +1,8 @@
 // pages/index/index.js
 import imageConfig from '../../config/imageConfig.js'
 
+const ELDERLY_MODE_KEY = 'elderlyMode';
+
 Page({
 
   /**
@@ -8,7 +10,8 @@ Page({
    */
   data: {
     images: imageConfig,
-    currentPage: 'index' // 当前页面标识
+    currentPage: 'index', // 当前页面标识
+    isElderlyMode: false // 老年版模式开关
   },
 
   /**
@@ -16,6 +19,32 @@ Page({
    */
   onLoad(options) {
     this.checkLoginStatus();
+    
+    // 读取老年版模式设置
+    const isElderlyMode = wx.getStorageSync(ELDERLY_MODE_KEY) || false;
+    this.setData({ isElderlyMode });
+
+    wx.cloud.init()
+    wx.cloud.callFunction({
+      name: "chatAI",
+      data: {
+        text: "你好?"
+      },
+      success: function(res) {
+        if (res.result.success) {
+          console.log("专家回答：", res.result.answer);
+          
+          // this.setData({ aiResponse: res.result.answer })
+        } else {
+          console.error("AI 问诊失败：", res.result.error);
+          wx.showToast({ title: '系统忙，请稍后再试', icon: 'none' });
+        }
+      },
+      fail: function(err) {
+        wx.hideLoading();
+        console.error("呼叫云函数失败：", err);
+      }
+    })
   },
 
   /**
@@ -159,5 +188,48 @@ Page({
     } else {
       //console.log('当前已在个人中心页面');
     }
+  },
+
+  /**
+   * 切换老年版/标准版模式
+   */
+  toggleElderlyMode() {
+    const newMode = !this.data.isElderlyMode;
+    this.setData({ isElderlyMode: newMode });
+    wx.setStorageSync(ELDERLY_MODE_KEY, newMode);
+    
+    wx.showToast({
+      title: newMode ? '已切换至老年版' : '已切换回标准版',
+      icon: 'success',
+      duration: 1500
+    });
+  },
+
+  /**
+   * 老年版 - 医院导航
+   */
+  elderlyNavigateToMap() {
+    wx.navigateTo({ url: '/pages/map/map' });
+  },
+
+  /**
+   * 老年版 - 院内导航
+   */
+  elderlyNavigateToNavigation() {
+    wx.navigateTo({ url: '/pages/navigation/navigation' });
+  },
+
+  /**
+   * 老年版 - 智能问诊
+   */
+  elderlyNavigateToAI() {
+    wx.navigateTo({ url: '/pages/ai-diagnosis/ai-diagnosis' });
+  },
+
+  /**
+   * 老年版 - 我的信息
+   */
+  elderlyNavigateToProfile() {
+    wx.navigateTo({ url: '/pages/profile/profile' });
   }
 })

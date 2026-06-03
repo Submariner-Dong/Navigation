@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "axios": "^1.16.1",
+    "openai": "^6.41.0",
+    "wx-server-sdk": "^3.0.4"
+  }
+}
