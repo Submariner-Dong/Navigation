@@ -23,28 +23,6 @@ Page({
     // 读取老年版模式设置
     const isElderlyMode = wx.getStorageSync(ELDERLY_MODE_KEY) || false;
     this.setData({ isElderlyMode });
-
-    wx.cloud.init()
-    wx.cloud.callFunction({
-      name: "chatAI",
-      data: {
-        text: "你好?"
-      },
-      success: function(res) {
-        if (res.result.success) {
-          console.log("专家回答：", res.result.answer);
-          
-          // this.setData({ aiResponse: res.result.answer })
-        } else {
-          console.error("AI 问诊失败：", res.result.error);
-          wx.showToast({ title: '系统忙，请稍后再试', icon: 'none' });
-        }
-      },
-      fail: function(err) {
-        wx.hideLoading();
-        console.error("呼叫云函数失败：", err);
-      }
-    })
   },
 
   /**
