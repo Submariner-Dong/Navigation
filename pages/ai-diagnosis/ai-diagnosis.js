@@ -170,6 +170,7 @@ Page({
 
     // 通过云函数安全代理调用 DeepSeek API（Key 不暴露给前端）
     return new Promise((resolve, reject) => {
+      wx.cloud.init()
       wx.cloud.callFunction({
         name: 'aiDiagnosis',
         data: {
@@ -499,6 +500,7 @@ Page({
     });
 
     try {
+      wx.cloud.init()
       const result = await new Promise((resolve, reject) => {
         wx.cloud.callFunction({
           name: 'aiDiagnosis',

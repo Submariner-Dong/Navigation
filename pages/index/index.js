@@ -21,6 +21,7 @@ Page({
     this.checkLoginStatus();
     
     // 读取老年版模式设置
+    wx.cloud.init()
     const isElderlyMode = wx.getStorageSync(ELDERLY_MODE_KEY) || false;
     this.setData({ isElderlyMode });
   },
