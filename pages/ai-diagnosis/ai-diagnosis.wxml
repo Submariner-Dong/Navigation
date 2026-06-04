@@ -1,40 +1,88 @@
 <view class="container">
+  <!-- ===== 顶部模式切换栏 ===== -->
+  <view class="mode-bar">
+    <view class="mode-tabs">
+      <view
+        class="mode-tab {{chatMode === 'diagnosis' ? 'active' : ''}}"
+        bindtap="switchToDiagnosisMode"
+      >智能分诊</view>
+      <view
+        class="mode-tab {{chatMode === 'expert' ? 'active' : ''}}"
+        bindtap="switchToExpertMode"
+      >专家咨询</view>
+    </view>
+
+    <!-- 当前选中专家信息（专家模式下显示）-->
+    <view wx:if="{{chatMode === 'expert' && selectedDoctor}}" class="doctor-info-bar">
+      <text class="doctor-info-text">{{selectedDoctor.department}} - {{selectedDoctor.title}} {{selectedDoctor.name}}</text>
+    </view>
+  </view>
+
   <!-- 聊天消息区域 -->
-  <scroll-view class="chat-container" scroll-y="true" scroll-top="{{scrollTop}}">
-    <view wx:for="{{messages}}" wx:key="index" class="message-container {{item.type}}">
-      <!-- AI消息（左侧） -->
-      <view wx:if="{{item.type === 'ai'}}" class="message-item ai">
-        <!-- AI头像 -->
-        <image class="avatar" src="{{aiAvatar}}" mode="aspectFit"></image>
-        <view class="message-bubble ai">
-          <text class="message-content">{{item.content}}</text>
+  <scroll-view class="chat-container {{chatMode === 'expert' ? 'expert-mode' : ''}}" scroll-y="true" scroll-top="{{scrollTop}}" style="padding-bottom: {{keyboardHeight > 0 ? (keyboardHeight + 60) : 10}}px;">
+    <!-- 医生选择面板（覆盖在聊天区域上）-->
+    <view wx:if="{{showDoctorList}}" class="doctor-list-overlay" catchtap="">
+      <view class="doctor-list-panel">
+        <view class="doctor-list-header">
+          <text class="doctor-list-title">选择咨询专家</text>
         </view>
-      </view>
-      
-      <!-- 用户消息（右侧） -->
-      <view wx:if="{{item.type === 'user'}}" class="message-item user">
-        <view class="message-bubble user">
-          <text class="message-content">{{item.content}}</text>
+        
+        <view wx:for="{{doctors}}" wx:key="id" 
+              class="doctor-card" 
+              bindtap="selectDoctor"
+              data-id="{{item.id}}">
+          <view class="doctor-card-main">
+            <text class="doctor-name">{{item.name}}</text>
+            <text class="doctor-title">{{item.title}}</text>
+            <text class="doctor-dept">{{item.department}}</text>
+          </view>
+          <text class="doctor-desc">{{item.description}}</text>
         </view>
-        <!-- 用户头像 -->
-        <image class="avatar" src="{{userAvatar}}" mode="aspectFit"></image>
+        
+        <view class="doctor-list-close" bindtap="switchToDiagnosisMode">
+          <text>取消</text>
+        </view>
       </view>
     </view>
+
+    <block wx:if="{{!showDoctorList}}">
+      <view wx:for="{{messages}}" wx:key="index" class="message-container {{item.type}}">
+        <!-- AI消息（左侧） -->
+        <view wx:if="{{item.type === 'ai'}}" class="message-item ai">
+          <!-- AI头像 -->
+          <image class="avatar" src="{{aiAvatar}}" mode="aspectFit"></image>
+          <view class="message-bubble ai">
+            <text class="message-content">{{item.content}}</text>
+          </view>
+        </view>
+        
+        <!-- 用户消息（右侧） -->
+        <view wx:if="{{item.type === 'user'}}" class="message-item user">
+          <view class="message-bubble user">
+            <text class="message-content">{{item.content}}</text>
+          </view>
+          <!-- 用户头像 -->
+          <image class="avatar" src="{{userAvatar}}" mode="aspectFit"></image>
+        </view>
+      </view>
+    </block>
   </scroll-view>
 
   <!-- 输入区域 -->
-  <view class="input-container">
+  <view class="input-container" style="bottom: {{keyboardHeight}}px;">
     <input 
-      placeholder="请描述您的症状" 
+      placeholder="{{chatMode === 'expert' ? '向专家提问...' : '请描述您的症状'}}" 
       bindinput="onInput" 
       value="{{inputText}}" 
       class="input-box"
+      adjust-position="{{false}}"
+      bindkeyboardheightchange="onKeyboardHeightChange"
     />
-    <button bindtap="sendMessage" class="send-btn">发送</button>
+    <button bindtap="sendMessage" class="send-btn {{chatMode === 'expert' ? 'send-expert' : ''}}">发送</button>
   </view>
 
-  <!-- 推荐区域 -->
-  <view wx:if="{{recommendedDepartment}}" class="recommendation">
+  <!-- 推荐区域（仅分诊模式显示）-->
+  <view wx:if="{{recommendedDepartment && chatMode !== 'expert'}}" class="recommendation">
     <text class="title">推荐科室：{{recommendedDepartment}}</text>
     <button class="nav-btn" bindtap="navigateToDepartment">前往导航</button>
   </view>

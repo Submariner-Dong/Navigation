@@ -11,7 +11,8 @@
 /* 聊天容器 - 对应<scroll-view class="chat-container">，支持滚动 */
 .chat-container {
   flex: 1;
-  padding: 0;
+  min-height: 0;           /* 关键：防止 flex 子元素溢出 */
+  padding: 0 0 10px 0;     /* 默认底部留出输入区空间 */
   background-color: #f8f9fa;
 }
 
@@ -79,13 +80,18 @@
   white-space: pre-wrap;
 }
 
-/* 输入容器 - 对应<view class="input-container"> */
+/* 输入容器 - 固定在底部，随键盘上浮 */
 .input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   padding: 12px 16px;
   background-color: white;
   border-top: 1px solid #e0e0e0;
   align-items: center;
+  z-index: 100;
 }
 
 /* 输入框样式 - 对应<input class="input-box"> */
@@ -119,6 +125,7 @@
   padding: 16px;
   background-color: #fff3e0;
   border-top: 1px solid #ddd;
+  margin-bottom: 60px;     /* 为固定定位的输入区域留出空间 */
 }
 
 /* 推荐标题样式 - 对应<text class="title">推荐科室：{{recommendedDepartment}}</text> */
@@ -141,4 +148,176 @@
 
 .nav-btn:active {
   background-color: #e68900;
+}
+
+/* ========== 专家数字分身模式样式 ========== */
+
+/* 模式切换栏 */
+.mode-bar {
+  padding: 8px 16px;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+}
+
+.mode-tabs {
+  display: flex;
+  flex-direction: row;
+}
+
+.mode-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #666;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.mode-tab.active {
+  color: #1976d2;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.mode-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background-color: #1976d2;
+  border-radius: 2px;
+}
+
+/* 当前选中专家信息条 */
+.doctor-info-bar {
+  margin-top: 6px;
+  padding: 6px 12px;
+  background-color: #e3f2fd;
+  border-radius: 12px;
+}
+
+.doctor-info-text {
+  font-size: 12px;
+  color: #1565c0;
+  display: block;
+}
+
+/* 医生选择面板遮罩 */
+.doctor-list-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 医生选择面板 */
+.doctor-list-panel {
+  width: 80%;
+  max-width: 380px;
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 10000;
+}
+
+.doctor-list-header {
+  padding: 20px 20px 10px;
+  text-align: center;
+}
+
+.doctor-list-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 医生卡片 */
+.doctor-card {
+  margin: 10px 16px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.doctor-card:active {
+  background-color: #e3f2fd;
+  border-color: #1976d2;
+}
+
+.doctor-card-main {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.doctor-name {
+  font-size: 17px;
+  font-weight: bold;
+  color: #333;
+  margin-right: 8px;
+}
+
+.doctor-title {
+  font-size: 13px;
+  color: #666;
+  margin-right: 8px;
+  background-color: #e8e8e8;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.doctor-dept {
+  font-size: 13px;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.doctor-desc {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.5;
+  display: block;
+}
+
+/* 关闭按钮 */
+.doctor-list-close {
+  padding: 16px;
+  text-align: center;
+  border-top: 1px solid #eee;
+}
+
+.doctor-list-close text {
+  color: #999;
+  font-size: 15px;
+}
+
+.doctor-list-close:active {
+  background-color: #f5f5f5;
+}
+
+/* 专家模式下的聊天区域 */
+.chat-container.expert-mode {
+  /* 可根据需要调整专家模式下的背景色 */
+  background-color: #fafafa;
+}
+
+/* 专家模式发送按钮 */
+.send-expert {
+  background-color: #1976d2 !important;
+}
+
+.send-expert:active {
+  background-color: #1565c0 !important;
 }

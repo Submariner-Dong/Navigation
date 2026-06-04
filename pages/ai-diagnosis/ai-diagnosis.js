@@ -29,16 +29,44 @@ const cache = {
 注意：请基于整个对话历史进行分析，确保回答的连贯性。特别关注患者的年龄信息，18岁以下必须推荐儿童口腔科。`
 };
 
+// 专家医生列表（后续可扩展）
+const EXPERT_DOCTORS = [
+  {
+    id: 'implant_ye',
+    name: '叶颖',
+    title: '副主任医师',
+    department: '口腔种植科',
+    description: '擅长种植牙、复杂骨增量、全口/半口即刻负重'
+  }
+];
+
 Page({
   data: {
+    // ===== 模式状态 =====
+    chatMode: 'diagnosis',        // 'diagnosis' = AI智能分诊 | 'expert' = 专家数字分身
+    showDoctorList: false,          // 是否显示医生选择面板
+    selectedDoctor: null,           // 当前选中的专家
+
+    // ===== 对话数据 =====
     messages: [],
     inputText: '',
     recommendedDepartment: '',
     recommendationReason: '',
+
+    // ===== 专家医生列表 =====
+    doctors: EXPERT_DOCTORS,
+
+    // ===== 专家模式专属 =====
+    expertConversationId: '',       // Dify 会话ID（用于多轮上下文）
+
+    // ===== UI 状态 =====
     scrollTop: 0,
     userAvatar: '',
-    aiAvatar: ''
+    aiAvatar: '',
+    keyboardHeight: 0           // 键盘高度，用于动态调整布局
   },
+
+  doctors: EXPERT_DOCTORS,
 
   onLoad(options) {
     // 使用缓存避免重复获取头像
@@ -57,10 +85,10 @@ Page({
         this.showDiagnosisRecord(record);
       } catch (error) {
         console.error('解析诊断记录失败:', error);
-        this.addMessage('您好，我是AI智能分诊助手，请描述您的症状，我将为您推荐合适的科室。', 'ai');
+        this.addMessage('您好，我是智能分诊助手，请描述您的症状，我将为您推荐合适的科室。', 'ai');
       }
     } else {
-      this.addMessage('您好，我是AI智能分诊助手，请描述您的症状，我将为您推荐合适的科室。', 'ai');
+      this.addMessage('您好，我是智能分诊助手，请描述您的症状，我将为您推荐合适的科室。', 'ai');
     }
   },
 
@@ -93,56 +121,19 @@ Page({
     });
   },
 
-  async sendMessage() {
-    const { inputText } = this.data;
-    if (!inputText.trim()) return;
+  /**
+   * 键盘高度变化时动态调整聊天区域底部间距
+   * 配合 adjust-position="{{false}}" 使用
+   */
+  onKeyboardHeightChange(e) {
+    const height = e.detail.height;
+    this.setData({ keyboardHeight: height });
 
-    this.addMessage(inputText, 'user');
-    this.setData({ inputText: '' });
-
-    // 显示加载状态
-    wx.showLoading({
-      title: 'AI分析中...',
-      mask: true
-    });
-
-    try {
-      const result = await this.analyzeSymptoms(inputText);
-      
-      // 构建完整的回复消息
-      let fullResponse = `${result.reason}\n\n`;
-      if (result.suggestions && result.suggestions.length > 0) {
-        fullResponse += '建议：\n';
-        result.suggestions.forEach((suggestion, index) => {
-          fullResponse += `${index + 1}. ${suggestion}\n`;
-        });
-      }
-      
-      this.addMessage(fullResponse, 'ai');
-      this.setData({
-        recommendedDepartment: result.department,
-        recommendationReason: result.reason
-      });
-      
-      // 根据严重程度显示不同的提示
-      if (result.severity === 'severe') {
-        wx.showModal({
-          title: '重要提醒',
-          content: '您的症状可能较为严重，建议尽快就医检查！',
-          confirmText: '立即导航',
-          success: (res) => {
-            if (res.confirm) {
-              this.navigateToDepartment();
-            }
-          }
-        });
-      }
-      
-    } catch (error) {
-      console.error('AI分析失败:', error);
-      this.addMessage('抱歉，AI分析暂时不可用，请稍后再试或联系客服。', 'ai');
-    } finally {
-      wx.hideLoading();
+    // 键盘弹出后延迟滚动到底部，确保最新消息可见
+    if (height > 0) {
+      setTimeout(() => {
+        this.setData({ scrollTop: 99999 });
+      }, 100);
     }
   },
 
@@ -440,5 +431,173 @@ Page({
     wx.navigateTo({
       url: `/pages/navigation/department/department?d=${recommendedDepartment}`
     });
-  }
+  },
+
+  // ===== 专家数字分身相关方法 =====
+
+  /**
+   * 切换到专家咨询模式（显示医生列表）
+   */
+  switchToExpertMode() {
+    this.setData({ showDoctorList: true });
+  },
+
+  /**
+   * 切换回 AI 分诊模式
+   */
+  switchToDiagnosisMode() {
+    this.setData({
+      chatMode: 'diagnosis',
+      showDoctorList: false,
+      messages: [],
+      inputText: '',
+      recommendedDepartment: '',
+      recommendationReason: ''
+    });
+    this.addMessage('您好，我是智能分诊助手，请描述您的症状，我将为您推荐合适的科室。', 'ai');
+  },
+
+  /**
+   * 选择医生并进入专家对话模式
+   */
+  selectDoctor(e) {
+    const doctorId = e.currentTarget.dataset.id;
+    const doctor = EXPERT_DOCTORS.find(d => d.id === doctorId);
+    
+    if (!doctor) return;
+
+    // 重置对话状态
+    this.setData({
+      selectedDoctor: doctor,
+      chatMode: 'expert',
+      showDoctorList: false,
+      messages: [],
+      expertConversationId: '',  // 新会话，清空 conversation_id
+      inputText: '',
+      recommendedDepartment: '',
+      recommendationReason: ''
+    });
+
+    // 发送欢迎消息
+    const welcomeMsg = `您好！我是${doctor.department}的${doctor.title}${doctor.name}。\n\n${doctor.description}\n\n请问有什么我可以帮您的？`;
+    this.addMessage(welcomeMsg, 'ai');
+  },
+
+  /**
+   * 发送专家咨询消息（通过 Dify RAG API）
+   */
+  async sendExpertMessage() {
+    const { inputText, expertConversationId, selectedDoctor } = this.data;
+    if (!inputText.trim()) return;
+
+    this.addMessage(inputText, 'user');
+    this.setData({ inputText: '' });
+
+    wx.showLoading({
+      title: `${selectedDoctor.name}医生思考中...`,
+      mask: true
+    });
+
+    try {
+      const result = await new Promise((resolve, reject) => {
+        wx.cloud.callFunction({
+          name: 'aiDiagnosis',
+          data: {
+            mode: 'expertAvatar',
+            query: inputText,
+            conversationId: expertConversationId || '',
+            userId: `wx_user_${Date.now()}`,
+            doctorName: selectedDoctor ? selectedDoctor.name : ''
+          },
+          success: (res) => {
+            const cloudResult = res.result;
+            if (cloudResult && cloudResult.success) {
+              resolve(cloudResult);
+            } else {
+              // 携带原始错误信息用于调试
+              const detail = cloudResult?.raw
+                ? `\n[Dify详情] ${cloudResult.raw.difyCode || ''}: ${cloudResult.raw.difyMessage || JSON.stringify(cloudResult.raw.body)}`
+                : '';
+              reject(new Error(cloudResult?.error + detail || 'Dify 服务调用失败'));
+            }
+          },
+          fail: (err) => {
+            console.error('调用 Dify 云函数失败:', err);
+            reject(err);
+          }
+        });
+      });
+
+      // 显示回复
+      this.addMessage(result.content, 'ai');
+
+      // 更新 conversation_id 以保持多轮上下文
+      if (result.conversationId) {
+        this.setData({ expertConversationId: result.conversationId });
+      }
+
+    } catch (error) {
+      console.error('专家咨询失败:', error);
+      this.addMessage(`抱歉，${selectedDoctor.name}医生暂时无法回答，请稍后重试。错误：${error.message || '服务异常'}`, 'ai');
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  /**
+   * 统一发送消息入口（根据当前模式路由）
+   */
+  sendMessage() {
+    if (this.data.chatMode === 'expert') {
+      this.sendExpertMessage();
+    } else {
+      this.sendDiagnosisMessage();
+    }
+  },
+
+  /**
+   * AI 分诊模式的发送消息（原有逻辑）
+   */
+  async sendDiagnosisMessage() {
+    const { inputText } = this.data;
+    if (!inputText.trim()) return;
+
+    this.addMessage(inputText, 'user');
+    this.setData({ inputText: '' });
+
+    wx.showLoading({ title: 'AI分析中...', mask: true });
+
+    try {
+      const result = await this.analyzeSymptoms(inputText);
+
+      let fullResponse = `${result.reason}\n\n`;
+      if (result.suggestions && result.suggestions.length > 0) {
+        fullResponse += '建议：\n';
+        result.suggestions.forEach((suggestion, index) => {
+          fullResponse += `${index + 1}. ${suggestion}\n`;
+        });
+      }
+
+      this.addMessage(fullResponse, 'ai');
+      this.setData({
+        recommendedDepartment: result.department,
+        recommendationReason: result.reason
+      });
+
+      if (result.severity === 'severe') {
+        wx.showModal({
+          title: '重要提醒',
+          content: '您的症状可能较为严重，建议尽快就医检查！',
+          confirmText: '立即导航',
+          success: (res) => { if (res.confirm) { this.navigateToDepartment(); } }
+        });
+      }
+
+    } catch (error) {
+      console.error('AI分析失败:', error);
+      this.addMessage('抱歉，AI分析暂时不可用，请稍后再试或联系客服。', 'ai');
+    } finally {
+      wx.hideLoading();
+    }
+  },
 })

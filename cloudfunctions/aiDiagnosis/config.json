@@ -1,1 +1,1 @@
-{"permissions": {"openapi": []}, "runtime": "Nodejs18"}
+{"permissions": {"openapi": []}, "runtime": "Nodejs18", "timeout": 60}
