@@ -123,6 +123,9 @@ async function handleExpertAvatar(event) {
     };
   }
 
+  const weContext = cloud.getWXContext();
+  const openId = weContext.OPENID || 'anonymous_user';
+
   try {
     const difyResponse = await axios.post(
       `${DIFY_API_BASE_URL}/chat-messages`,
@@ -131,7 +134,7 @@ async function handleExpertAvatar(event) {
         query: query,
         response_mode: 'blocking',
         conversation_id: conversationId || '',
-        user: userId || 'anonymous',
+        user: openId,
         auto_generate_name: true
       },
       {
