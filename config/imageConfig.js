@@ -50,6 +50,20 @@ const navIcons = {
   PROFILE_ICON: "profile-icon.png"  // 个人中心图标
 };
 
+// 科普视频配置（相对路径，自动拼接 BASE_URL）
+const scienceVideos = {
+  VIDEO_5_DENTAL_IMPLANT: "videos/DentalImplantPromotion.mp4",     // 即拔即种即吃饭（暂时隐藏）
+  VIDEO_6_CRACKED_TOOTH: "videos/CrackedToothSyn.mp4",              // 小隐裂，大隐患
+  VIDEO_7_CARE_FOR_TEETH: "videos/C2.mp4",                         // 趣味护牙，健康成长
+  VIDEO_8_ORAL_TOWN: "videos/C3.mp4",                              // 探秘粉红王国——口腔小镇
+  VIDEO_9_BABY_TOOTH: "videos/C4.mp4",                             // 乳牙撞坏无所谓？绿茵场上要当心！
+  VIDEO_10_CAVITY_FIGHT: "videos/C5.mp4",                          // "蛀牙"也爱吃甜食？牙齿保卫战大揭秘！
+  VIDEO_11_NIGHT_GRINDING: "videos/C6.mp4",                        // 夜半三更"咔咔"声？
+  VIDEO_12_WISDOM_TOOTH: "videos/C7.mp4",                         // 智齿，和智慧有关吗？
+  VIDEO_13_OCCLUSION: "videos/C8.mp4",                             // 地包天，天包地，错𬌗畸形要警惕
+  VIDEO_14_CARPET: "videos/C9.mp4"                                 // 口腔地毯（待定）
+};
+
 // 动态生成完整URL
 const imageConfig = {};
 
@@ -81,6 +95,11 @@ Object.keys(departmentImages).forEach(key => {
 // 添加导航栏图标
 Object.keys(navIcons).forEach(key => {
   imageConfig[key] = `${BASE_URL}/${navIcons[key]}`;
+});
+
+// 添加科普视频完整URL
+Object.keys(scienceVideos).forEach(key => {
+  imageConfig[key] = `${BASE_URL}/${scienceVideos[key]}`;
 });
 
 export default imageConfig;

@@ -41,12 +41,51 @@
 /* 文章项样式 - 对应<view class="article" wx:for="{{articles}}">，可点击进入详情 */
 .article {
   margin-bottom: 15px;
-  padding: 10px;
+  padding: 12px 16px;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #f0f0f0;
   transition: all 0.3s ease;
+}
+
+/* 文章项头部 - 标题+标签横向排列 */
+.article-header {
+  display: flex;
+  align-items: center;
+}
+
+/* 文章标题 */
+.article-title {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* 类型标签通用样式 */
+.article-type-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-left: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 视频类型标签 */
+.tag-video {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+}
+
+/* 文章类型标签 */
+.tag-article {
+  background-color: #f5f5f5;
+  color: #999;
+  border: 1px solid #eee;
 }
 
 /* 文章项悬停效果 */

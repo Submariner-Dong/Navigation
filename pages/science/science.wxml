@@ -9,8 +9,10 @@
   </view>
   <view class="content">
     <view class="article" wx:for="{{articles}}" wx:key="id" bindtap="navigateToDetail" data-id="{{index}}">
-      <text>{{item.title}}</text>
-      <text>{{item.summary}}</text>
+      <view class="article-header">
+        <text class="article-title">{{item.title}}</text>
+        <text class="article-type-tag {{item.type === 'video' ? 'tag-video' : 'tag-article'}}">{{item.type === 'video' ? '视频' : '文章'}}</text>
+      </view>
     </view>
   </view>
 </view>

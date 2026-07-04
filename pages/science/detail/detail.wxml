@@ -1,6 +1,23 @@
 <view class="container">
-  <image src="{{imageUrl}}" mode="widthFix"></image>
-  
+  <!-- 文章类型：显示图片 -->
+  <image wx:if="{{type === 'article'}}" src="{{imageUrl}}" mode="widthFix"></image>
+
+  <!-- 视频类型：显示视频播放器 -->
+  <view wx:if="{{type === 'video'}}" class="video-wrapper">
+    <video
+      id="scienceVideo"
+      class="science-video"
+      src="{{videoUrl}}"
+      controls
+      autoplay
+      show-center-play-btn
+      show-play-btn
+      enable-progress-gesture
+      object-fit="contain"
+      poster=""
+    ></video>
+  </view>
+
   <!-- 底部操作栏 -->
   <view class="action-bar">
     <button class="back-btn" bindtap="goBack">返回</button>

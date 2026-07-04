@@ -1,19 +1,47 @@
 const UserDataManager = require('../../../utils/userDataManager.js');
+import imageConfig from '../../../config/imageConfig.js';
+
+// 视频资源映射表（按 id → imageConfig key）
+const VIDEO_MAP = {
+  // 暂时隐藏: 5: imageConfig.VIDEO_5_DENTAL_IMPLANT,
+  6: imageConfig.VIDEO_6_CRACKED_TOOTH,
+  7: imageConfig.VIDEO_7_CARE_FOR_TEETH,
+  8: imageConfig.VIDEO_8_ORAL_TOWN,
+  9: imageConfig.VIDEO_9_BABY_TOOTH,
+  10: imageConfig.VIDEO_10_CAVITY_FIGHT,
+  11: imageConfig.VIDEO_11_NIGHT_GRINDING,
+  12: imageConfig.VIDEO_12_WISDOM_TOOTH,
+  13: imageConfig.VIDEO_13_OCCLUSION,
+  14: imageConfig.VIDEO_14_CARPET
+};
 
 Page({
   data: {
     id: '',
+    type: 'article',        // 'article' | 'video'
     imageUrl: '',
+    videoUrl: '',
     isFavorite: false
   },
   onLoad: function(option) {
     const id = option.id || '1';
-    console.log(id);
-    this.setData({
-      id: id,
-      imageUrl: this.getImageUrl(id)
-    });
-    
+    const type = option.type || 'article';
+    console.log('详情页加载, id:', id, ', type:', type);
+
+    const data = { id, type };
+
+    if (type === 'video') {
+      // 视频类型：加载视频URL
+      data.videoUrl = VIDEO_MAP[id] || '';
+      data.imageUrl = '';
+    } else {
+      // 文章类型：加载图片URL
+      data.imageUrl = this.getImageUrl(id);
+      data.videoUrl = '';
+    }
+
+    this.setData(data);
+
     // 检查是否已收藏
     this.checkFavoriteStatus(id);
   },
@@ -60,7 +88,8 @@ Page({
       id: parsedId,
       title: this.getArticleTitle(id),
       imageUrl: this.getImageUrl(id),
-      type: '科普文章'
+      videoUrl: VIDEO_MAP[parsedId] || '',
+      type: this.data.type === 'video' ? '科普视频' : '科普文章'
     };
     
     console.log('准备操作的收藏文章信息:', articleInfo);
@@ -112,26 +141,25 @@ Page({
     console.log('=== 收藏状态切换完成 ===');
   },
   
-  // 获取文章标题
+  // 获取文章/视频标题
   getArticleTitle: function(id) {
-    //console.log('=== 获取文章标题 ===');
-    //console.log('传入的文章ID:', id, '类型:', typeof id);
-    
     const titles = {
-      0: "鼻须知道——打败口呼吸小怪兽的魔法指南",
-      1: "口干勿躁：糖尿病患者科学护口指南",
-      2: "糖尿病人牙周健康科普手册",
-      3: "稳糖护黏，笑容常在——糖尿病患者口腔黏膜病指南"
+      0: `鼻须知道——打败口呼吸小怪兽的魔法指南`,
+      1: `口干勿躁：糖尿病患者科学护口指南`,
+      2: '糖尿病人牙周健康科普手册',
+      3: '稳糖护黏，笑容常在——糖尿病患者口腔黏膜病指南',
+      // 暂时隐藏: 5: '即拔即种即吃饭：今天拔牙今天种牙今天吃饭，真的是最佳方案吗？',
+      6: '小隐裂，大隐患：隐裂牙自传',
+      7: '趣味护牙，健康成长',
+      8: '探秘粉红王国——口腔小镇',
+      9: '乳牙撞坏无所谓？绿茵场上要当心！',
+      10: `"蛀牙"也爱吃甜食？牙齿保卫战大揭秘！`,
+      11: `夜半三更"咔咔"声？解码夜间牙齿的"神秘运动会"`,
+      12: '智齿，和智慧有关吗？',
+      13: '地包天，天包地，错𬌗畸形要警惕',
+      14: '口腔地毯（待定）'
     };
-    
-    const parsedId = parseInt(id);
-    //console.log('解析后的文章ID:', parsedId);
-    //console.log('可用的标题映射:', titles);
-    
-    const title = titles[parsedId] || "科普文章";
-    //console.log('获取到的标题:', title);
-    //console.log('=== 标题获取完成 ===');
-    
-    return title;
+
+    return titles[parseInt(id)] || "科普内容";
   }
 })
