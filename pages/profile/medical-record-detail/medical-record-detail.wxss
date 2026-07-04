@@ -93,6 +93,13 @@
   border-radius: 12rpx;
   box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  min-width: 0 !important;
+  max-width: none !important;
+  width: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .action-btn:active {
@@ -101,25 +108,52 @@
 }
 
 /* 复制按钮样式 */
-.action-btn[theme="default"] {
+.copy-btn {
   background: linear-gradient(135deg, #f0f0f0 0%, #d9d9d9 100%);
   border: 2rpx solid #d9d9d9;
   color: #333;
+  padding: 0;
+  margin: 0;
+  line-height: 88rpx;
+  border-radius: 12rpx;
 }
 
-.action-btn[theme="default"]:active {
+.copy-btn::after {
+  border: none;
+}
+
+.copy-btn:active {
   background: linear-gradient(135deg, #e0e0e0 0%, #c9c9c9 100%);
 }
 
 /* 分享按钮样式 */
-.action-btn[theme="primary"] {
+.share-btn {
   background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
   border: 2rpx solid #1677ff;
   color: white;
+  padding: 0;
+  margin: 0;
+  line-height: 88rpx;
+  border-radius: 12rpx;
 }
 
-.action-btn[theme="primary"]:active {
+.share-btn::after {
+  border: none;
+}
+
+.share-btn:active {
   background: linear-gradient(135deg, #0d63e6 0%, #2d85e6 100%);
+}
+
+/* ========== 修改按钮 ========== */
+.edit-section {
+  padding: 20rpx 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.edit-btn {
+  width: 100%;
+  border-radius: 12rpx;
 }
 
 /* 无数据状态 */

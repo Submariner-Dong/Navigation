@@ -44,6 +44,11 @@ const departmentImages = {
   "1-ORALANDMAXILLOFACIALSURGERY-1": "1-Oralandmaxillofacialsurgery-1.jpg"
 };
 
+// Logo 配置
+const logoImages = {
+  APP_LOGO: "logo.png"
+};
+
 // 底部导航栏图标配置
 const navIcons = {
   HOME_ICON: "home-icon.png",       // 首页图标
@@ -95,6 +100,11 @@ Object.keys(departmentImages).forEach(key => {
 // 添加导航栏图标
 Object.keys(navIcons).forEach(key => {
   imageConfig[key] = `${BASE_URL}/${navIcons[key]}`;
+});
+
+// 添加 Logo
+Object.keys(logoImages).forEach(key => {
+  imageConfig[key] = `${BASE_URL}/${logoImages[key]}`;
 });
 
 // 添加科普视频完整URL

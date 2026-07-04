@@ -1,3 +1,5 @@
+const UserDataManager = require('../../../utils/userDataManager.js');
+
 Page({
   data: {
     medicalRecord: null,
@@ -12,21 +14,80 @@ Page({
       "复诊信息": "",
       "检查结果": "",
       "医嘱": ""
-    }
+    },
+    currentRecordId: null // 记录当前病历ID，用于onShow时重新拉取最新数据
   },
 
   onLoad(options) {
+    // 启用分享菜单，确保转发功能可用
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    });
+
+    this.loadRecordData(options);
+  },
+
+  // 页面显示时（从编辑页返回）重新加载最新数据
+  onShow() {
+    // 仅当已有记录数据时才刷新（避免首次加载重复）
+    if (this.data.currentRecordId && this.data.medicalRecord) {
+      this.refreshCurrentRecord();
+    }
+  },
+
+  // 加载记录数据（onLoad / 刷新共用）
+  loadRecordData(options) {
     if (options.record) {
       const record = JSON.parse(decodeURIComponent(options.record));
       this.setData({
         medicalRecord: record,
-        detailedInfo: this.generateDetailedInfo(record)
+        detailedInfo: this.generateDetailedInfo(record),
+        currentRecordId: record.id
       });
+    }
+  },
+
+  // 从本地存储重新拉取当前记录的最新数据（用于编辑返回后同步）
+  refreshCurrentRecord() {
+    try {
+      const userData = UserDataManager.loadUserData();
+      const records = userData.medicalData.medicalRecords || [];
+      
+      // 先在手动添加的病历中查找
+      let updatedRecord = records.find(r => r.id === this.data.currentRecordId);
+      
+      if (updatedRecord) {
+        // 找到了，更新显示
+        this.setData({
+          medicalRecord: updatedRecord,
+          detailedInfo: this.generateDetailedInfo(updatedRecord)
+        });
+      }
+      // 如果是医院模拟病历，数据不变无需处理
+    } catch (error) {
+      console.error('刷新病历数据失败:', error);
     }
   },
 
   // 生成详细的病历信息
   generateDetailedInfo(record) {
+    // 手动添加的病历：直接使用用户填写的详细数据
+    if (record.isManual) {
+      return {
+        "就诊时间": record.visitTime,
+        "科室": record.department,
+        "医生": record.doctor,
+        "主诉": record.mainComplaint || '未填写',
+        "诊断结果": record.diagnosis || '未填写',
+        "治疗经过": record.treatmentProcess || '未填写',
+        "用药信息": record.medication || '未填写',
+        "复诊信息": record.followUp || '未填写',
+        "检查结果": record.examination || '未填写',
+        "医嘱": record.advice || '未填写'
+      };
+    }
+
     // 模拟医院系统返回的详细病历信息
     const departments = {
       '牙体牙髓病科': '专注于牙齿硬组织和牙髓疾病的诊断与治疗',
@@ -168,5 +229,19 @@ Page({
   // 返回上一页
   goBack() {
     wx.navigateBack();
+  },
+
+  // 编辑病历（跳转到病历填写页面并回填数据）
+  editMedicalRecord() {
+    const { medicalRecord } = this.data;
+
+    if (!medicalRecord || !medicalRecord.isManual) {
+      wx.showToast({ title: '仅支持编辑手动添加的病历', icon: 'none' });
+      return;
+    }
+
+    wx.navigateTo({
+      url: `/pages/profile/medical-record/medical-record?record=${encodeURIComponent(JSON.stringify(medicalRecord))}`
+    });
   }
 })

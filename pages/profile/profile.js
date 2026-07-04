@@ -22,10 +22,13 @@ Page({
       phone: ''
     },
     medicalRecords: [],
-    
+
     // 图片配置
     images: imageConfig,
     currentPage: 'profile',
+
+    // 游客模式标识
+    isGuestMode: false,
     
     // 新增健康管理相关数据
     healthStatus: {
@@ -62,12 +65,54 @@ Page({
   },
 
   async onLoad() {
-    // 并行加载数据
-    await Promise.all([
-      this.loadUserData(),
-      this.loadUserAccount(),
-      this.loadHealthData()
-    ]);
+    // 检查游客模式
+    this.checkGuestMode();
+
+    // 并行加载数据（非游客模式才加载用户数据）
+    if (!this.data.isGuestMode) {
+      await Promise.all([
+        this.loadUserData(),
+        this.loadUserAccount(),
+        this.loadHealthData()
+      ]);
+    }
+  },
+
+  // 页面显示时检查是否需要刷新（从手动添加/编辑病历页面返回时）
+  onShow() {
+    // 每次显示都重新检查游客模式状态
+    this.checkGuestMode();
+
+    // 游客模式不加载用户数据
+    if (this.data.isGuestMode) return;
+
+    // 如果病历列表已加载过，每次 onShow 都重新同步（覆盖增/删/改全部场景）
+    if (this.data.medicalRecordsList.length > 0 || this.data.medicalRecordsCount > 0) {
+      this.fetchMedicalRecords();
+    }
+    // 同时刷新健康数据（AI问诊、收藏、科室等）
+    this.loadHealthData();
+  },
+
+  // ==================== 游客模式管理 ====================
+
+  // 检查当前是否处于游客模式
+  checkGuestMode() {
+    const isGuest = wx.getStorageSync('isGuestMode') === true;
+    const hasLoggedIn = wx.getStorageSync('hasLoggedIn') === true;
+    const hasCompletedAuth = wx.getStorageSync('hasCompletedAuth') === true;
+
+    // 如果标记为游客模式 或 未登录/未完成认证，则进入游客模式
+    if (isGuest || (!hasLoggedIn && !hasCompletedAuth)) {
+      this.setData({ isGuestMode: true });
+    } else {
+      this.setData({ isGuestMode: false });
+    }
+  },
+
+  // 从游客模式登录 → 跳转到认证页
+  loginFromGuestMode() {
+    wx.redirectTo({ url: '/pages/auth/auth' });
   },
 
   loadUserData() {
@@ -301,22 +346,22 @@ Page({
     }
   },
 
-  // 时间格式化函数
+  // 时间格式化函数（AI诊断记录使用）
   formatTimestamp(timestamp) {
     if (!timestamp) return '未知时间';
-    
+
     // 如果是ISO格式时间戳，提取日期部分
-    if (timestamp.includes('T')) {
+    if (typeof timestamp === 'string' && timestamp.includes('T')) {
       return timestamp.split('T')[0];
     }
-    
-    // 其他格式的时间戳处理
+
+    // 其他格式的时间戳处理，使用统一的 YYYY-MM-DD 格式
     try {
       const date = new Date(timestamp);
       if (isNaN(date.getTime())) {
         return '未知时间';
       }
-      return date.toISOString().split('T')[0];
+      return this.formatDateYMD(date);
     } catch (error) {
       return '未知时间';
     }
@@ -621,30 +666,31 @@ Page({
     });
   },
 
-  // 格式化时间
+  // 格式化时间（统一使用 YYYY-MM-DD 格式）
   formatTime(timestamp) {
     if (!timestamp) return '';
     
     const date = new Date(timestamp);
+    // 检查日期是否有效
+    if (isNaN(date.getTime())) return '';
+    
     const now = new Date();
-    const diff = now - date;
+    const diff = now.getTime() - date.getTime();
     
     // 如果是今天
-    if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString('zh-CN', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
+    if (this.formatDateYMD(date) === this.formatDateYMD(now)) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
     }
     
     // 如果是昨天
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
-    if (date.toDateString() === yesterday.toDateString()) {
-      return '昨天 ' + date.toLocaleTimeString('zh-CN', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
+    if (this.formatDateYMD(date) === this.formatDateYMD(yesterday)) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `昨天 ${hours}:${minutes}`;
     }
     
     // 一周内
@@ -653,12 +699,8 @@ Page({
       return `${days}天前`;
     }
     
-    // 更早的时间
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
+    // 更早的时间：统一 YYYY-MM-DD
+    return this.formatDateYMD(date);
   },
 
   viewRecommendedArticle() {
@@ -688,10 +730,72 @@ Page({
 
   // 设置相关方法
   bindPhone() {
+    const that = this;
+    
+    // 如果已绑定手机号，提示用户
+    if (that.data.userInfo && that.data.userInfo.phone) {
+      wx.showModal({
+        title: '绑定手机',
+        content: `当前已绑定手机号：${that.data.userInfo.phone}`,
+        confirmText: '更换号码',
+        success: (res) => {
+          if (res.confirm) {
+            that.showPhoneBindDialog();
+          }
+        }
+      });
+      return;
+    }
+
+    // 未绑定，直接弹出绑定弹窗
+    that.showPhoneBindDialog();
+  },
+
+  // 显示手机绑定弹窗
+  showPhoneBindDialog() {
+    const that = this;
+
     wx.showModal({
-      title: '绑定手机',
-      content: '此功能正在开发中，将用于绑定您的手机号码',
-      showCancel: false
+      title: '绑定手机号',
+      content: '',   // 留空，避免预填文字干扰用户输入
+      editable: true,
+      placeholderText: '请输入11位手机号',
+      confirmText: '确认绑定',
+      confirmColor: '#1677ff',
+      success: (res) => {
+        if (res.confirm && res.content) {
+          const phone = res.content.trim();
+          
+          // 验证手机号格式
+          if (!/^1[3-9]\d{9}$/.test(phone)) {
+            wx.showToast({
+              title: '请输入正确的11位手机号',
+              icon: 'none'
+            });
+            return;
+          }
+
+          // 保存手机号到本地存储
+          try {
+            const userData = UserDataManager.loadUserData();
+            userData.userInfo.phone = phone;
+            UserDataManager.saveUserData(userData);
+            
+            that.setData({ 'userInfo.phone': phone });
+
+            wx.showToast({
+              title: '手机号绑定成功',
+              icon: 'success'
+            });
+          } catch (error) {
+            console.error('保存手机号失败:', error);
+            wx.showToast({
+              title: '绑定失败，请重试',
+              icon: 'none'
+            });
+          }
+        }
+      }
     });
   },
 
@@ -879,17 +983,42 @@ Page({
   logout() {
     wx.showModal({
       title: '退出登录',
-      content: '确定要退出登录吗？',
+      content: '确定要退出登录吗？退出后将进入游客模式，无法查看个人数据。',
       confirmText: '退出',
       confirmColor: '#fa5151',
       success: (res) => {
         if (res.confirm) {
+          // 清除登录状态
           wx.removeStorageSync('userAccount');
           wx.removeStorageSync('hasLoggedIn');
-          this.setData({ userAccount: null });
+          wx.removeStorageSync('hasCompletedAuth');
+
+          // 设置游客模式标记
+          wx.setStorageSync('isGuestMode', true);
+
+          // 清空页面用户数据，显示游客视图
+          this.setData({
+            isGuestMode: true,
+            userAccount: null,
+            userInfo: { name: '', gender: '', age: '', phone: '' },
+            aiRecordsCount: 0,
+            aiDiagnosisList: [],
+            displayedDiagnosisList: [],
+            remainingDiagnosisList: [],
+            favoriteArticles: 0,
+            displayedFavoriteArticles: [],
+            remainingFavoriteArticles: [],
+            commonDepartmentsCount: 0,
+            commonDepartmentsList: [],
+            medicalRecordsCount: 0,
+            medicalRecordsList: [],
+            displayedMedicalRecords: [],
+            remainingMedicalRecords: []
+          });
+
           wx.showToast({
-            title: '已退出登录',
-            icon: 'success'
+            title: '已切换到游客模式',
+            icon: 'none'
           });
         }
       }
@@ -961,7 +1090,7 @@ Page({
 
   // 病历信息相关方法
 
-  // 获取病历信息（模拟医院系统接口）
+  // 获取病历信息（模拟医院系统接口 + 手动添加的病历）
   fetchMedicalRecords() {
     if (this.data.medicalRecordsLoading) return;
     
@@ -975,11 +1104,37 @@ Page({
         // 模拟从医院系统获取的病历数据
         const mockMedicalRecords = this.generateMockMedicalRecords();
         
+        // 合并手动添加的病历（去重）
+        const userData = UserDataManager.loadUserData();
+        const manualRecords = (userData.medicalData.medicalRecords || [])
+          .filter(r => r.isManual)
+          .map(r => ({
+            id: r.id,
+            department: r.department,
+            doctor: r.doctor,
+            diagnosis: r.diagnosis,
+            visitTime: r.visitTime,
+            description: r.description,
+            treatment: r.treatment,
+            nextVisit: r.nextVisit,
+            mainComplaint: r.mainComplaint,
+            treatmentProcess: r.treatmentProcess,
+            medication: r.medication,
+            followUp: r.followUp,
+            examination: r.examination,
+            advice: r.advice,
+            isManual: true
+          }));
+        
+        // 合并并按时间排序（最新的在前）
+        const allRecords = [...manualRecords, ...mockMedicalRecords];
+        allRecords.sort((a, b) => new Date(b.visitTime) - new Date(a.visitTime));
+        
         this.setData({
-          medicalRecordsList: mockMedicalRecords,
-          medicalRecordsCount: mockMedicalRecords.length,
-          displayedMedicalRecords: mockMedicalRecords.slice(0, 3),
-          remainingMedicalRecords: mockMedicalRecords.slice(3),
+          medicalRecordsList: allRecords,
+          medicalRecordsCount: allRecords.length,
+          displayedMedicalRecords: allRecords.slice(0, 3),
+          remainingMedicalRecords: allRecords.slice(3),
           medicalRecordsLoading: false
         });
 
@@ -999,6 +1154,17 @@ Page({
         });
       }
     }, 1500);
+  },
+
+  // 统一日期格式化函数 YYYY-MM-DD
+  formatDateYMD(date) {
+    if (!date) return '';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   },
 
   // 生成模拟病历数据
@@ -1031,7 +1197,7 @@ Page({
       const randomDays = Math.floor(Math.random() * 365);
       const visitDate = new Date();
       visitDate.setDate(visitDate.getDate() - randomDays);
-      const visitTime = visitDate.toLocaleDateString('zh-CN');
+      const visitTime = this.formatDateYMD(visitDate);
       
       records.push({
         id: `medical_${Date.now()}_${i}`,
@@ -1103,5 +1269,120 @@ Page({
         remainingMedicalRecords: medicalRecordsList.slice(3)
       });
     }
+  },
+
+  // 长按删除单条目（统一处理：AI问诊、收藏文章、常用科室、病历）
+  deleteSingleItem(e) {
+    const { type, id } = e.currentTarget.dataset;
+    let itemTitle = '';
+    let deleteConfirmContent = '';
+
+    switch (type) {
+      case 'diagnosis':
+        itemTitle = '智能问诊记录';
+        deleteConfirmContent = '确定要删除这条问诊记录吗？';
+        break;
+      case 'favorite':
+        itemTitle = '收藏文章';
+        deleteConfirmContent = '确定要删除这篇文章吗？';
+        break;
+      case 'department': {
+        const name = e.currentTarget.dataset.name;
+        itemTitle = name;
+        deleteConfirmContent = `确定要删除「${name}」吗？`;
+        break;
+      }
+      case 'record':
+        itemTitle = '病历记录';
+        deleteConfirmContent = '确定要删除这条病历吗？';
+        break;
+      default:
+        return;
+    }
+
+    wx.showModal({
+      title: `删除${itemTitle}`,
+      content: deleteConfirmContent,
+      confirmText: '删除',
+      confirmColor: '#fa5151',
+      success: (res) => {
+        if (res.confirm) {
+          this.executeDeleteSingleItem(type, id, e);
+        }
+      }
+    });
+  },
+
+  // 执行单条删除操作（立即从当前界面移除 + 存储层删除）
+  executeDeleteSingleItem(type, id, e) {
+    const userData = UserDataManager.loadUserData();
+    let successMessage = '';
+
+    switch (type) {
+      case 'diagnosis': {
+        userData.medicalData.aiDiagnosisHistory = userData.medicalData.aiDiagnosisHistory.filter(
+          record => String(record.timestamp) !== String(id)
+        );
+        // 立即从当前显示数组中移除
+        const newAiList = this.data.aiDiagnosisList.filter(item => String(item.id) !== String(id));
+        this.setData({
+          aiDiagnosisList: newAiList,
+          displayedDiagnosisList: newAiList.slice(0, 3),
+          remainingDiagnosisList: newAiList.slice(3),
+          aiRecordsCount: newAiList.length
+        });
+        successMessage = '问诊记录已删除';
+        break;
+      }
+      case 'favorite': {
+        userData.preferences.favoriteArticles = userData.preferences.favoriteArticles.filter(
+          article => article.id !== id
+        );
+        // 立即从当前显示数组中移除
+        const newFavList = this.data.displayedFavoriteArticles.filter(item => item.id !== id);
+        this.setData({
+          displayedFavoriteArticles: newFavList,
+          favoriteArticles: (this.data.favoriteArticles || 1) - 1
+        });
+        successMessage = '收藏已移除';
+        break;
+      }
+      case 'department': {
+        const deptName = e.currentTarget.dataset.name;
+        userData.preferences.commonDepartments = userData.preferences.commonDepartments.filter(
+          dept => dept.name !== deptName
+        );
+        // 立即从当前显示数组中移除
+        const newDeptList = this.data.commonDepartmentsList.filter(item => item.name !== deptName);
+        this.setData({
+          commonDepartmentsList: newDeptList,
+          commonDepartmentsCount: newDeptList.length
+        });
+        successMessage = '科室已删除';
+        break;
+      }
+      case 'record': {
+        // 删除手动添加的病历
+        userData.medicalData.medicalRecords = (userData.medicalData.medicalRecords || []).filter(
+          r => r.id !== id
+        );
+        // 立即从当前显示数组中移除
+        const newList = this.data.medicalRecordsList.filter(r => r.id !== id);
+        this.setData({
+          medicalRecordsList: newList,
+          medicalRecordsCount: newList.length,
+          displayedMedicalRecords: newList.slice(0, 3),
+          remainingMedicalRecords: newList.slice(3)
+        });
+        successMessage = '病历已删除';
+        break;
+      }
+      default:
+        return;
+    }
+
+    UserDataManager.saveUserData(userData);
+
+    wx.showToast({ title: successMessage, icon: 'success' });
   }
 })

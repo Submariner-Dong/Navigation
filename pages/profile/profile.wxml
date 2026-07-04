@@ -1,4 +1,82 @@
 <view class="container">
+  <!-- ==================== 游客模式视图 ==================== -->
+  <block wx:if="{{isGuestMode}}">
+    <!-- 游客模式顶部 -->
+    <view class="identity-section">
+      <view class="identity-header">
+        <view class="avatar-area">
+          <view class="default-avatar">
+            <image src="{{images.APP_LOGO}}" mode="aspectFit" class="guest-logo"></image>
+          </view>
+          <view class="greeting-area">
+            <text class="greeting-text">您好，欢迎使用青芽智医</text>
+            <text class="care-motto">登录后可享受完整功能体验</text>
+          </view>
+        </view>
+
+        <view class="guest-status">
+          <t-tag theme="warning" variant="light" class="status-tag">游客模式</t-tag>
+          <text class="status-desc">当前以游客身份浏览，数据不会被保存</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 游客提示区 -->
+    <view class="cards-section">
+      <view class="guest-prompt-card">
+        <view class="guest-prompt-icon">🔒</view>
+        <text class="guest-prompt-title">登录后解锁更多功能</text>
+        <view class="guest-feature-list">
+          <view class="guest-feature-item">
+            <t-icon name="chat" size="18" color="#1677ff"></t-icon>
+            <text>保存智能问诊记录</text>
+          </view>
+          <view class="guest-feature-item">
+            <t-icon name="star" size="18" color="#faad14"></t-icon>
+            <text>收藏科普文章</text>
+          </view>
+          <view class="guest-feature-item">
+            <t-icon name="file" size="18" color="#52c41a"></t-icon>
+            <text>管理病历信息</text>
+          </view>
+          <view class="guest-feature-item">
+            <t-icon name="phone" size="18" color="#722ed1"></t-icon>
+            <text>绑定手机号保障安全</text>
+          </view>
+        </view>
+        <t-button theme="primary" size="large" bindtap="loginFromGuestMode" class="login-btn-guest">
+          立即登录
+        </t-button>
+      </view>
+    </view>
+
+    <!-- 设置与信息管理列表（游客模式下简化） -->
+    <view class="settings-section">
+      <t-cell-group title="关于与帮助">
+        <t-cell arrow bindtap="aboutApp">
+          <view slot="title"><text>关于青芽智医</text></view>
+        </t-cell>
+        <t-cell arrow bindtap="viewPrivacyPolicy">
+          <view slot="title"><text>隐私政策</text></view>
+        </t-cell>
+        <t-cell arrow bindtap="contactSupport">
+          <view slot="title"><text>联系客服</text></view>
+        </t-cell>
+      </t-cell-group>
+    </view>
+
+    <!-- 底部操作区 -->
+    <view class="security-section">
+      <view class="privacy-notice">
+        <t-message theme="info" size="small">
+          登录后可同步您的使用记录和数据
+        </t-message>
+      </view>
+    </view>
+  </block>
+
+  <!-- ==================== 已登录用户视图（原内容） ==================== -->
+  <block wx:if="{{!isGuestMode}}">
   <!-- 顶部身份区 - 强调专业与关怀 -->
   <view class="identity-section">
     <view class="identity-header">
@@ -72,7 +150,7 @@
         
         <!-- AI问诊记录列表 - 默认显示前3条 -->
         <view wx:if="{{!loading && displayedDiagnosisList.length > 0}}" class="diagnosis-list">
-          <view wx:for="{{displayedDiagnosisList}}" wx:key="id" class="diagnosis-item" bindtap="viewAiDiagnosisDetail" data-index="{{index}}">
+          <view wx:for="{{displayedDiagnosisList}}" wx:key="id" class="diagnosis-item" bindtap="viewAiDiagnosisDetail" data-index="{{index}}" bindlongpress="deleteSingleItem" data-type="diagnosis" data-id="{{item.id}}">
             <view class="diagnosis-content">
               <text class="diagnosis-symptoms">{{index + 1}}. {{item.symptoms}}</text>
               <text class="diagnosis-time">{{item.formattedTime}}</text>
@@ -119,7 +197,7 @@
         
         <!-- 收藏文章列表 - 默认显示前3条 -->
         <view wx:if="{{displayedFavoriteArticles.length > 0}}" class="favorite-list">
-          <view wx:for="{{displayedFavoriteArticles}}" wx:key="id" class="favorite-item" bindtap="viewFavoriteArticle" data-id="{{item.id}}">
+          <view wx:for="{{displayedFavoriteArticles}}" wx:key="id" class="favorite-item" bindtap="viewFavoriteArticle" data-id="{{item.id}}" bindlongpress="deleteSingleItem" data-type="favorite" data-id="{{item.id}}">
             <view class="favorite-content">
               <text class="favorite-title">{{index + 1}}. {{item.title}}</text>
               <text class="favorite-time">{{item.formattedTime}}</text>
@@ -162,7 +240,7 @@
         
         <!-- 常用科室列表 - 显示前3个 -->
         <view wx:if="{{commonDepartmentsList.length > 0}}" class="common-departments-list">
-          <view wx:for="{{commonDepartmentsList}}" wx:key="id" class="department-item" bindtap="navigateToDepartment" data-name="{{item.name}}">
+          <view wx:for="{{commonDepartmentsList}}" wx:key="id" class="department-item" bindtap="navigateToDepartment" data-name="{{item.name}}" bindlongpress="deleteSingleItem" data-type="department" data-name="{{item.name}}">
             <view class="department-content">
               <text class="department-name">{{index + 1}}. {{item.name}}</text>
               <text class="department-count">使用 {{item.count}} 次</text>
@@ -207,7 +285,7 @@
         
         <!-- 病历信息列表 - 显示前3份 -->
         <view wx:if="{{!medicalRecordsLoading && displayedMedicalRecords.length > 0}}" class="medical-records-list">
-          <view wx:for="{{displayedMedicalRecords}}" wx:key="id" class="medical-record-item" bindtap="viewMedicalRecordDetail" data-id="{{item.id}}" data-index="{{index}}">
+          <view wx:for="{{displayedMedicalRecords}}" wx:key="id" class="medical-record-item" bindtap="viewMedicalRecordDetail" data-id="{{item.id}}" data-index="{{index}}" bindlongpress="deleteSingleItem" data-type="record" data-id="{{item.id}}">
             <view class="medical-record-content">
               <text class="record-department">{{index + 1}}. {{item.department}} - {{item.doctor}}</text>
               <text class="record-diagnosis">{{item.diagnosis}}</text>
@@ -228,6 +306,13 @@
         
         <view class="card-tip">
           <t-message theme="success" size="small">与医院系统同步，查看完整就诊记录</t-message>
+        </view>
+
+        <!-- 手动添加病历按钮 -->
+        <view class="add-record-section">
+          <t-button theme="light" size="medium" bindtap="addMedicalRecord" class="add-record-btn">
+            + 手动添加病历
+          </t-button>
         </view>
       </t-cell-group>
     </view>
@@ -290,7 +375,7 @@
       </t-message>
     </view>
   </view>
-</view>
+</block>
 
 <!-- 底部导航栏 -->
 <view class="bottom-nav">
@@ -302,4 +387,5 @@
     <image src="{{images.PROFILE_ICON}}" mode="aspectFit" class="nav-icon"></image>
     <text class="nav-text">我的</text>
   </view>
+</view>
 </view>

@@ -1,0 +1,196 @@
+<view class="container">
+  <view class="form-section">
+    <t-cell-group title="就诊基本信息">
+
+      <!-- 就诊时间 - 日历选择器（不可选未来日期） -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">就诊时间 *</text>
+        </view>
+        <view slot="note">
+          <picker mode="date" value="{{formData.visitTime}}" data-field="visitTime" bindchange="onDatePick" start="2000-01-01" end="{{maxDate}}">
+            <view class="picker-value {{formData.visitTime ? '' : 'placeholder'}}">
+              {{formData.visitTime || '请选择日期'}}
+            </view>
+          </picker>
+        </view>
+      </t-cell>
+
+      <!-- 科室 -->
+      <t-cell arrow>
+        <view slot="title">
+          <text class="field-label">科室 *</text>
+        </view>
+        <view slot="note">
+          <picker
+            mode="selector"
+            range="{{departmentOptions}}"
+            value="{{departmentIndex}}"
+            bindchange="onDepartmentPick"
+          >
+            <view class="picker-value {{formData.department ? '' : 'placeholder'}}">
+              {{formData.department || '请选择科室'}}
+            </view>
+          </picker>
+        </view>
+      </t-cell>
+
+      <!-- 医生 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">医生 *</text>
+        </view>
+        <view slot="note">
+          <input
+            class="field-input"
+            type="text"
+            value="{{formData.doctor}}"
+            placeholder="请输入医生姓名"
+            data-field="doctor"
+            bindinput="onInputChange"
+          />
+        </view>
+      </t-cell>
+
+    </t-cell-group>
+  </view>
+
+  <view class="form-section">
+    <t-cell-group title="病历详细信息">
+
+      <!-- 主诉 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">主诉</text>
+        </view>
+        <view slot="note">
+          <input
+            class="field-input"
+            type="text"
+            value="{{formData.mainComplaint}}"
+            placeholder="请输入主要症状描述"
+            data-field="mainComplaint"
+            bindinput="onInputChange"
+          />
+        </view>
+      </t-cell>
+
+      <!-- 诊断结果 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">诊断结果</text>
+        </view>
+        <view slot="note">
+          <input
+            class="field-input"
+            type="text"
+            value="{{formData.diagnosis}}"
+            placeholder="请输入诊断结果"
+            data-field="diagnosis"
+            bindinput="onInputChange"
+          />
+        </view>
+      </t-cell>
+
+      <!-- 治疗经过 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">治疗经过</text>
+        </view>
+        <view slot="note">
+          <textarea
+            class="field-textarea"
+            value="{{formData.treatmentProcess}}"
+            placeholder="请输入治疗经过描述"
+            data-field="treatmentProcess"
+            bindinput="onInputChange"
+            auto-height
+            maxlength="-1"
+          />
+        </view>
+      </t-cell>
+
+      <!-- 用药信息 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">用药信息</text>
+        </view>
+        <view slot="note">
+          <textarea
+            class="field-textarea"
+            value="{{formData.medication}}"
+            placeholder="请输入用药信息"
+            data-field="medication"
+            bindinput="onInputChange"
+            auto-height
+            maxlength="-1"
+          />
+        </view>
+      </t-cell>
+
+      <!-- 复诊信息 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">复诊信息</text>
+        </view>
+        <view slot="note">
+          <input
+            class="field-input"
+            type="text"
+            value="{{formData.followUp}}"
+            placeholder="如：建议3个月后复查"
+            data-field="followUp"
+            bindinput="onInputChange"
+          />
+        </view>
+      </t-cell>
+
+      <!-- 检查结果 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">检查结果</text>
+        </view>
+        <view slot="note">
+          <textarea
+            class="field-textarea"
+            value="{{formData.examination}}"
+            placeholder="请输入检查结果"
+            data-field="examination"
+            bindinput="onInputChange"
+            auto-height
+            maxlength="-1"
+          />
+        </view>
+      </t-cell>
+
+      <!-- 医嘱 -->
+      <t-cell>
+        <view slot="title">
+          <text class="field-label">医嘱</text>
+        </view>
+        <view slot="note">
+          <textarea
+            class="field-textarea"
+            value="{{formData.advice}}"
+            placeholder="请输入医嘱内容"
+            data-field="advice"
+            bindinput="onInputChange"
+            auto-height
+            maxlength="-1"
+          />
+        </view>
+      </t-cell>
+
+    </t-cell-group>
+  </view>
+
+  <!-- 底部操作按钮 -->
+  <view class="action-buttons">
+    <t-button theme="default" size="large" bindtap="resetForm" class="action-btn">
+      重置
+    </t-button>
+    <t-button theme="primary" size="large" bindtap="saveMedicalRecord" class="action-btn">
+      保存病历
+    </t-button>
+  </view>
+</view>

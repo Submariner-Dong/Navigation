@@ -1,5 +1,6 @@
 // pages/index/index.js
 import imageConfig from '../../config/imageConfig.js'
+const UserDataManager = require('../../utils/userDataManager.js');
 
 const ELDERLY_MODE_KEY = 'elderlyMode';
 
@@ -76,21 +77,29 @@ Page({
   },
 
   checkLoginStatus() {
+    // 检查是否处于游客模式
+    const isGuestMode = wx.getStorageSync('isGuestMode') === true;
+
+    // 游客模式允许正常使用首页（不强制跳转认证）
+    if (isGuestMode) return;
+
+    // 检查是否已完成首次认证引导
+    const hasCompletedAuth = wx.getStorageSync('hasCompletedAuth');
+
+    if (!hasCompletedAuth) {
+      // 首次使用：跳转到认证引导页面
+      setTimeout(() => {
+        wx.redirectTo({
+          url: '/pages/auth/auth'
+        });
+      }, 300);
+      return;
+    }
+
+    // 非首次使用：检查旧版 hasLoggedIn 标记（兼容）
     const hasLoggedIn = wx.getStorageSync('hasLoggedIn');
     if (!hasLoggedIn) {
-      wx.showModal({
-        title: '登录提示',
-        content: '是否要登录微信账号以获得更好的体验？',
-        confirmText: '登录',
-        cancelText: '跳过',
-        success: (res) => {
-          if (res.confirm) {
-            this.wxLogin();
-          } else {
-            wx.setStorageSync('hasLoggedIn', true);
-          }
-        }
-      });
+      wx.setStorageSync('hasLoggedIn', true);
     }
   },
 
@@ -101,7 +110,18 @@ Page({
         const userInfo = res.userInfo;
         const accountName = this.generateUniqueAccountName();
         
-        // 保存用户信息
+        // 保存用户信息到统一数据管理器
+        try {
+          const userData = UserDataManager.loadUserData();
+          userData.userInfo.name = userInfo.nickName || accountName;
+          userData.userInfo.avatarUrl = userInfo.avatarUrl || '';
+          userData.userInfo.source = 'wechat';
+          UserDataManager.saveUserData(userData);
+        } catch (err) {
+          console.error('保存用户信息失败:', err);
+        }
+        
+        // 兼容旧存储格式
         wx.setStorageSync('userAccount', {
           avatarUrl: userInfo.avatarUrl,
           accountName: accountName,

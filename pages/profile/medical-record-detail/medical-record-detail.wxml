@@ -119,16 +119,23 @@
       </t-cell>
 
     </t-cell-group>
+
+    <!-- 手动病历操作按钮：仅手动添加的病历显示修改按钮 -->
+    <view wx:if="{{medicalRecord.isManual}}" class="edit-section">
+      <t-button theme="light" size="medium" icon="edit" bindtap="editMedicalRecord" class="edit-btn">
+        修改病历
+      </t-button>
+    </view>
   </view>
 
   <!-- 底部操作按钮 -->
   <view class="action-buttons">
-    <t-button theme="default" size="large" bindtap="copyMedicalRecord" class="action-btn">
+    <button class="action-btn copy-btn" bindtap="copyMedicalRecord">
       复制病历信息
-    </t-button>
-    <t-button theme="primary" size="large" open-type="share" class="action-btn">
+    </button>
+    <button class="action-btn share-btn" open-type="share">
       分享病历
-    </t-button>
+    </button>
   </view>
 
   <!-- 无数据提示 -->

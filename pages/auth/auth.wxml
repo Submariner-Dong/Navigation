@@ -1,0 +1,217 @@
+<view class="auth-container">
+  <!-- ==================== Step 1: 欢迎授权（头像+用户名） ==================== -->
+  <view class="step-page {{currentStep === 1 ? 'active' : ''}} {{welcomeAnimating ? 'animating' : ''}}" wx:if="{{currentStep <= 4}}">
+    <view class="step-content welcome-content">
+      <!-- 品牌标识 -->
+      <view class="brand-area">
+        <view class="brand-logo-emoji">🦷</view>
+        <text class="brand-name">青芽智医</text>
+        <text class="brand-subtitle">同济大学附属口腔医院 · 智能导诊助手</text>
+      </view>
+
+      <!-- 头像授权区域 -->
+      <view class="avatar-auth-section">
+        <text class="section-title">完善您的个人资料</text>
+
+        <!-- 微信头像按钮 -->
+        <button
+          class="wechat-avatar-btn"
+          open-type="chooseAvatar"
+          bind:chooseavatar="onChooseAvatar"
+        >
+          <image
+            src="{{avatarUrl || 'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/user-avatar.png'}}"
+            mode="aspectFill"
+            class="preview-avatar"
+          />
+          <text class="avatar-hint">{{wechatAvatarUrl ? '已获取微信头像' : '点击获取微信头像'}}</text>
+        </button>
+
+        <!-- 用户名区域：支持微信昵称 + 手动编辑 -->
+        <view class="username-area">
+          <!-- 未设置用户名时显示两种选择 -->
+          <block wx:if="{{!nickName}}">
+            <!-- 方式一：微信昵称一键获取 -->
+            <button
+              class="wechat-nickname-btn"
+              open-type="chooseAvatar"
+              bind:chooseavatar="onChooseNicknameWechat"
+            >
+              <t-icon name="logo-wechat" size="20" color="#07c160"></t-icon>
+              <text>使用微信昵称</text>
+            </button>
+
+            <view class="divider-row-mini">
+              <view class="divider-line"></view>
+              <text class="divider-text">或手动输入</text>
+              <view class="divider-line"></view>
+            </view>
+
+            <!-- 方式二：手动输入用户名 -->
+            <input
+              type="text"
+              class="nickname-input"
+              placeholder="请输入您的用户名"
+              value="{{tempNickName}}"
+              bindinput="onInputNickname"
+              bindblur="onInputNickname"
+            />
+          </block>
+
+          <!-- 已设置用户名时显示当前值和编辑入口 -->
+          <block wx:if="{{nickName}}">
+            <view class="name-display-row" bindtap="toggleEditNickname">
+              <text class="name-display-value">{{nickName}}</text>
+              <view wx:if="{{nickNameSource === 'wechat'}}" class="source-tag-inline">
+                <t-tag theme="primary" variant="light" size="small">微信昵称</t-tag>
+              </view>
+              <t-icon name="edit" size="18" color="#1677ff"></t-icon>
+            </view>
+
+            <!-- 编辑模式 -->
+            <block wx:if="{{isEditingNickname}}">
+              <input
+                class="name-edit-input"
+                value="{{tempNickName}}"
+                placeholder="请输入用户名"
+                maxlength="16"
+                bindinput="onNicknameInput"
+                focus="{{isEditingNickname}}"
+              />
+              <view class="edit-actions">
+                <view class="action-btn cancel-btn" bindtap="cancelEditNickname">
+                  <text>取消</text>
+                </view>
+                <view class="action-btn confirm-btn" bindtap="confirmEditNickname">
+                  <text>确定</text>
+                </view>
+              </view>
+            </block>
+          </block>
+        </view>
+
+        <!-- 跳过按钮 -->
+        <view class="skip-area" bindtap="skipWechatAuth">
+          <text class="skip-text">跳过，使用匿名身份</text>
+        </view>
+      </view>
+
+      <!-- 底部操作区 -->
+      <view class="bottom-action" wx:if="{{nickName}}">
+        <button class="primary-btn" bindtap="goNextStep">
+          下一步 →
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== Step 2: 已移除（合并到Step 1） ==================== -->
+  <!-- 此步骤已合并到 Step 1 中，直接进入 Step 3 手机号绑定 -->
+
+  <!-- ==================== Step 3: 手机号绑定 ==================== -->
+  <view class="step-page {{currentStep === 3 ? 'active' : ''}}" wx:if="{{currentStep >= 3 && currentStep <= 4}}">
+    <view class="step-content phone-content">
+
+      <!-- 步骤指示器 -->
+      <view class="step-indicator">
+        <view class="indicator-line active"></view>
+        <view class="indicator-dot done"></view>
+        <view class="indicator-line active"></view>
+        <view class="indicator-dot done"></view>
+        <view class="indicator-line"></view>
+        <view class="indicator-dot current"></view>
+      </view>
+      <view class="step-labels">
+        <text class="step-label">资料</text>
+        <text class="step-label">手机号</text>
+      </view>
+
+      <view class="phone-card">
+        <text class="card-title">绑定手机号</text>
+        <text class="card-desc">用于账号安全验证和就诊提醒通知</text>
+
+        <!-- 微信一键绑定（如果可用） -->
+        <button
+          class="wechat-phone-btn"
+          open-type="getPhoneNumber"
+          bindgetphonenumber="onGetPhoneNumber"
+        >
+          <t-icon name="logo-wechat" size="24" color="#07c160"></t-icon>
+          <text>微信快捷绑定</text>
+        </button>
+
+        <view class="divider-row">
+          <view class="divider-line"></view>
+          <text class="divider-text">或手动输入</text>
+          <view class="divider-line"></view>
+        </view>
+
+        <!-- 手机号输入 -->
+        <view class="phone-input-group {{phoneFocused ? 'focused' : ''}}">
+          <text class="phone-prefix">+86</text>
+          <input
+            class="phone-input"
+            type="number"
+            maxlength="11"
+            placeholder="请输入11位手机号"
+            value="{{phone}}"
+            bindinput="onPhoneInput"
+            bindfocus="onPhoneFocus"
+            bindblur="onPhoneBlur"
+          />
+        </view>
+
+        <!-- 验证码区域 -->
+        <view class="verify-code-group" wx:if="{{phone.length === 11}}">
+          <input
+            class="code-input"
+            type="number"
+            maxlength="6"
+            placeholder="请输入验证码"
+            value="{{verifyCode}}"
+            bindinput="onVerifyCodeInput"
+          />
+          <button
+            class="send-code-btn {{countdown > 0 || phone.length !== 11 ? 'disabled' : ''}}"
+            bindtap="sendVerifyCode"
+            disabled="{{countdown > 0 || phone.length !== 11}}"
+          >
+            {{countdown > 0 ? countdown + 's后重发' : '发送验证码'}}
+          </button>
+        </view>
+
+        <!-- 验证状态提示 -->
+        <view class="verify-status" wx:if="{{phoneVerified}}">
+          <t-icon name="check-circle-filled" size="18" color="#52c41a"></t-icon>
+          <text class="verify-success-text">手机号验证通过</text>
+        </view>
+      </view>
+
+      <!-- 底部操作 -->
+      <view class="bottom-actions">
+        <button class="secondary-btn" bindtap="goPrevStep">
+          ← 上一步
+        </button>
+        <button class="primary-btn {{!canSubmit ? 'disabled-btn' : ''}}" bindtap="submitAllData" disabled="{{!canSubmit || submitting}}">
+          {{submitting ? '提交中...' : '完成设置 ✓'}}
+        </button>
+      </view>
+
+      <!-- 跳过链接 -->
+      <view class="skip-link" bindtap="skipPhoneBind">
+        <text class="skip-link-text">暂时跳过 ></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== Step 4: 完成动画 ==================== -->
+  <view class="step-page {{currentStep === 4 ? 'active' : ''}}" wx:if="{{currentStep === 4}}">
+    <view class="complete-content">
+      <view class="success-animation">
+        <image src="{{images.APP_LOGO}}" mode="aspectFit" class="complete-logo"></image>
+      </view>
+      <text class="complete-title">欢迎使用青芽智医！</text>
+      <text class="complete-desc">正在为您准备个性化体验...</text>
+    </view>
+  </view>
+</view>

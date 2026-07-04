@@ -1,0 +1,688 @@
+/* ==================== 页面基础 ==================== */
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #e8f4fd 0%, #f0f2f5 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==================== 步骤页面通用 ==================== */
+.step-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(60rpx);
+  transition: all 0.4s ease;
+}
+
+.step-page.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  z-index: 10;
+}
+
+.step-content {
+  padding: 80rpx 48rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100vh - 160rpx);
+}
+
+/* ==================== Step 1: 欢迎授权 ==================== */
+.welcome-content {
+  justify-content: center;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.welcome-content.animating .brand-area {
+  animation: fadeInDown 0.5s 0.1s ease both;
+}
+
+.welcome-content.animating .avatar-auth-section {
+  animation: fadeInUp 0.5s 0.3s ease both;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 品牌区域 */
+.brand-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 80rpx;
+}
+
+.brand-logo {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.brand-logo-emoji {
+  width: 140rpx;
+  height: 140rpx;
+  font-size: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  box-shadow: 0 6rpx 24rpx rgba(22, 119, 255, 0.1);
+}
+
+.brand-name {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #1677ff;
+  margin-bottom: 12rpx;
+  letter-spacing: 4rpx;
+}
+
+.brand-subtitle {
+  font-size: 24rpx;
+  color: #888;
+  text-align: center;
+}
+
+/* 头像授权区 */
+.avatar-auth-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 50rpx 40rpx;
+  box-shadow: 0 8rpx 40rpx rgba(22, 119, 255, 0.08);
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 40rpx;
+}
+
+.wechat-avatar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: inherit !important;
+}
+
+.wechat-avatar-btn::after {
+  display: none !important;
+}
+
+.preview-avatar {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  border: 6rpx solid #1677ff;
+  margin-bottom: 20rpx;
+  box-shadow: 0 6rpx 24rpx rgba(22, 119, 255, 0.15);
+}
+
+.avatar-hint {
+  font-size: 26rpx;
+  color: #1677ff;
+  font-weight: 500;
+}
+
+/* 昵称输入行 */
+.nickname-row {
+  width: 100%;
+  margin-top: 30rpx;
+}
+
+/* 用户名区域（支持微信昵称 + 手动编辑） */
+.username-area {
+  width: 100%;
+  margin-top: 30rpx;
+}
+
+/* 微信昵称按钮 */
+.wechat-nickname-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12rpx !important;
+  width: 100% !important;
+  height: 84rpx !important;
+  background: #f7f9fc !important;
+  color: #07c160 !important;
+  font-size: 28rpx !important;
+  border: 2rpx solid #c1f0d3 !important;
+  border-radius: 16rpx !important;
+  line-height: normal !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.wechat-nickname-btn::after {
+  display: none !important;
+}
+
+/* 迷你分割线 */
+.divider-row-mini {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin: 24rpx 0;
+}
+
+.divider-row-mini .divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: #eee;
+}
+
+.divider-row-mini .divider-text {
+  font-size: 22rpx;
+  color: #ccc;
+}
+
+.nickname-input {
+  width: 100%;
+  height: 88rpx;
+  background: #f7f9fc;
+  border: 2rpx solid #e8ecf0;
+  border-radius: 16rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #333;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+}
+
+.nickname-input:focus {
+  border-color: #1677ff;
+  background: #fff;
+}
+
+/* 跳过区域 */
+.skip-area {
+  margin-top: 36rpx;
+  padding: 12rpx 24rpx;
+}
+
+.skip-text {
+  font-size: 24rpx;
+  color: #bbb;
+}
+
+/* 底部操作按钮 */
+.bottom-action {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 40rpx;
+}
+
+.primary-btn {
+  width: 100% !important;
+  height: 96rpx !important;
+  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%) !important;
+  color: #fff !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  border: none !important;
+  border-radius: 48rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 8rpx 28rpx rgba(22, 119, 255, 0.3) !important;
+}
+
+.primary-btn::after {
+  display: none !important;
+}
+
+.primary-btn.disabled-btn {
+  background: #d9d9d9 !important;
+  box-shadow: none !important;
+  color: #999 !important;
+}
+
+.secondary-btn {
+  width: 200rpx !important;
+  height: 88rpx !important;
+  background: transparent !important;
+  color: #666 !important;
+  font-size: 28rpx !important;
+  border: 2rpx solid #ddd !important;
+  border-radius: 44rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.secondary-btn::after {
+  display: none !important;
+}
+
+/* ==================== Step 2/3 共用：步骤指示器 ==================== */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 16rpx;
+}
+
+.indicator-line {
+  width: 120rpx;
+  height: 4rpx;
+  background: #e0e0e0;
+  border-radius: 2rpx;
+  transition: background 0.3s;
+}
+
+.indicator-line.active {
+  background: #1677ff;
+}
+
+.indicator-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: #e0e0e0;
+  transition: all 0.3s;
+}
+
+.indicator-dot.done {
+  background: #1677ff;
+}
+
+.indicator-dot.current {
+  background: #fff;
+  border: 4rpx solid #1677ff;
+  box-shadow: 0 0 0 4rpx rgba(22, 119, 255, 0.15);
+}
+
+.step-labels {
+  display: flex;
+  justify-content: center;
+  gap: 180rpx;
+  margin-bottom: 48rpx;
+}
+
+.step-label {
+  font-size: 24rpx;
+  color: #999;
+  width: 120rpx;
+  text-align: center;
+}
+
+/* ==================== Step 2: 资料设置卡片 ==================== */
+.profile-card,
+.phone-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 44rpx 36rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 36rpx;
+}
+
+.card-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.card-desc {
+  font-size: 24rpx;
+  color:#999;
+  display: block;
+  margin-bottom: 36rpx;
+}
+
+/* 头像编辑区域 */
+.edit-avatar-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36rpx;
+}
+
+.avatar-wrapper {
+  position: relative;
+}
+
+.edit-avatar {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 4rpx solid #e8ecf0;
+}
+
+.change-avatar-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 56rpx;
+  height: 56rpx;
+  background: #1677ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(22, 119, 255, 0.3);
+}
+
+.change-avatar-text {
+  color: #fff;
+  font-size: 20rpx;
+}
+
+.source-tag {
+  margin-top: 16rpx;
+}
+
+/* 用户名编辑区域 */
+.edit-name-area {
+  border-top: 1rpx solid #f0f0f0;
+  padding-top: 30rpx;
+}
+
+.field-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 14rpx;
+  display: block;
+}
+
+.name-display-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18rpx 24rpx;
+  background: #f7f9fc;
+  border-radius: 12rpx;
+  border: 1rpx solid transparent;
+  transition: border-color 0.2s;
+}
+
+.name-display-row:active {
+  border-color: #1677ff;
+}
+
+.name-display-value {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.name-edit-row {
+  margin-bottom: 20rpx;
+}
+
+.name-edit-input {
+  width: 100%;
+  height: 84rpx;
+  background: #fff;
+  border: 2rpx solid #1677ff;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  color: #333;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 20rpx;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  padding: 12rpx 32rpx;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.confirm-btn {
+  background: #1677ff;
+  color: #fff;
+}
+
+/* ==================== Step 3: 手机号绑定 ==================== */
+.phone-content {
+  justify-content: flex-start;
+}
+
+/* 微信快捷绑定按钮 */
+.wechat-phone-btn {
+  width: 100% !important;
+  height: 92rpx !important;
+  background: #07c160 !important;
+  color: #fff !important;
+  font-size: 30rpx !important;
+  border: none !important;
+  border-radius: 16rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16rpx !important;
+  margin-bottom: 30rpx !important;
+  box-shadow: 0 6rpx 20rpx rgba(7, 193, 96, 0.2) !important;
+}
+
+.wechat-phone-btn::after {
+  display: none !important;
+}
+
+/* 分割线 */
+.divider-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: #eee;
+}
+
+.divider-text {
+  font-size: 22rpx;
+  color: #ccc;
+}
+
+/* 手机号输入组 */
+.phone-input-group {
+  display: flex;
+  align-items: center;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 14rpx;
+  padding: 0 24rpx;
+  height: 96rpx;
+  transition: border-color 0.2s;
+  margin-bottom: 24rpx;
+  background: #fafbfc;
+}
+
+.phone-input-group.focused {
+  border-color: #1677ff;
+  background: #fff;
+  box-shadow: 0 0 0 4rpx rgba(22, 119, 255, 0.06);
+}
+
+.phone-prefix {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 600;
+  margin-right: 16rpx;
+  white-space: nowrap;
+}
+
+.phone-input {
+  flex: 1;
+  height: 100%;
+  font-size: 32rpx;
+  color: #333;
+}
+
+/* 验证码组 */
+.verify-code-group {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.code-input {
+  flex: 1;
+  height: 88rpx;
+  background: #fafbfc;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 14rpx;
+  font-size: 30rpx;
+  color: #333;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+}
+
+.send-code-btn {
+  width: 220rpx !important;
+  height: 88rpx !important;
+  background: #1677ff !important;
+  color: #fff !important;
+  font-size: 26rpx !important;
+  border: none !important;
+  border-radius: 14rpx !important;
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.send-code-btn::after {
+  display: none !important;
+}
+
+.send-code-btn.disabled {
+  background: #d9d9d9 !important;
+}
+
+.verify-status {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 0;
+}
+
+.verify-success-text {
+  font-size: 26rpx;
+  color: #52c41a;
+  font-weight: 500;
+}
+
+/* 底部操作（双按钮各占一半） */
+.bottom-actions {
+  width: 100%;
+  display: flex;
+  gap: 20rpx;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 20rpx;
+}
+
+.bottom-actions .primary-btn,
+.bottom-actions .secondary-btn {
+  flex: 1;
+  width: 0 !important; /* 让 flex:1 控制宽度，覆盖固定width */
+}
+
+/* 跳过链接 */
+.skip-link {
+  width: 100%;
+  text-align: center;
+  margin-top: 24rpx;
+  padding: 16rpx 0;
+}
+
+.skip-link-text {
+  font-size: 24rpx;
+  color: #bbb;
+}
+
+/* ==================== Step 4: 完成动画 ==================== */
+.complete-content {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #e8f4fd 0%, #f0f2f5 100%);
+}
+
+.success-animation {
+  margin-bottom: 40rpx;
+  animation: successBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes successBounce {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.success-circle {
+  width: 140rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12rpx 40rpx rgba(82, 196, 26, 0.3);
+}
+
+.complete-logo {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+}
+
+.complete-title {
+  font-size: 42rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 16rpx;
+  animation: fadeInUp 0.5s 0.3s ease both;
+}
+
+.complete-desc {
+  font-size: 28rpx;
+  color:#999;
+  animation: fadeInUp 0.5s 0.5s ease both;
+}

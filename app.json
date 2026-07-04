@@ -8,6 +8,8 @@
     "pages/science/detail/detail",
     "pages/profile/profile",
     "pages/profile/medical-record-detail/medical-record-detail",
+    "pages/profile/medical-record/medical-record",
+    "pages/auth/auth",
     "pages/ai-diagnosis/ai-diagnosis",
     "pages/map/map"
   ],
