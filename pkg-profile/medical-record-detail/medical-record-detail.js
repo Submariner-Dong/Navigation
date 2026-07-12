@@ -222,7 +222,7 @@ Page({
     const { medicalRecord } = this.data;
     return {
       title: `我的口腔病历 - ${medicalRecord.department}`,
-      path: `/pages/profile/medical-record-detail/medical-record-detail?record=${encodeURIComponent(JSON.stringify(medicalRecord))}`
+      path: `/pkg-profile/profile/medical-record-detail/medical-record-detail?record=${encodeURIComponent(JSON.stringify(medicalRecord))}`
     };
   },
 
@@ -241,7 +241,7 @@ Page({
     }
 
     wx.navigateTo({
-      url: `/pages/profile/medical-record/medical-record?record=${encodeURIComponent(JSON.stringify(medicalRecord))}`
+      url: `/pkg-profile/profile/medical-record/medical-record?record=${encodeURIComponent(JSON.stringify(medicalRecord))}`
     });
   }
 })

@@ -2,6 +2,27 @@
 
 ## 更新日志
 
+### 2026-07-12：分包重构 & 主包瘦身
+
+1. **主包分包化改造**：
+   - 将页面从 `pages/` 主包迁移至独立分包，解决主包体积超限问题
+   - 新增 5 个分包：`pkg-navigation`（地图+院内导航+科室详情）、`pkg-science`（科普列表+详情）、`pkg-profile`（个人中心+病历管理）、`pkg-auth`（认证登录）、`pkg-ai`（AI智能分诊）
+   - 首页保留在主包作为统一入口，配置 `preloadRule` 预下载各分包提升加载速度
+
+2. **路径全面迁移**：
+   - 22 处页面跳转路径全部从 `/pages/xxx` 格式更新为分包绝对路径 `/pkg-xxx/xxx`
+   - 涉及 7 个 JS 文件和 1 个 WXML 文件的 navigator 路由与 API 跳转
+
+3. **工具文件归属迁移**：
+   - `config/navigationConfig.js` → `pkg-navigation/config/`（导航配置随导航模块）
+   - `libs/amap-wx.130.js` → `pkg-navigation/libs/`（高德SDK随地模块）
+   - `utils/avatarManager.js` → `pkg-profile/utils/`（头像管理随个人中心）
+   - 修复 2 处跨包引用路径（`ai-diagnosis.js`、`auth/auth.js`），改用绝对路径 `/pkg-profile/utils/avatarManager.js`
+
+4. **代码质量修复**：
+   - 清理微信开发者工具「代码质量」扫描报告的 3 项"主包未使用JS文件"警告
+   - TDesign 组件库优化方案已写入文档（方案A/B）待后续实施
+
 ### 2026-07-04: 认证流程重构 & 游客模式 & 病历信息模块增强
 
 1. **认证流程优化**：
@@ -307,6 +328,111 @@ Navigation/
 > 3. 右键各云函数 → **配置** → **环境变量** → 填入上述 Key
 
 ## 待实现功能（技术债务与规划）
+
+---
+
+### ✅ 已完成：主包代码质量修复（2026-07-12）
+
+- ~~`config/navigationConfig.js`~~ → 已移至 `pkg-navigation/config/`
+- ~~`libs/amap-wx.130.js`~~ → 已移至 `pkg-navigation/libs/`
+- ~~`utils/avatarManager.js`~~ → 已移至 `pkg-profile/utils/`，跨包引用路径已更新（`ai-diagnosis.js`、`auth/auth.js`）
+
+---
+
+### 📦 待实施：TDesign 组件库体积优化（分包后专项）
+
+> **背景**：项目使用 TDesign Miniprogram 组件库（位于 `miniprogram_npm/tdesign-miniprogram/`），包含 **500+ 文件**，占用约 **2-3MB**。
+>
+> **当前状态**：分包已完成（路径已全部迁移），但 TDesign 组件库的优化尚未执行。以下为详细实施方案，供日后参考。
+
+#### 方案 A：各分包相对引用（推荐，改动小）
+
+**原理**：每个分包的 JSON 配置中，通过**相对路径**直接引用 `miniprogram_npm/tdesign-miniprogram/` 下的具体组件文件。
+
+**路径计算示例**：
+
+```plaintext
+pkg-profile/profile/profile.json
+├── 当前位置：pkg-profile/profile/profile.json
+├── 目标位置：miniprogram_npm/tdesign-miniprogram/cell-group/index.js
+└── 相对路径：../../../miniprogram_npm/tdesign-miniprogram/cell-group/index.js
+
+pkg-navigation/navigation/navigation.json
+├── 当前位置：pkg-navigation/navigation/navigation.json
+├── 目标位置：miniprogram_npm/tdesign-miniprogram/button/index.js
+└── 相对路径：../../../../miniprogram_npm/tdesign-miniprogram/button/index.js
+```
+
+**操作步骤**：
+
+1. 检查每个分包页面的 WXML，确认实际使用了哪些 TDesign 组件
+2. 将该分包内所有页面的 JSON 中 `"usingComponents"` 的组件路径从绝对路径改为**相对路径**
+3. 相对层级 = 从当前分包页面位置回溯到项目根目录的 `../` 数量 + `miniprogram_npm/...`
+
+**优缺点**：
+
+| 优点 | 缺点 |
+|------|------|
+| 改动量小，只改 JSON 配置 | 各分包可能重复打包同一组件（如 t-cell 多个分包都用） |
+| 不影响现有 import 语句 | 分包间组件不共享，总体积可能增加 |
+
+#### 方案 B：独立 TDesign 分包（最优解，改动大）
+
+**原理**：将 TDesign 创建为一个**独立的分包**（如 `pkg-tdesign`），其他分包通过**跨分包自定义组件引用**来使用。
+
+**app.json 配置**：
+
+```json
+{
+  "subpackages": [
+    {
+      "root": "pkg-tdesign",
+      "name": "pkg-tdesign",
+      "pages": []
+    },
+    {
+      "root": "pkg-profile",
+      "pages": ["profile/profile", ...]
+    }
+  ]
+}
+```
+
+**跨包引用格式**：
+
+```json
+// pkg-profile/profile/profile.json
+{
+  "usingComponents": {
+    "t-cell": "/pkg-tdesign/miniprogram_npm/tdesign-miniprogram/cell/index",
+    "t-cell-group": "/pkg-tdesign/miniprogram_npm/tdesign-miniprogram/cell-group/index"
+  }
+}
+```
+
+**操作步骤**：
+
+1. 创建 `pkg-tdesign` 空分包（无需 pages）
+2. 将 `miniprogram_npm/tdesign-miniprogram/` 复制或软链接到该分包内
+3. 更新所有分包页面的 JSON，使用 `/pkg-tdesign/...` 绝对路径
+4. 可选：配置 `preloadRule` 预下载 pkg-tdesign
+
+**优缺点**：
+
+| 优点 | 缺点 |
+|------|------|
+| TDesign 只打包一次，所有分包共享 | 需要创建新目录 + 复制/链接组件文件 |
+| 总体积最小化 | 需修改所有使用 TDesign 页面的 JSON 路径 |
+
+#### 已知未使用组件警告（可同步清理）
+
+以下页面注册了但实际未使用的 TDesign 组件（WXML 使用原生标签）：
+
+| 文件 | 注册了但未使用 |
+|------|---------------|
+| `pkg-profile/medical-record/medical-record.json` | t-input, t-picker, t-textarea（wxml 用原生 input/picker/textarea） |
+
+建议：从对应 JSON 的 `usingComponents` 中移除这些未使用的组件声明。
 
 ---
 

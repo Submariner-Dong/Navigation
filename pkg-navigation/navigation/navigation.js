@@ -45,7 +45,7 @@ Page({
     }*/
     const department = this.data.destination;
     wx.navigateTo({
-      url: `/pages/navigation/department/department?d=${department}`,
+      url: `/pkg-navigation/navigation/department/department?d=${department}`,
       success: function(res) {
         res.eventChannel.emit('sendNavigationData', {
           navigationInfo: this.data.navigationInfo[department],

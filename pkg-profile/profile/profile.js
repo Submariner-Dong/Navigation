@@ -112,7 +112,7 @@ Page({
 
   // 从游客模式登录 → 跳转到认证页
   loginFromGuestMode() {
-    wx.redirectTo({ url: '/pages/auth/auth' });
+    wx.redirectTo({ url: '/pkg-auth/auth/auth' });
   },
 
   loadUserData() {
@@ -142,7 +142,7 @@ Page({
 
   addMedicalRecord() {
     wx.navigateTo({
-      url: '/pages/profile/medical-record/medical-record'
+      url: '/pkg-profile/profile/medical-record/medical-record'
     });
   },
 
@@ -572,7 +572,7 @@ Page({
     
     // 将诊断记录传递到AI问诊页面
     wx.navigateTo({
-      url: `/pages/ai-diagnosis/ai-diagnosis?diagnosisRecord=${encodeURIComponent(JSON.stringify(record))}`
+      url: `/pkg-ai/ai-diagnosis/ai-diagnosis?diagnosisRecord=${encodeURIComponent(JSON.stringify(record))}`
     });
   },
 
@@ -662,7 +662,7 @@ Page({
     
     // 跳转到对应文章详情页
     wx.navigateTo({
-      url: `/pages/science/detail/detail?id=${articleId}`
+      url: `/pkg-science/science/detail/detail?id=${articleId}`
     });
   },
 
@@ -724,7 +724,7 @@ Page({
     
     // 直接跳转到对应科室的导航页面
     wx.navigateTo({
-      url: `/pages/navigation/department/department?d=${departmentName}`
+      url: `/pkg-navigation/navigation/department/department?d=${departmentName}`
     });
   },
 
@@ -1241,7 +1241,7 @@ Page({
     
     // 跳转到病历详情页面
     wx.navigateTo({
-      url: `/pages/profile/medical-record-detail/medical-record-detail?record=${encodeURIComponent(JSON.stringify(record))}`
+      url: `/pkg-profile/profile/medical-record-detail/medical-record-detail?record=${encodeURIComponent(JSON.stringify(record))}`
     });
   },
 

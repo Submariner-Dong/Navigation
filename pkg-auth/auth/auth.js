@@ -2,7 +2,7 @@
 // 首次登录与手机号绑定合并的认证模块
 
 const UserDataManager = require('../../utils/userDataManager.js');
-const AvatarManager = require('../../utils/avatarManager.js');
+const AvatarManager = require('/pkg-profile/utils/avatarManager.js');
 import imageConfig from '../../config/imageConfig.js';
 
 Page({

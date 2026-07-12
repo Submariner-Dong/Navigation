@@ -34,12 +34,12 @@
         <!-- 第一行：科普知识和AI智能问诊 -->
         <view class="grid-row">
           <view class="grid-item">
-            <navigator url="/pages/science/science" class="btn">
+            <navigator url="/pkg-science/science/science" class="btn">
               <image src="{{images.INDEX_BUTTON_1}}" mode="aspectFit" class="button-image"></image>
             </navigator>
           </view>
           <view class="grid-item">
-            <navigator url="/pages/ai-diagnosis/ai-diagnosis" class="btn">
+            <navigator url="/pkg-ai/ai-diagnosis/ai-diagnosis" class="btn">
               <image src="{{images.INDEX_BUTTON_3}}" mode="aspectFit" class="button-image"></image>
             </navigator>
           </view>
@@ -48,12 +48,12 @@
         <!-- 第二行：院内导航和医院地图 -->
         <view class="grid-row">
           <view class="grid-item">
-            <navigator url="/pages/navigation/navigation" class="btn">
+            <navigator url="/pkg-navigation/navigation/navigation" class="btn">
               <image src="{{images.INDEX_BUTTON_2}}" mode="aspectFit" class="button-image"></image>
             </navigator>
           </view>
           <view class="grid-item">
-            <navigator url="/pages/map/map" class="btn">
+            <navigator url="/pkg-navigation/map/map" class="btn">
               <image src="{{images.INDEX_BUTTON_5}}" mode="aspectFit" class="button-image"></image>
             </navigator>
           </view>

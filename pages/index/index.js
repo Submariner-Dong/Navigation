@@ -90,7 +90,7 @@ Page({
       // 首次使用：跳转到认证引导页面
       setTimeout(() => {
         wx.redirectTo({
-          url: '/pages/auth/auth'
+          url: '/pkg-auth/auth/auth'
         });
       }, 300);
       return;
@@ -181,7 +181,7 @@ Page({
     //console.log('点击我的按钮');
     if (this.data.currentPage !== 'profile') {
       wx.navigateTo({
-        url: '/pages/profile/profile'
+        url: '/pkg-profile/profile/profile'
       });
       //console.log('跳转到个人中心');
     } else {
@@ -208,27 +208,27 @@ Page({
    * 老年版 - 医院导航
    */
   elderlyNavigateToMap() {
-    wx.navigateTo({ url: '/pages/map/map' });
+    wx.navigateTo({ url: '/pkg-navigation/map/map' });
   },
 
   /**
    * 老年版 - 院内导航
    */
   elderlyNavigateToNavigation() {
-    wx.navigateTo({ url: '/pages/navigation/navigation' });
+    wx.navigateTo({ url: '/pkg-navigation/navigation/navigation' });
   },
 
   /**
    * 老年版 - 智能问诊
    */
   elderlyNavigateToAI() {
-    wx.navigateTo({ url: '/pages/ai-diagnosis/ai-diagnosis' });
+    wx.navigateTo({ url: '/pkg-ai/ai-diagnosis/ai-diagnosis' });
   },
 
   /**
    * 老年版 - 我的信息
    */
   elderlyNavigateToProfile() {
-    wx.navigateTo({ url: '/pages/profile/profile' });
+    wx.navigateTo({ url: '/pkg-profile/profile/profile' });
   }
 })

@@ -1,5 +1,5 @@
 const UserDataManager = require('../../utils/userDataManager.js');
-const AvatarManager = require('../../utils/avatarManager.js');
+const AvatarManager = require('/pkg-profile/utils/avatarManager.js');
 
 // 缓存数据，避免重复计算
 const cache = {
@@ -430,7 +430,7 @@ Page({
     
     // 直接跳转到科室导航页面，不经过选择界面
     wx.navigateTo({
-      url: `/pages/navigation/department/department?d=${recommendedDepartment}`
+      url: `/pkg-navigation/navigation/department/department?d=${recommendedDepartment}`
     });
   },
 

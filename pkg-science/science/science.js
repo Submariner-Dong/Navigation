@@ -103,7 +103,7 @@ Page({
     console.log('跳转详情:', article);
 
     wx.navigateTo({
-      url: `/pages/science/detail/detail?id=${article.id}&type=${article.type || 'article'}`
+      url: `/pkg-science/science/detail/detail?id=${article.id}&type=${article.type || 'article'}`
     });
   }
 })

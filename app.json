@@ -1,18 +1,53 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/science/science",
-    
-    "pages/navigation/navigation",
-    "pages/navigation/department/department",
-    "pages/science/detail/detail",
-    "pages/profile/profile",
-    "pages/profile/medical-record-detail/medical-record-detail",
-    "pages/profile/medical-record/medical-record",
-    "pages/auth/auth",
-    "pages/ai-diagnosis/ai-diagnosis",
-    "pages/map/map"
+    "pages/index/index"
   ],
+
+  "subPackages": [
+    {
+      "root": "pkg-navigation", 
+      "pages": [
+        "navigation/navigation", 
+        "navigation/department/department", 
+        "map/map"
+      ]
+    }, 
+    {
+      "root": "pkg-science", 
+      "pages": [
+        "science/science", 
+        "science/detail/detail"
+      ]
+    }, 
+    {
+      "root": "pkg-profile", 
+      "pages": [
+        "profile/profile", 
+        "profile/medical-record-detail/medical-record-detail", 
+        "profile/medical-record/medical-record"
+      ]
+    }, 
+    {
+      "root": "pkg-auth", 
+      "pages": [
+        "auth/auth"
+      ]
+    }, 
+    {
+      "root": "pkg-ai",
+      "pages": [
+        "ai-diagnosis/ai-diagnosis"
+      ]
+    }
+  ],
+
+  "preloadRule": {
+    "pages/index/index":{
+      "network": "all", 
+      "packages": ["pkg-navigation", "pkg-science"]
+    }
+  },
+
   "window": {
     "navigationBarTitleText": "青芽智医",
     "navigationBarBackgroundColor": "#ffffff",
