@@ -1,5 +1,22 @@
-const UserDataManager = require('../../utils/userDataManager.js');
-const AvatarManager = require('/pkg-profile/utils/avatarManager.js');
+const UserDataManager = require('../utils/userDataManager.js');
+
+// 头像URL常量（替代跨包引用 avatarManager）
+const DEFAULT_AVATAR = 'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/user-avatar.png';
+const AI_AVATAR_URL = 'https://miniapp-navigation-1382838528.cos.ap-shanghai.myqcloud.com/ai-avatar.png';
+
+// 辅助函数：获取用户头像（内联实现）
+function getUserAvatar() {
+  try {
+    const userData = UserDataManager.loadUserData();
+    if (userData && userData.userInfo && userData.userInfo.avatarUrl) {
+      return userData.userInfo.avatarUrl;
+    }
+    return DEFAULT_AVATAR;
+  } catch (error) {
+    console.error('获取用户头像失败:', error);
+    return DEFAULT_AVATAR;
+  }
+}
 
 // 缓存数据，避免重复计算
 const cache = {
@@ -71,11 +88,11 @@ Page({
   onLoad(options) {
     // 使用缓存避免重复获取头像
     if (!cache.userAvatar) {
-      cache.userAvatar = AvatarManager.getUserAvatar();
+      cache.userAvatar = getUserAvatar();
     }
     this.setData({
       userAvatar: cache.userAvatar,
-      aiAvatar: AvatarManager.getAIAvatar()
+      aiAvatar: AI_AVATAR_URL
     });
     
     // 检查是否从用户信息页面传递了诊断记录

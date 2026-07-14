@@ -6,11 +6,11 @@ const cachedHealthData = {
 const CACHE_DURATION = 30000; // 30秒缓存
 
 // 导入数据管理模块
-const UserDataManager = require('../../utils/userDataManager.js');
-const AvatarManager = require('../../utils/avatarManager.js');
+const UserDataManager = require('../utils/userDataManager.js');
+const AvatarManager = require('../utils/avatarManager.js');
 
 // 导入图片配置
-import imageConfig from '../../config/imageConfig.js'
+import imageConfig from '../config/imageConfig.js'
 
 Page({
   data: {

@@ -1,19 +1,4 @@
-// 使用主包的 imageConfig（而不是分包内的副本，确保数据一致性）
-const imageConfig = require("../../config/imageConfig.js");
-
-// ========== 调试代码：检查 imageConfig 加载情况 ==========
-console.log('=== navigationConfig.js 内部调试 ===');
-console.log('1. imageConfig 对象:', imageConfig);
-console.log('2. imageConfig 类型:', typeof imageConfig);
-console.log('3. imageConfig 包含属性数量:', Object.keys(imageConfig).length);
-console.log('4. GATE 值:', imageConfig.GATE);
-console.log('5. PASSAGE 值:', imageConfig.PASSAGE);
-console.log('6. 1-STAIRS 值:', imageConfig['1-STAIRS']);
-console.log('7. 1-ELEVATOR 值:', imageConfig['1-ELEVATOR']);
-console.log('8. 2-RADIOLOGY-1 值:', imageConfig['2-RADIOLOGY-1']);
-console.log('9. 所有导航相关属性:', Object.keys(imageConfig).filter(k => k.includes('GATE') || k.includes('STAIR') || k.includes('ELEVAT') || k.includes('RADIO')));
-console.log('=== 调试结束 ===\n');
-// ========== 调试代码结束 ==========
+const imageConfig = require("./imageConfig.js");
 
 // 导航路径配置
 const navigationConfig = {

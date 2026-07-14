@@ -17,13 +17,13 @@
     <view class="carousel-section">
       <swiper class="carousel" indicator-dots="true" autoplay="true" interval="3000" duration="500">
         <swiper-item>
-          <image src="{{images.CAROUSEL_1}}" mode="aspectFill" class="carousel-image"></image>
+          <image src="{{images.CAROUSEL_1}}" mode="widthFix" class="carousel-image"></image>
         </swiper-item>
         <swiper-item>
-          <image src="{{images.CAROUSEL_2}}" mode="aspectFill" class="carousel-image"></image>
+          <image src="{{images.CAROUSEL_2}}" mode="widthFix" class="carousel-image"></image>
         </swiper-item>
         <swiper-item>
-          <image src="{{images.CAROUSEL_3}}" mode="aspectFill" class="carousel-image"></image>
+          <image src="{{images.CAROUSEL_3}}" mode="widthFix" class="carousel-image"></image>
         </swiper-item>
       </swiper>
     </view>

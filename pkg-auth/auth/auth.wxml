@@ -31,15 +31,23 @@
         <view class="username-area">
           <!-- 未设置用户名时显示两种选择 -->
           <block wx:if="{{!nickName}}">
-            <!-- 方式一：微信昵称一键获取 -->
+            <!-- 方式一：微信昵称一键获取（点击即自动唤起微信昵称填充） -->
             <button
               class="wechat-nickname-btn"
-              open-type="chooseAvatar"
-              bind:chooseavatar="onChooseNicknameWechat"
+              bindtap="onChooseNicknameWechat"
             >
               <t-icon name="logo-wechat" size="20" color="#07c160"></t-icon>
               <text>使用微信昵称</text>
             </button>
+
+            <!-- 微信昵称输入框（隐藏，聚焦时微信自动弹窗填充昵称） -->
+            <input
+              type="nickname"
+              class="wechat-nickname-hidden-input"
+              focus="{{nicknameInputFocus}}"
+              bindinput="onWechatNicknameInput"
+              bindblur="onWechatNicknameBlur"
+            />
 
             <view class="divider-row-mini">
               <view class="divider-line"></view>

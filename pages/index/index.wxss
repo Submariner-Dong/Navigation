@@ -126,21 +126,20 @@
   font-weight: bold;
 }
 
-/* 轮播图区域 - 占屏幕顶部三分之一 */
+/* 轮播图区域 - 高度自适应图片原始比例 */
 .carousel-section {
   width: 100%;
-  height: 33vh;
   margin-bottom: 20px;
 }
 
 .carousel {
   width: 100%;
-  height: 100%;
+  /* 高度由内容撑开，无需固定值 */
 }
 
 .carousel-image {
   width: 100%;
-  height: 100%;
+  /* widthFix模式下高度自动按原图比例计算 */
 }
 
 /* 内容区域 - 对应<view class="content">，包含所有功能入口 */

@@ -1,4 +1,4 @@
-import navigationConfig from "../../config/navigationConfig";
+const navigationConfig = require('../../config/navigationConfig');
 
 Page({
   data: {
@@ -20,6 +20,33 @@ Page({
   },
 
   onLoad(options) {
+    // ========== 调试代码开始 ==========
+    console.log('=== navigation.js 模块加载调试 ===');
+    console.log('1. navigationConfig 对象:', navigationConfig);
+    console.log('2. navigationConfig 类型:', typeof navigationConfig);
+    console.log('3. 是否为数组/对象:', Array.isArray(navigationConfig) || typeof navigationConfig === 'object');
+    console.log('4. 包含的科室数量:', Object.keys(navigationConfig).length);
+    console.log('5. 科室列表:', Object.keys(navigationConfig));
+    
+    if (navigationConfig && navigationConfig['正畸科']) {
+      console.log('6. ✅ 正畸科数据正常');
+      console.log('7. 正畸科步骤数:', navigationConfig['正畸科'].steps.length);
+      if (navigationConfig['正畸科'].steps[0]) {
+        const firstStepImage = navigationConfig['正畸科'].steps[0].image;
+        console.log('8. 第一步图片URL:', firstStepImage);
+        console.log('9. 图片URL类型:', typeof firstStepImage);
+        if (firstStepImage) {
+          console.log('10. 图片URL是否包含http:', firstStepImage.includes('http'));
+        } else {
+          console.error('⚠️  警告：图片URL为空！请检查 imageConfig 是否包含 GATE 等属性');
+        }
+      }
+    } else {
+      console.error('❌ 错误：navigationConfig未定义或缺少正畸科数据！');
+    }
+    console.log('=== 调试代码结束 ===\n');
+    // ========== 调试代码结束 ==========
+    
     this.setData({
       destination: this.data.navigationArray[0],
     });

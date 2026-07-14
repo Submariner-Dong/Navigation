@@ -1,5 +1,5 @@
-const UserDataManager = require('../../../utils/userDataManager.js');
-import imageConfig from '../../../config/imageConfig.js';
+const UserDataManager = require('../../utils/userDataManager.js');
+const imageConfig = require('../../config/imageConfig.js');
 
 // 视频资源映射表（按 id → imageConfig key）
 const VIDEO_MAP = {
@@ -24,6 +24,24 @@ Page({
     isFavorite: false
   },
   onLoad: function(option) {
+    // ========== 调试代码开始 ==========
+    console.log('=== detail.js (science/detail) 模块加载调试 ===');
+    console.log('1. UserDataManager 对象:', UserDataManager);
+    console.log('2. UserDataManager 类型:', typeof UserDataManager);
+    
+    console.log('3. imageConfig 对象:', imageConfig);
+    console.log('4. imageConfig 类型:', typeof imageConfig);
+    console.log('5. imageConfig 包含的属性数量:', Object.keys(imageConfig).length);
+    
+    if (imageConfig && imageConfig.VIDEO_6_CRACKED_TOOTH) {
+      console.log('6. ✅ imageConfig 加载成功');
+      console.log('7. 测试视频URL:', imageConfig.VIDEO_6_CRACKED_TOOTH);
+    } else {
+      console.error('❌ imageConfig 加载失败或缺少预期属性');
+    }
+    console.log('=== 调试代码结束 ===\n');
+    // ========== 调试代码结束 ==========
+    
     const id = option.id || '1';
     const type = option.type || 'article';
     console.log('详情页加载, id:', id, ', type:', type);
@@ -157,7 +175,7 @@ Page({
       11: `夜半三更"咔咔"声？解码夜间牙齿的"神秘运动会"`,
       12: '智齿，和智慧有关吗？',
       13: '地包天，天包地，错𬌗畸形要警惕',
-      14: '口腔地毯（待定）'
+      14: '嘴里疼的不止牙'
     };
 
     return titles[parseInt(id)] || "科普内容";

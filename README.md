@@ -2,6 +2,59 @@
 
 ## 更新日志
 
+### 2026-07-14：全面修复分包加载 & ES Module 兼容性 & 优化交互细节并加强防重复机制
+
+1. **分包模块 require() 失败根本原因定位与修复**：
+   - **核心发现**：微信分包首次从主包跳转时，分包内非页面 JS 文件可能尚未注册到模块系统，导致顶层 `require()` 找不到同包内文件
+   - **解决方案**：所有分包的共享模块引用统一指向主包（使用 `../../../` 路径穿越分包边界）
+   - **修复范围**：navigationConfig.js、imageConfig.js、userDataManager.js、amap-wx.130.js 等 10+ 文件路径调整
+
+2. **ES Module → CommonJS 全面转换**（关键修复）：
+   - **根因**：分包环境中 `require()` 无法解析 ES6 的 `export default` 语法，返回 `undefined`
+   - **修复文件**：主包 `config/imageConfig.js`（最后一行 `export default` → `module.exports`）
+   - **影响**：此修复解决了 navigationConfig 图片 URL 全部为 `undefined` 的连锁问题
+
+3. **navigationConfig.js 内部路径错误修复**：
+   - 原代码：`require("./config/navigationConfig")` 解析为不存在的 `config/config/navigationConfig`
+   - 修复为：`require("./imageConfig.js")`（同目录下的 imageConfig）
+
+4. **detail.js ES6 import 语法修复**：
+   - `import imageConfig from '...'` 改为 `const imageConfig = require('...')`
+
+5. **medical-record 页面 "page not found" 修复**：
+   - 根因：缺少必要的 `.wxml`、`.wxss`、`.json` 页面文件
+   - 微信小程序每个页面必须包含完整的4个文件才能被识别和加载
+
+6. **调试基础设施建立**：
+   - 为 6 个关键页面添加详细的模块加载调试代码（navigation.js、department.js、map.js、detail.js、medical-record.js、medical-record-detail.js）
+   - 生成 `DEBUG_GUIDE.md` 调试指南文档，包含预期输出示例与常见错误排查流程
+
+7. **技术经验总结（写入最佳实践）**：
+   - 分包开发只用 CommonJS（`require/module.exports`），禁用 ES Module（`import/export`）
+   - 共享文件优先放主包，避免多副本同步问题
+   - 每个页面的4个文件必须齐全
+   - 分包首次加载时避免在顶层立即 require 同包内非页面文件
+
+8. **登录页微信昵称获取交互优化**：
+   - **问题**：点击"使用微信昵称"按钮后仅弹出 toast 提示让用户在下方输入框确认，体验不流畅
+   - **修复方案**：改用 `<input type="nickname">` 的 `focus` 属性控制聚焦状态 → 微信自动弹窗填充昵称
+   - **实现细节**：`onChooseNicknameWechat()` 先重置 `nicknameInputFocus=false`，再延迟 50ms 设为 `true` 触发弹窗；获取成功后自动 `focus=false`
+   - **效果**：与「获取微信头像」一致的点击即唤起交互体验
+
+9. **首页轮播图显示不全修复**：
+   - **问题**：轮播图 carousel-1.png（1256×336，宽高比约 3.74:1）使用 `mode="aspectFill"` + 固定高度 `33vh` 容器，导致图片被大量裁剪无法完整显示
+   - **修复方案**：3张轮播图全部改为 `mode="widthFix"`；移除 `.carousel-section` 和 `.carousel` 的固定高度约束，由图片内容自适应撑开
+   - **效果**：图片按原始比例完整展示（宽度铺满屏幕，高度自动计算约为宽度的 26.7%）
+
+10. **科普视频标题修正 & 病历保存防重复提交**：
+    - **视频标题修改**：`science.js` 和 `detail.js` 中 "口腔地毯（待定）" → "嘴里疼的不止牙"
+    - **病历重复保存 Bug 根因**：`saveMedicalRecord()` 无任何防护，保存后 `navigateBack()` 有 1.5s 延迟期间用户可连点多下 → 每次都 `unshift` 插入相同记录
+    - **三重防护方案**：
+      - **UI 锁（第一层）**：按钮增加 `loading="{{submitting}}"` + `disabled="{{submitting}}"`，点击后文字切换为"保存中..."；3秒冷却定时器兜底防止永久卡死
+      - **存储记录查重（第二层）**：在 record 构建完成后、写入 Storage 前，读取已有病历列表用 `records.some(逐字段 === record)` 对比核心字段（visitTime/department/doctor/diagnosis/mainComplaint/treatmentProcess/medication），发现完全一致则拦截并提示"请勿重复保存相同病历"
+      - **关键设计决策**：查重使用完整 `record` 对象与存储值对比，天然避免默认值不一致导致比对失败的问题
+    - **修复文件**：`medical-record.wxml`（按钮状态）、`medical-record.js`（三重防护逻辑）、新增 `onUnload` 清理定时器防泄漏
+
 ### 2026-07-12：分包重构 & 主包瘦身
 
 1. **主包分包化改造**：

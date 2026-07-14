@@ -1,4 +1,4 @@
-import imageConfig from '../../config/imageConfig.js';
+import imageConfig from '../config/imageConfig.js';
 
 Page({
   data: {
@@ -91,7 +91,7 @@ Page({
       },
       {
         id: 14,
-        title: "口腔地毯（待定）",
+        title: "嘴里疼的不止牙",
         type: 'video',
         videoUrl: imageConfig.VIDEO_14_CARPET
       }

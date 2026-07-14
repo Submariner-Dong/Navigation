@@ -1,2 +1,150 @@
-<!--pkg-profile/profile/medical-record-detail/medical-record-detail.wxml-->
-<text>pkg-profile/profile/medical-record-detail/medical-record-detail.wxml</text>
+<view class="container">
+  <!-- 头部信息卡片 -->
+  <view wx:if="{{medicalRecord}}" class="header-card">
+    <view class="department-info">
+      <t-tag theme="primary" size="large" class="department-tag">
+        {{medicalRecord.department}}
+      </t-tag>
+      <view class="doctor-info">
+        <text class="doctor-name">{{medicalRecord.doctor}}</text>
+        <text class="doctor-title">主治医师</text>
+      </view>
+    </view>
+    <view class="diagnosis-info">
+      <text class="diagnosis-text">{{medicalRecord.diagnosis}}</text>
+      <text class="visit-time">{{medicalRecord.visitTime}}</text>
+    </view>
+  </view>
+
+  <!-- 病历详情内容 -->
+  <view wx:if="{{medicalRecord}}" class="content-section">
+    <t-cell-group title="病历详细信息">
+      
+      <!-- 就诊基本信息 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">就诊时间</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['就诊时间']}}</text>
+        </view>
+      </t-cell>
+      
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">科室</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['科室']}}</text>
+        </view>
+      </t-cell>
+      
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">医生</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['医生']}}</text>
+        </view>
+      </t-cell>
+
+      <!-- 主诉 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">主诉</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['主诉']}}</text>
+        </view>
+      </t-cell>
+
+      <!-- 诊断结果 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">诊断结果</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['诊断结果']}}</text>
+        </view>
+      </t-cell>
+
+      <!-- 治疗经过 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">治疗经过</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['治疗经过']}}</text>
+        </view>
+      </t-cell>
+
+      <!-- 用药信息 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">用药信息</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['用药信息']}}</text>
+        </view>
+      </t-cell>
+
+      <!-- 复诊信息 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">复诊信息</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['复诊信息']}}</text>
+        </view>
+      </t-cell>
+
+      <!-- 检查结果 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">检查结果</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['检查结果']}}</text>
+        </view>
+      </t-cell>
+
+      <!-- 医嘱 -->
+      <t-cell>
+        <view slot="title">
+          <text class="info-label">医嘱</text>
+        </view>
+        <view slot="note">
+          <text class="info-value">{{detailedInfo['医嘱']}}</text>
+        </view>
+      </t-cell>
+
+    </t-cell-group>
+
+    <!-- 手动病历操作按钮：仅手动添加的病历显示修改按钮 -->
+    <view wx:if="{{medicalRecord.isManual}}" class="edit-section">
+      <t-button theme="light" size="medium" icon="edit" bindtap="editMedicalRecord" class="edit-btn">
+        修改病历
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 底部操作按钮 -->
+  <view class="action-buttons">
+    <button class="action-btn copy-btn" bindtap="copyMedicalRecord">
+      复制病历信息
+    </button>
+    <button class="action-btn share-btn" open-type="share">
+      分享病历
+    </button>
+  </view>
+
+  <!-- 无数据提示 -->
+  <view wx:if="{{!medicalRecord}}" class="no-data">
+    <t-message theme="warning" size="large">
+      病历信息加载失败，请返回重试
+    </t-message>
+    <t-button theme="default" size="large" bindtap="goBack" class="back-btn">
+      返回
+    </t-button>
+  </view>
+</view>

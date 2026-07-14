@@ -1,4 +1,4 @@
-import navigationConfig from "../../../config/navigationConfig";
+const navigationConfig = require('../../config/navigationConfig');
 
 Page({
   data: {
@@ -10,6 +10,25 @@ Page({
   },
 
   onLoad(options) {
+    // ========== 调试代码开始 ==========
+    console.log('=== department.js 模块加载调试 ===');
+    console.log('1. navigationConfig 对象:', navigationConfig);
+    console.log('2. navigationConfig 类型:', typeof navigationConfig);
+    console.log('3. 包含的科室数量:', Object.keys(navigationConfig).length);
+    console.log('4. URL参数 options:', options);
+    
+    try {
+      // 测试 userDataManager 是否能正常 require
+      const UserDataManagerTest = require('../../utils/userDataManager.js');
+      console.log('5. ✅ userDataManager 加载成功');
+      console.log('6. UserDataManager 类型:', typeof UserDataManagerTest);
+      console.log('7. UserDataManager 方法列表:', Object.keys(UserDataManagerTest));
+    } catch(e) {
+      console.error('❌ userDataManager 加载失败:', e.message);
+    }
+    console.log('=== 调试代码结束 ===\n');
+    // ========== 调试代码结束 ==========
+    
     // 优先通过URL参数获取科室名称
     if (options && options.d) {
       const department = options.d;
@@ -149,7 +168,7 @@ Page({
     const { department } = this.data;
     
     // 导入UserDataManager
-    const UserDataManager = require('../../../utils/userDataManager.js');
+    const UserDataManager = require('../../utils/userDataManager.js');
     
     // 统计常用科室
     const departmentRecord = {

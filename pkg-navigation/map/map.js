@@ -61,8 +61,31 @@ Page({
   },
 
   onLoad: function() {
-    // 初始化高德地图SDK
-    this.myAmapFun = new amapFile.AMapWX({key: AMAP_API_KEY});
+    // ========== 调试代码开始 ==========
+    console.log('=== map.js 模块加载调试 ===');
+    console.log('1. amapFile 对象:', amapFile);
+    console.log('2. amapFile 类型:', typeof amapFile);
+    console.log('3. amapFile 包含的属性:', Object.keys(amapFile));
+    console.log('4. AMapWX 构造函数:', amapFile.AMapWX);
+    console.log('5. AMapWX 类型:', typeof amapFile.AMapWX);
+    
+    if (amapFile && amapFile.AMapWX) {
+      console.log('6. ✅ 高德地图SDK加载成功');
+      try {
+        this.myAmapFun = new amapFile.AMapWX({key: AMAP_API_KEY});
+        console.log('7. ✅ AMapWX 实例创建成功');
+        console.log('8. myAmapFun对象:', this.myAmapFun);
+      } catch(e) {
+        console.error('❌ AMapWX 实例创建失败:', e.message);
+      }
+    } else {
+      console.error('❌ 高德地图SDK加载失败！amapFile或AMapWX未定义');
+    }
+    console.log('=== 调试代码结束 ===\n');
+    // ========== 调试代码结束 ==========
+    
+    // 初始化高德地图SDK（注释掉原初始化，避免重复）
+    // this.myAmapFun = new amapFile.AMapWX({key: AMAP_API_KEY});
     this.initMap();
     this.getUserLocation();
   },

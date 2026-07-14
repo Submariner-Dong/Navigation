@@ -1,9 +1,9 @@
 // pages/auth/auth.js
 // 首次登录与手机号绑定合并的认证模块
 
-const UserDataManager = require('../../utils/userDataManager.js');
-const AvatarManager = require('/pkg-profile/utils/avatarManager.js');
-import imageConfig from '../../config/imageConfig.js';
+const UserDataManager = require('../utils/userDataManager.js');
+const AvatarManager = require('../utils/avatarManager.js');
+import imageConfig from '../config/imageConfig.js';
 
 Page({
   data: {
@@ -25,6 +25,7 @@ Page({
 
     wechatAvatarUrl: '',
     wechatNickName: '',
+    nicknameInputFocus: false,  // 控制隐藏昵称input的聚焦状态（唤起微信昵称弹窗）
 
     // Step 3 - 手机号绑定
     phone: '',
@@ -93,12 +94,38 @@ Page({
     }
   },
 
+  // 点击"使用微信昵称"按钮 → 聚焦隐藏input → 微信自动弹窗填充昵称
   onChooseNicknameWechat(e) {
-    this.setData({
-      isEditingNickname: true,
-      tempNickName: '',
-      nickNameSourceTarget: 'wechat'
-    });
+    // 先重置（确保每次点击都能触发 focus 事件）
+    this.setData({ nicknameInputFocus: false });
+    setTimeout(() => {
+      // 设置聚焦 → 微信自动弹出昵称选择/确认窗口
+      this.setData({ nicknameInputFocus: true, nickNameSourceTarget: 'wechat' });
+    }, 50);
+  },
+
+  // 微信昵称输入框输入事件（微信自动填充或用户确认时触发）
+  onWechatNicknameInput(e) {
+    const nickname = e.detail.value || '';
+    console.log('微信昵称输入:', nickname);
+    if (nickname) {
+      this.setData({
+        tempNickName: nickname,
+        nickName: nickname,
+        isEditingNickname: false,
+        nickNameSource: 'wechat',
+        nicknameInputFocus: false  // 获取成功，关闭聚焦状态
+      });
+      wx.showToast({ title: `已获取昵称：${nickname}`, icon: 'none', duration: 1500 });
+    }
+  },
+
+  // 微信昵称输入框失焦
+  onWechatNicknameBlur(e) {
+    const nickname = e.detail.value || '';
+    if (!nickname && !this.data.nickName) {
+      console.log('微信昵称未获取，用户可手动输入');
+    }
   },
 
   onInputNickname(e) {
